@@ -40,8 +40,8 @@ export function DeepDiveLayout({ id, kicker, title, body, Icon, children, flip, 
 
           <Reveal delay={0.15}>
             <div
-              className={`relative aspect-square w-full overflow-hidden rounded-3xl border border-white/10 bg-ink-900/50 ${
-                wide ? 'sm:aspect-[16/10]' : 'sm:aspect-[4/3]'
+              className={`relative aspect-[4/5] w-full overflow-hidden rounded-3xl border border-white/10 bg-ink-900/50 ${
+                wide ? 'md:aspect-[16/10]' : 'md:aspect-[4/3]'
               }`}
             >
               {children}
