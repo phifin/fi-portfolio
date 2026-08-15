@@ -1,0 +1,117 @@
+import { useEffect, useState } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
+import { useLang } from '../../providers/LanguageProvider'
+import { ui } from '../../i18n'
+import { scrollToId } from '../../hooks/useLenis'
+import { sectionIds } from '../../data/content'
+import { LanguageToggle } from './LanguageToggle'
+
+const links = [
+  { id: sectionIds.about, label: ui.nav.about },
+  { id: sectionIds.skills, label: ui.nav.skills },
+  { id: sectionIds.kafka, label: ui.nav.architecture },
+  { id: sectionIds.experience, label: ui.nav.experience },
+  { id: sectionIds.projects, label: ui.nav.projects },
+  { id: sectionIds.contact, label: ui.nav.contact },
+]
+
+export function Nav() {
+  const { pick } = useLang()
+  const [scrolled, setScrolled] = useState(false)
+  const [open, setOpen] = useState(false)
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  const go = (id: string) => {
+    setOpen(false)
+    scrollToId(id)
+  }
+
+  return (
+    <>
+      <motion.header
+        initial={{ y: -80, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+        className="fixed inset-x-0 top-0 z-50"
+      >
+        <div
+          className={`container-page mt-3 flex items-center justify-between rounded-2xl px-4 py-3 transition-all duration-300 ${
+            scrolled ? 'glass-strong shadow-glow' : 'bg-transparent'
+          }`}
+        >
+          <button onClick={() => go(sectionIds.hero)} className="group flex items-center gap-2">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-accent-cyan to-accent-violet font-mono text-sm font-bold text-ink-950">
+              VP
+            </span>
+            <span className="hidden font-semibold tracking-tight sm:block">Vo Nhu Phi</span>
+          </button>
+
+          <nav className="hidden items-center gap-1 md:flex">
+            {links.map((l) => (
+              <button
+                key={l.id}
+                onClick={() => go(l.id)}
+                className="rounded-lg px-3 py-1.5 text-sm text-white/70 transition-colors hover:bg-white/5 hover:text-white"
+              >
+                {pick(l.label)}
+              </button>
+            ))}
+          </nav>
+
+          <div className="flex items-center gap-2">
+            <LanguageToggle />
+            <button
+              onClick={() => setOpen((o) => !o)}
+              aria-label="Menu"
+              className="glass flex h-9 w-9 items-center justify-center rounded-full md:hidden"
+            >
+              <span className="relative flex h-3 w-4 flex-col justify-between">
+                <span className={`h-0.5 w-full bg-white transition-transform ${open ? 'translate-y-[5px] rotate-45' : ''}`} />
+                <span className={`h-0.5 w-full bg-white transition-opacity ${open ? 'opacity-0' : ''}`} />
+                <span className={`h-0.5 w-full bg-white transition-transform ${open ? '-translate-y-[5px] -rotate-45' : ''}`} />
+              </span>
+            </button>
+          </div>
+        </div>
+      </motion.header>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-40 md:hidden"
+          >
+            <div className="absolute inset-0 bg-ink-950/80 backdrop-blur-lg" onClick={() => setOpen(false)} />
+            <motion.nav
+              initial={{ y: -20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: -20, opacity: 0 }}
+              className="container-page relative mt-24 flex flex-col gap-2"
+            >
+              {links.map((l, i) => (
+                <motion.button
+                  key={l.id}
+                  initial={{ x: -20, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  transition={{ delay: 0.05 * i }}
+                  onClick={() => go(l.id)}
+                  className="glass rounded-xl px-5 py-4 text-left text-lg font-semibold"
+                >
+                  {pick(l.label)}
+                </motion.button>
+              ))}
+            </motion.nav>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  )
+}
