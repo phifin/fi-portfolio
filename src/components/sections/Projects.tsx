@@ -1,3 +1,4 @@
+import { FolderGit2 } from 'lucide-react'
 import { SectionHeading } from '../ui/SectionHeading'
 import { Reveal } from '../ui/Reveal'
 import { TiltCard } from '../ui/TiltCard'
@@ -7,8 +8,8 @@ import { projects, sectionIds } from '../../data/content'
 
 const glow: Record<string, string> = {
   cyan: 'from-accent-cyan/20',
-  violet: 'from-accent-violet/20',
-  magenta: 'from-accent-magenta/20',
+  blue: 'from-accent-blue/20',
+  sky: 'from-accent-sky/20',
 }
 
 export function Projects() {
@@ -16,7 +17,7 @@ export function Projects() {
   return (
     <section id={sectionIds.projects} className="section-pad relative">
       <div className="container-page">
-        <SectionHeading kicker={pick(ui.projects.kicker)} title={pick(ui.projects.title)} />
+        <SectionHeading kicker={pick(ui.projects.kicker)} title={pick(ui.projects.title)} Icon={FolderGit2} />
 
         <div className="mt-14 grid gap-6 md:grid-cols-2">
           {projects.map((p, i) => (

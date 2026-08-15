@@ -18,8 +18,11 @@ Song ngữ VI/EN, dark theme neon cyan/violet, deploy GitHub Pages.
 | 3D | `@react-three/fiber` (R3F) + `@react-three/drei` + `@react-three/postprocessing` | Bloom cho glow |
 | Animation | `gsap` + ScrollTrigger, `framer-motion` | GSAP dùng qua Lenis ticker |
 | Smooth scroll | `lenis` | tắt khi `prefers-reduced-motion` |
-| Styling | Tailwind CSS 3 + CSS vars (`src/index.css`) | |
+| Styling | Tailwind CSS 3 + CSS vars (`src/index.css`) | theme **cyan + blue** (không dùng violet) |
+| Icons | `lucide-react` | dùng cho nav/section/skill/social + trong SVG sơ đồ |
 | i18n | Tự viết (không dùng lib) | `LanguageProvider` + dict `src/i18n/index.ts` |
+
+> **Theme**: accent tokens `accent.cyan / accent.blue / accent.sky` (tailwind.config.js) + biến `--cyan/--blue/--sky` (index.css). Đổi màu chủ đạo sửa 2 chỗ này.
 
 ## 3. Cấu trúc thư mục
 
@@ -33,8 +36,9 @@ src/
     useLenis.ts          ← smooth scroll + scrollToId(id) + deep-link
   components/
     layout/   Nav, LanguageToggle, Footer
-    ui/       Reveal, SectionHeading, AnimatedCounter, TiltCard, DeepDiveLayout
-    three/    HeroScene, FlowPrimitives, KafkaScene, DiagramCanvas
+    ui/       Reveal, SectionHeading, AnimatedCounter, TiltCard, DeepDiveLayout, DiagramLegend
+    three/    HeroScene              (canvas 3D DUY NHẤT)
+    diagram/  primitives.tsx         (shape + icon + flow cho sơ đồ SVG)
     sections/ Hero, About, Skills, KafkaDeepDive, SagaDeepDive,
               GatewayDeepDive, Experience, Projects, Contact
   App.tsx                ← ghép section theo thứ tự + scroll progress + deep-link
@@ -63,21 +67,23 @@ Thêm ngôn ngữ mới: thêm mã vào type `Lang`, thêm nhánh trong mọi ob
 
 ## 6. Deep-dive diagrams (phần "wow")
 
-3 diagram minh hoạ kiến trúc, layout chung qua `ui/DeepDiveLayout` (prop `flip` đảo trái/phải, `wide` cho khung 16:10).
+3 diagram minh hoạ kiến trúc, **tất cả là SVG động** (framer-motion) — chuẩn ký hiệu sơ đồ, chữ nằm gọn trong object, nhẹ & sắc nét. Layout chung qua `ui/DeepDiveLayout` (prop `flip` đảo trái/phải, `wide` cho khung 16:10, `Icon` cho kicker).
 
-- **KafkaDeepDive** — 3D thật (R3F). Scene ở `three/KafkaScene.tsx`, primitive tái dùng ở `three/FlowPrimitives.tsx` (`Node`, `Connection`, `MessageStream` = hạt message chạy dọc curve). Vị trí node là các `Vector3` ở đầu file KafkaScene — chỉnh ở đó. Nhãn node = drei `<Html>` (screen-space).
-- **SagaDeepDive** — SVG + framer-motion, có toggle Happy/Fail (compensating transaction). Tất cả trong 1 file.
-- **GatewayDeepDive** — SVG + framer, request token fan-out tới 4 provider. Tất cả trong 1 file.
+- **Vocabulary dùng chung**: `components/diagram/primitives.tsx` — `ServiceNode` (box + icon lucide), `Datastore` (cylinder = kho dữ liệu), `TopicNode` (Kafka có partition), `Edge` (mũi tên), `FlowPackets` (hạt chạy dọc waypoints). Bảng màu `DIA`.
+- **KafkaDeepDive** — Order Service → Outbox (cylinder) → Debezium → Kafka (topic) → 3 consumer.
+- **SagaDeepDive** — Temporal / Order / Payment, toggle Happy/Fail (compensating transaction), pulse chạy theo bước.
+- **GatewayDeepDive** — Client → Go Gateway (4 middleware) → 4 provider + Redis (cylinder).
+- Legend dùng `ui/DiagramLegend` (icon chip, **không dùng chấm tròn**).
 
-Thêm deep-dive mới: nếu là flow ngang nhiều node → clone pattern Kafka (3D) hoặc Saga/Gateway (SVG, nhẹ hơn, sắc nét, tốt cho mobile).
+> Chỉ còn **1 WebGL canvas duy nhất** (Hero, `three/HeroScene.tsx`). Sơ đồ đã chuyển hết sang SVG để hết lag. Thêm diagram mới → clone pattern SVG bằng primitives ở trên.
 
 ## 7. Hiệu năng / mobile (QUAN TRỌNG)
 
-- `useDeviceTier()` trả `{ tier, isMobile, dpr, reducedMotion }`. Dùng để:
-  - giảm số particle (Hero: 1400/700/300 theo tier),
-  - tắt postprocessing Bloom ở tier `low`,
-  - scale nhỏ KafkaScene trên mobile (0.6) để không tràn khung vuông.
-- Mọi Canvas set `dpr` từ tier để không render quá nét trên máy yếu.
+**Nguyên tắc chống lag (đã áp dụng — quan trọng khi thêm 3D):**
+- **1 canvas duy nhất** (Hero). Không mount nhiều WebGL context cùng lúc.
+- Hero canvas `frameloop='never'` khi cuộn khỏi viewport (IntersectionObserver) → không render frame vô ích.
+- `<PerformanceMonitor onDecline>` tự hạ chất lượng (tắt bloom, giảm particle) khi tụt FPS; `<AdaptiveDpr pixelated />` tự giảm DPR.
+- `useDeviceTier()` trả `{ tier, isMobile, dpr, reducedMotion }`: giảm particle (Hero 900/450/200 theo tier), tắt Bloom ở `low`, cap DPR (1.6/1.25/1).
 - `prefers-reduced-motion`: Lenis tắt, animation CSS rút về ~0ms (index.css), `Reveal` vẫn chạy nhưng nhanh.
 - **Tránh tràn ngang**: grid item chứa vùng `overflow-x-auto` phải có `min-w-0` (xem Skills.tsx) — nếu không track grid phình theo nội dung.
 

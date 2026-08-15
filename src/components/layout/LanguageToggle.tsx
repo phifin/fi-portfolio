@@ -14,7 +14,7 @@ export function LanguageToggle() {
           }`}
         >
           {lang === l && (
-            <span className="absolute inset-0 rounded-full bg-gradient-to-r from-accent-cyan to-accent-violet" />
+            <span className="absolute inset-0 rounded-full bg-gradient-to-r from-accent-cyan to-accent-blue" />
           )}
           <span className="relative">{l}</span>
         </button>

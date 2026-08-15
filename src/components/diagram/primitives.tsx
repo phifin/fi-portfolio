@@ -1,0 +1,258 @@
+import { motion } from 'framer-motion'
+import type { LucideIcon } from 'lucide-react'
+
+/** Shared professional SVG diagram vocabulary: service boxes, datastores,
+ *  topic/queue shapes, edges with arrowheads and animated flow packets. */
+
+export const DIA = {
+  cyan: '#2dd4ff',
+  blue: '#4f8cff',
+  sky: '#38bdf8',
+  green: '#34d399',
+  amber: '#fbbf24',
+  rose: '#fb7185',
+  ink: '#0d1130',
+}
+
+type XY = [number, number]
+
+function hexA(hex: string, a: number) {
+  const n = parseInt(hex.slice(1), 16)
+  const r = (n >> 16) & 255
+  const g = (n >> 8) & 255
+  const b = n & 255
+  return `rgba(${r},${g},${b},${a})`
+}
+
+/** Small colored icon chip used inside nodes. */
+function IconChip({ x, y, Icon, color }: { x: number; y: number; Icon: LucideIcon; color: string }) {
+  return (
+    <>
+      <rect x={x} y={y} width={22} height={22} rx={6} fill={hexA(color, 0.16)} stroke={hexA(color, 0.5)} />
+      <Icon x={x + 4} y={y + 4} width={14} height={14} color={color} strokeWidth={2} />
+    </>
+  )
+}
+
+export function ServiceNode({
+  x,
+  y,
+  w = 132,
+  h = 50,
+  title,
+  sub,
+  color,
+  Icon,
+  active = false,
+}: {
+  x: number
+  y: number
+  w?: number
+  h?: number
+  title: string
+  sub?: string
+  color: string
+  Icon: LucideIcon
+  active?: boolean
+}) {
+  return (
+    <g>
+      <rect
+        x={x}
+        y={y}
+        width={w}
+        height={h}
+        rx={11}
+        fill="#0e1230"
+        stroke={hexA(color, active ? 1 : 0.6)}
+        strokeWidth={active ? 2 : 1.4}
+        style={{ filter: `drop-shadow(0 0 ${active ? 12 : 7}px ${hexA(color, active ? 0.55 : 0.3)})` }}
+      />
+      <IconChip x={x + 10} y={y + h / 2 - 11} Icon={Icon} color={color} />
+      <text x={x + 42} y={y + (sub ? h / 2 - 2 : h / 2 + 4)} fill="#fff" fontSize={12.5} fontWeight={700}>
+        {title}
+      </text>
+      {sub && (
+        <text x={x + 42} y={y + h / 2 + 13} fill="rgba(255,255,255,0.5)" fontSize={9.5}>
+          {sub}
+        </text>
+      )}
+    </g>
+  )
+}
+
+/** Cylinder = datastore (standard notation). */
+export function Datastore({
+  x,
+  y,
+  w = 92,
+  h = 74,
+  title,
+  sub,
+  color,
+}: {
+  x: number
+  y: number
+  w?: number
+  h?: number
+  title: string
+  sub?: string
+  color: string
+}) {
+  const ry = 9
+  const cx = x + w / 2
+  const d = `M${x},${y + ry} A${w / 2},${ry} 0 0 1 ${x + w},${y + ry} L${x + w},${y + h - ry} A${w / 2},${ry} 0 0 1 ${x},${y + h - ry} Z`
+  return (
+    <g style={{ filter: `drop-shadow(0 0 8px ${hexA(color, 0.35)})` }}>
+      <path d={d} fill="#0e1230" stroke={hexA(color, 0.7)} strokeWidth={1.4} />
+      <ellipse cx={cx} cy={y + ry} rx={w / 2} ry={ry} fill={hexA(color, 0.18)} stroke={hexA(color, 0.7)} strokeWidth={1.4} />
+      <text x={cx} y={y + h / 2 + 1} textAnchor="middle" fill="#fff" fontSize={12.5} fontWeight={700}>
+        {title}
+      </text>
+      {sub && (
+        <text x={cx} y={y + h / 2 + 15} textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize={9.5}>
+          {sub}
+        </text>
+      )}
+    </g>
+  )
+}
+
+/** Partitioned topic/queue (Kafka) — recognizable log-with-partitions shape. */
+export function TopicNode({
+  x,
+  y,
+  w = 118,
+  h = 70,
+  title,
+  sub,
+  color,
+}: {
+  x: number
+  y: number
+  w?: number
+  h?: number
+  title: string
+  sub?: string
+  color: string
+}) {
+  const parts = [0, 1, 2]
+  const bandH = 12
+  return (
+    <g style={{ filter: `drop-shadow(0 0 10px ${hexA(color, 0.4)})` }}>
+      <rect x={x} y={y} width={w} height={h} rx={10} fill="#0e1230" stroke={hexA(color, 0.75)} strokeWidth={1.6} />
+      <text x={x + w / 2} y={y + 17} textAnchor="middle" fill="#fff" fontSize={12.5} fontWeight={700}>
+        {title}
+      </text>
+      {parts.map((p) => (
+        <g key={p}>
+          <rect
+            x={x + 12}
+            y={y + 24 + p * (bandH + 4)}
+            width={w - 24}
+            height={bandH}
+            rx={3}
+            fill={hexA(color, 0.14)}
+            stroke={hexA(color, 0.4)}
+          />
+          <line
+            x1={x + 12 + (w - 24) / 3}
+            y1={y + 24 + p * (bandH + 4)}
+            x2={x + 12 + (w - 24) / 3}
+            y2={y + 24 + p * (bandH + 4) + bandH}
+            stroke={hexA(color, 0.4)}
+          />
+          <line
+            x1={x + 12 + (2 * (w - 24)) / 3}
+            y1={y + 24 + p * (bandH + 4)}
+            x2={x + 12 + (2 * (w - 24)) / 3}
+            y2={y + 24 + p * (bandH + 4) + bandH}
+            stroke={hexA(color, 0.4)}
+          />
+        </g>
+      ))}
+      {sub && (
+        <text x={x + w / 2} y={y + h + 14} textAnchor="middle" fill="rgba(255,255,255,0.45)" fontSize={9.5}>
+          {sub}
+        </text>
+      )}
+    </g>
+  )
+}
+
+/** Orthogonal-ish edge with arrowhead. `bend` adds a mid waypoint for elbow routing. */
+export function Edge({
+  id,
+  from,
+  to,
+  via,
+  color,
+  dashed = false,
+}: {
+  id: string
+  from: XY
+  to: XY
+  via?: XY
+  color: string
+  dashed?: boolean
+}) {
+  const d = via ? `M${from[0]},${from[1]} Q${via[0]},${via[1]} ${to[0]},${to[1]}` : `M${from[0]},${from[1]} L${to[0]},${to[1]}`
+  return (
+    <>
+      <defs>
+        <marker id={`ah-${id}`} markerWidth={8} markerHeight={8} refX={6} refY={3} orient="auto">
+          <path d="M0,0 L6,3 L0,6 Z" fill={color} />
+        </marker>
+      </defs>
+      <path
+        d={d}
+        fill="none"
+        stroke={hexA(color, 0.35)}
+        strokeWidth={1.6}
+        strokeDasharray={dashed ? '5 5' : undefined}
+        markerEnd={`url(#ah-${id})`}
+      />
+    </>
+  )
+}
+
+/** Animated packets traveling along a polyline of waypoints. */
+export function FlowPackets({
+  points,
+  color,
+  count = 3,
+  dur = 2.2,
+  r = 4,
+}: {
+  points: XY[]
+  color: string
+  count?: number
+  dur?: number
+  r?: number
+}) {
+  const xs = points.map((p) => p[0])
+  const ys = points.map((p) => p[1])
+  const opacity = points.map((_, i) => (i === 0 || i === points.length - 1 ? 0 : 1))
+  const times = points.map((_, i) => i / (points.length - 1))
+  return (
+    <>
+      {Array.from({ length: count }).map((_, i) => (
+        <motion.circle
+          key={i}
+          r={r}
+          fill={color}
+          style={{ filter: `drop-shadow(0 0 5px ${color})` }}
+          initial={{ cx: xs[0], cy: ys[0], opacity: 0 }}
+          animate={{ cx: xs, cy: ys, opacity }}
+          transition={{
+            duration: dur,
+            delay: (i * dur) / count,
+            repeat: Infinity,
+            ease: 'linear',
+            times,
+          }}
+        />
+      ))}
+    </>
+  )
+}

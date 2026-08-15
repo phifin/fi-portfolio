@@ -10,16 +10,10 @@ export default {
           800: '#0f1124',
           700: '#161936',
         },
-        cyan: {
-          glow: '#22d3ee',
-        },
-        violet: {
-          glow: '#a855f7',
-        },
         accent: {
           cyan: '#2dd4ff',
-          violet: '#a855f7',
-          magenta: '#e879f9',
+          blue: '#4f8cff',
+          sky: '#60a5fa',
         },
       },
       fontFamily: {
@@ -28,7 +22,7 @@ export default {
       },
       boxShadow: {
         glow: '0 0 40px -10px rgba(45,212,255,0.5)',
-        'glow-violet': '0 0 40px -10px rgba(168,85,247,0.5)',
+        'glow-blue': '0 0 40px -10px rgba(79,140,255,0.55)',
       },
       keyframes: {
         float: {

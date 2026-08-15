@@ -43,7 +43,7 @@ export const stats: { value: number; suffix: string; label: Bi }[] = [
 export type SkillGroup = {
   key: string
   title: Bi
-  accent: 'cyan' | 'violet' | 'magenta'
+  accent: 'cyan' | 'blue' | 'sky'
   skills: string[]
 }
 
@@ -70,7 +70,7 @@ export const skillGroups: SkillGroup[] = [
   {
     key: 'frontend',
     title: { en: 'Frontend', vi: 'Frontend' },
-    accent: 'violet',
+    accent: 'blue',
     skills: [
       'React',
       'Next.js',
@@ -86,7 +86,7 @@ export const skillGroups: SkillGroup[] = [
   {
     key: 'data',
     title: { en: 'Databases & Caching', vi: 'Cơ sở dữ liệu & Cache' },
-    accent: 'magenta',
+    accent: 'sky',
     skills: ['PostgreSQL', 'MongoDB', 'Redis'],
   },
   {
@@ -107,7 +107,7 @@ export const skillGroups: SkillGroup[] = [
   {
     key: 'practices',
     title: { en: 'Practices', vi: 'Phương pháp' },
-    accent: 'violet',
+    accent: 'blue',
     skills: ['Agile', 'Code Review', 'Multi-tenant System Design'],
   },
 ]
@@ -212,7 +212,7 @@ export type Project = {
   tagline: Bi
   description: Bi
   stack: string[]
-  accent: 'cyan' | 'violet' | 'magenta'
+  accent: 'cyan' | 'blue' | 'sky'
 }
 
 export const projects: Project[] = [
@@ -236,7 +236,7 @@ export const projects: Project[] = [
       vi: 'Gateway Go (net/http, không framework) chuẩn hoá và route lưu lượng e-invoice tới FPT, MISA, Viettel và M-Invoice sau một API, với rate limit và cache bằng Redis.',
     },
     stack: ['Golang', 'Redis', 'Docker', 'Next.js', 'ApexCharts'],
-    accent: 'violet',
+    accent: 'blue',
   },
 ]
 

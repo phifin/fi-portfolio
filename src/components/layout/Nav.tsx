@@ -9,9 +9,7 @@ import { LanguageToggle } from './LanguageToggle'
 const links = [
   { id: sectionIds.about, label: ui.nav.about },
   { id: sectionIds.skills, label: ui.nav.skills },
-  { id: sectionIds.kafka, label: ui.nav.architecture },
   { id: sectionIds.experience, label: ui.nav.experience },
-  { id: sectionIds.projects, label: ui.nav.projects },
   { id: sectionIds.contact, label: ui.nav.contact },
 ]
 
@@ -46,7 +44,7 @@ export function Nav() {
           }`}
         >
           <button onClick={() => go(sectionIds.hero)} className="group flex items-center gap-2">
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-accent-cyan to-accent-violet font-mono text-sm font-bold text-ink-950">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-accent-cyan to-accent-blue font-mono text-sm font-bold text-ink-950">
               VP
             </span>
             <span className="hidden font-semibold tracking-tight sm:block">Vo Nhu Phi</span>

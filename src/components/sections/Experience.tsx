@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { Briefcase } from 'lucide-react'
 import { SectionHeading } from '../ui/SectionHeading'
 import { Reveal } from '../ui/Reveal'
 import { useLang } from '../../providers/LanguageProvider'
@@ -10,11 +11,11 @@ export function Experience() {
   return (
     <section id={sectionIds.experience} className="section-pad relative">
       <div className="container-page">
-        <SectionHeading kicker={pick(ui.experience.kicker)} title={pick(ui.experience.title)} />
+        <SectionHeading kicker={pick(ui.experience.kicker)} title={pick(ui.experience.title)} Icon={Briefcase} />
 
         <div className="relative mt-14">
           {/* timeline spine */}
-          <div className="absolute left-[7px] top-2 bottom-2 w-px bg-gradient-to-b from-accent-cyan via-accent-violet to-transparent" />
+          <div className="absolute left-[7px] top-2 bottom-2 w-px bg-gradient-to-b from-accent-cyan via-accent-blue to-transparent" />
 
           {experiences.map((exp) => (
             <div key={exp.company} className="mb-12 pl-8">
@@ -52,7 +53,7 @@ export function Experience() {
                         ))}
                       </div>
 
-                      <p className="mt-5 font-mono text-xs uppercase tracking-[0.15em] text-accent-violet">
+                      <p className="mt-5 font-mono text-xs uppercase tracking-[0.15em] text-accent-blue">
                         {pick(ui.experience.highlights)}
                       </p>
                       <ul className="mt-2 space-y-2">

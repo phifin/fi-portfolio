@@ -1,7 +1,9 @@
-import { Suspense } from 'react'
+import { Suspense, useEffect, useRef, useState } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { EffectComposer, Bloom } from '@react-three/postprocessing'
+import { AdaptiveDpr, PerformanceMonitor } from '@react-three/drei'
 import { motion } from 'framer-motion'
+import { Github, Linkedin } from 'lucide-react'
 import { HeroScene } from '../three/HeroScene'
 import { useDeviceTier } from '../../hooks/useDeviceTier'
 import { useLang } from '../../providers/LanguageProvider'
@@ -12,28 +14,46 @@ import { scrollToId } from '../../hooks/useLenis'
 export function Hero() {
   const { pick } = useLang()
   const { tier, dpr } = useDeviceTier()
+  const sectionRef = useRef<HTMLElement>(null)
+  const [visible, setVisible] = useState(true)
+  const [degraded, setDegraded] = useState(false)
+
+  // Pause the WebGL render loop entirely when the hero is scrolled out of view.
+  useEffect(() => {
+    const el = sectionRef.current
+    if (!el) return
+    const io = new IntersectionObserver(([e]) => setVisible(e.isIntersecting), { rootMargin: '120px' })
+    io.observe(el)
+    return () => io.disconnect()
+  }, [])
+
+  const bloomOn = tier !== 'low' && !degraded
 
   return (
-    <section id={sectionIds.hero} className="relative min-h-[100svh] w-full overflow-hidden">
-      {/* 3D canvas backdrop */}
+    <section ref={sectionRef} id={sectionIds.hero} className="relative min-h-[100svh] w-full overflow-hidden">
+      {/* 3D canvas backdrop — frozen when off-screen */}
       <div className="absolute inset-0">
         <Canvas
+          frameloop={visible ? 'always' : 'never'}
           dpr={dpr}
           camera={{ position: [0, 0, 5.5], fov: 50 }}
-          gl={{ antialias: tier !== 'low', powerPreference: 'high-performance' }}
+          gl={{ antialias: tier === 'high', powerPreference: 'high-performance' }}
         >
           <Suspense fallback={null}>
-            <HeroScene tier={tier} />
-            {tier !== 'low' && (
-              <EffectComposer>
-                <Bloom
-                  intensity={tier === 'high' ? 1.1 : 0.7}
-                  luminanceThreshold={0.2}
-                  luminanceSmoothing={0.9}
-                  mipmapBlur
-                />
-              </EffectComposer>
-            )}
+            <PerformanceMonitor onDecline={() => setDegraded(true)}>
+              <HeroScene tier={degraded ? 'low' : tier} />
+              {bloomOn && (
+                <EffectComposer>
+                  <Bloom
+                    intensity={tier === 'high' ? 0.9 : 0.6}
+                    luminanceThreshold={0.22}
+                    luminanceSmoothing={0.9}
+                    mipmapBlur
+                  />
+                </EffectComposer>
+              )}
+            </PerformanceMonitor>
+            <AdaptiveDpr pixelated />
           </Suspense>
         </Canvas>
       </div>
@@ -43,7 +63,7 @@ export function Hero() {
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-ink-950 to-transparent" />
 
       {/* overlay content */}
-      <div className="container-page relative flex min-h-[100svh] flex-col justify-center pt-24">
+      <div className="container-page relative flex min-h-[100svh] flex-col justify-center pb-28 pt-24">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -93,7 +113,7 @@ export function Hero() {
         >
           <button
             onClick={() => scrollToId(sectionIds.about)}
-            className="group relative overflow-hidden rounded-full bg-gradient-to-r from-accent-cyan to-accent-violet px-6 py-3 font-semibold text-ink-950 shadow-glow transition-transform hover:scale-[1.03]"
+            className="group relative overflow-hidden rounded-full bg-gradient-to-r from-accent-cyan to-accent-blue px-6 py-3 font-semibold text-ink-950 shadow-glow transition-transform hover:scale-[1.03]"
           >
             {pick(ui.hero.cta)}
           </button>
@@ -105,24 +125,35 @@ export function Hero() {
           >
             {pick(ui.hero.resume)}
           </a>
-          <div className="ml-1 flex items-center gap-3 text-white/60">
-            <a href={contacts.github} target="_blank" rel="noreferrer" className="transition-colors hover:text-accent-cyan">
-              GitHub
+          <div className="ml-1 flex items-center gap-2">
+            <a
+              href={contacts.github}
+              target="_blank"
+              rel="noreferrer"
+              aria-label="GitHub"
+              className="flex h-11 w-11 items-center justify-center rounded-full glass text-white/70 transition-colors hover:text-accent-cyan"
+            >
+              <Github size={19} strokeWidth={2} />
             </a>
-            <span className="text-white/20">·</span>
-            <a href={contacts.linkedin} target="_blank" rel="noreferrer" className="transition-colors hover:text-accent-cyan">
-              LinkedIn
+            <a
+              href={contacts.linkedin}
+              target="_blank"
+              rel="noreferrer"
+              aria-label="LinkedIn"
+              className="flex h-11 w-11 items-center justify-center rounded-full glass text-white/70 transition-colors hover:text-accent-cyan"
+            >
+              <Linkedin size={19} strokeWidth={2} />
             </a>
           </div>
         </motion.div>
       </div>
 
-      {/* scroll hint */}
+      {/* scroll hint — hidden on short viewports to avoid overlapping the CTAs */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.4 }}
-        className="pointer-events-none absolute inset-x-0 bottom-6 flex flex-col items-center gap-2 text-xs uppercase tracking-[0.2em] text-white/40"
+        className="pointer-events-none absolute inset-x-0 bottom-6 hidden flex-col items-center gap-2 text-xs uppercase tracking-[0.2em] text-white/40 [@media(min-height:760px)]:flex"
       >
         {pick(ui.hero.scroll)}
         <motion.span

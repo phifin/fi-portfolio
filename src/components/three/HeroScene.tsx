@@ -52,15 +52,15 @@ function Core() {
   })
   return (
     <Float speed={1.5} rotationIntensity={0.6} floatIntensity={1.2} position={[1.9, 0.35, -0.6]}>
-      <Icosahedron ref={ref} args={[1.15, 6]}>
+      <Icosahedron ref={ref} args={[1.15, 4]}>
         <MeshDistortMaterial
-          color="#3b1d8f"
+          color="#12306b"
           emissive="#22d3ee"
-          emissiveIntensity={0.35}
+          emissiveIntensity={0.32}
           roughness={0.15}
           metalness={0.9}
-          distort={0.38}
-          speed={1.8}
+          distort={0.35}
+          speed={1.4}
         />
       </Icosahedron>
     </Float>
@@ -80,12 +80,12 @@ function Rig({ enablePointer }: { enablePointer: boolean }) {
 }
 
 export function HeroScene({ tier }: { tier: DeviceTier }) {
-  const particleCount = tier === 'high' ? 1400 : tier === 'mid' ? 700 : 300
+  const particleCount = tier === 'high' ? 900 : tier === 'mid' ? 450 : 200
   return (
     <>
       <ambientLight intensity={0.4} />
       <pointLight position={[6, 6, 6]} intensity={90} color="#22d3ee" />
-      <pointLight position={[-6, -4, 2]} intensity={70} color="#a855f7" />
+      <pointLight position={[-6, -4, 2]} intensity={70} color="#4f8cff" />
       <Core />
       <ParticleCloud count={particleCount} />
       <Rig enablePointer={tier !== 'low'} />

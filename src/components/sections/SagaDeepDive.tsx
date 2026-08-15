@@ -1,54 +1,26 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
+import { Workflow, Server, CreditCard, CheckCircle2, RotateCcw } from 'lucide-react'
 import { DeepDiveLayout } from '../ui/DeepDiveLayout'
+import { ServiceNode, Edge, DIA } from '../diagram/primitives'
 import { useLang } from '../../providers/LanguageProvider'
 import { ui } from '../../i18n'
 import { sectionIds } from '../../data/content'
 
 type Mode = 'happy' | 'fail'
-
-type Step = { from: [number, number]; to: [number, number]; label: { en: string; vi: string }; color: string }
-
-const NODES = {
-  temporal: { x: 200, y: 55, w: 160, h: 52 },
-  order: { x: 95, y: 235, w: 140, h: 52 },
-  payment: { x: 305, y: 235, w: 140, h: 52 },
-}
+type XY = [number, number]
+type Step = { from: XY; to: XY; via?: XY; label: { en: string; vi: string }; color: string }
 
 const stepsFor = (mode: Mode): Step[] => [
-  { from: [160, 80], to: [110, 209], label: { en: '1 · Create order', vi: '1 · Tạo đơn' }, color: '#22d3ee' },
-  { from: [165, 235], to: [235, 235], label: { en: '2 · Charge payment (gRPC)', vi: '2 · Thu tiền (gRPC)' }, color: '#22d3ee' },
+  { from: [198, 84], to: [118, 196], via: [150, 150], label: { en: '1 · Create order', vi: '1 · Tạo đơn' }, color: DIA.cyan },
+  { from: [182, 226], to: [258, 226], label: { en: '2 · Charge payment (gRPC)', vi: '2 · Thu tiền (gRPC)' }, color: DIA.cyan },
   mode === 'happy'
-    ? { from: [290, 209], to: [230, 80], label: { en: '3 · Paid ✓', vi: '3 · Đã thu ✓' }, color: '#34d399' }
-    : { from: [290, 209], to: [230, 80], label: { en: '3 · Payment failed ✗', vi: '3 · Thu tiền lỗi ✗' }, color: '#fb7185' },
+    ? { from: [332, 196], to: [252, 84], via: [300, 150], label: { en: '3 · Paid ✓', vi: '3 · Đã thu ✓' }, color: DIA.green }
+    : { from: [332, 196], to: [252, 84], via: [300, 150], label: { en: '3 · Payment failed ✗', vi: '3 · Thu tiền lỗi ✗' }, color: DIA.rose },
   mode === 'happy'
-    ? { from: [240, 80], to: [130, 209], label: { en: '4 · Confirm order', vi: '4 · Xác nhận đơn' }, color: '#34d399' }
-    : { from: [240, 80], to: [130, 209], label: { en: '4 · Compensate → rollback', vi: '4 · Bù trừ → rollback' }, color: '#fb7185' },
+    ? { from: [242, 84], to: [138, 196], via: [180, 140], label: { en: '4 · Confirm order', vi: '4 · Xác nhận đơn' }, color: DIA.green }
+    : { from: [242, 84], to: [138, 196], via: [180, 140], label: { en: '4 · Compensate → rollback', vi: '4 · Bù trừ → rollback' }, color: DIA.rose },
 ]
-
-function NodeBox({ n, label, sub, color }: { n: { x: number; y: number; w: number; h: number }; label: string; sub: string; color: string }) {
-  return (
-    <g>
-      <rect
-        x={n.x - n.w / 2}
-        y={n.y - n.h / 2}
-        width={n.w}
-        height={n.h}
-        rx={10}
-        fill="#0f1330"
-        stroke={color}
-        strokeOpacity={0.8}
-        style={{ filter: `drop-shadow(0 0 8px ${color}66)` }}
-      />
-      <text x={n.x} y={n.y - 2} textAnchor="middle" fill="#fff" fontSize={14} fontWeight={700}>
-        {label}
-      </text>
-      <text x={n.x} y={n.y + 15} textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize={10}>
-        {sub}
-      </text>
-    </g>
-  )
-}
 
 function SagaDiagram({ mode }: { mode: Mode }) {
   const { pick } = useLang()
@@ -57,7 +29,7 @@ function SagaDiagram({ mode }: { mode: Mode }) {
 
   useEffect(() => {
     setActive(0)
-    const id = setInterval(() => setActive((a) => (a + 1) % steps.length), 1500)
+    const id = setInterval(() => setActive((a) => (a + 1) % steps.length), 1600)
     return () => clearInterval(id)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode])
@@ -66,50 +38,27 @@ function SagaDiagram({ mode }: { mode: Mode }) {
 
   return (
     <div className="absolute inset-0 flex flex-col">
-      <svg viewBox="0 0 400 300" className="h-full w-full">
-        <defs>
-          {steps.map((s, i) => (
-            <marker key={i} id={`arrow-${i}`} markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-              <path d="M0,0 L6,3 L0,6 Z" fill={s.color} />
-            </marker>
-          ))}
-        </defs>
+      <svg viewBox="0 0 440 300" className="h-full w-full" preserveAspectRatio="xMidYMid meet">
+        {steps.map((s, i) => (
+          <g key={i} opacity={i === active ? 1 : 0.28}>
+            <Edge id={`s${i}`} from={s.from} to={s.to} via={s.via} color={s.color} dashed={i === active} />
+          </g>
+        ))}
 
-        {/* arrows */}
-        {steps.map((s, i) => {
-          const on = i === active
-          return (
-            <line
-              key={i}
-              x1={s.from[0]}
-              y1={s.from[1]}
-              x2={s.to[0]}
-              y2={s.to[1]}
-              stroke={s.color}
-              strokeWidth={on ? 3 : 1.5}
-              strokeOpacity={on ? 1 : 0.25}
-              markerEnd={`url(#arrow-${i})`}
-              strokeDasharray={on ? '6 6' : undefined}
-            >
-              {on && <animate attributeName="stroke-dashoffset" from="12" to="0" dur="0.5s" repeatCount="indefinite" />}
-            </line>
-          )
-        })}
-
-        {/* traveling pulse on active arrow */}
+        {/* traveling pulse on the active step */}
         <motion.circle
-          key={`pulse-${active}-${mode}`}
+          key={`p-${active}-${mode}`}
           r={5}
           fill={cur.color}
           style={{ filter: `drop-shadow(0 0 6px ${cur.color})` }}
           initial={{ cx: cur.from[0], cy: cur.from[1] }}
-          animate={{ cx: cur.to[0], cy: cur.to[1] }}
-          transition={{ duration: 1.2, ease: 'easeInOut' }}
+          animate={{ cx: cur.via ? [cur.from[0], cur.via[0], cur.to[0]] : [cur.from[0], cur.to[0]], cy: cur.via ? [cur.from[1], cur.via[1], cur.to[1]] : [cur.from[1], cur.to[1]] }}
+          transition={{ duration: 1.3, ease: 'easeInOut' }}
         />
 
-        <NodeBox n={NODES.temporal} label="Temporal" sub="orchestrator" color="#a855f7" />
-        <NodeBox n={NODES.order} label="Order Service" sub="Java · PostgreSQL" color="#22d3ee" />
-        <NodeBox n={NODES.payment} label="Payment Service" sub="gRPC" color="#22d3ee" />
+        <ServiceNode x={150} y={32} w={140} h={52} title="Temporal" sub="orchestrator" color={DIA.blue} Icon={Workflow} active />
+        <ServiceNode x={30} y={200} w={150} h={52} title="Order Service" sub="Java · PostgreSQL" color={DIA.cyan} Icon={Server} />
+        <ServiceNode x={260} y={200} w={150} h={52} title="Payment" sub="gRPC" color={DIA.cyan} Icon={CreditCard} />
       </svg>
 
       <div className="px-4 pb-4">
@@ -117,9 +66,10 @@ function SagaDiagram({ mode }: { mode: Mode }) {
           key={cur.label.en}
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
-          className="glass rounded-xl px-4 py-2 text-center font-mono text-sm"
+          className="glass flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-center font-mono text-sm"
           style={{ color: cur.color }}
         >
+          {mode === 'happy' ? <CheckCircle2 size={15} /> : active >= 2 ? <RotateCcw size={15} /> : null}
           {pick(cur.label)}
         </motion.div>
       </div>
@@ -137,24 +87,25 @@ export function SagaDeepDive() {
       kicker={pick(ui.saga.kicker)}
       title={pick(ui.saga.title)}
       body={pick(ui.saga.body)}
+      Icon={Workflow}
       flip
       legend={
         <div className="mt-2 flex gap-2">
           <button
             onClick={() => setMode('happy')}
-            className={`rounded-full px-4 py-2 text-sm font-semibold transition-all ${
+            className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-all ${
               mode === 'happy' ? 'bg-emerald-400/20 text-emerald-300 ring-1 ring-emerald-400/50' : 'glass text-white/60'
             }`}
           >
-            {pick(ui.saga.happy)}
+            <CheckCircle2 size={15} /> {pick(ui.saga.happy)}
           </button>
           <button
             onClick={() => setMode('fail')}
-            className={`rounded-full px-4 py-2 text-sm font-semibold transition-all ${
+            className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-all ${
               mode === 'fail' ? 'bg-rose-400/20 text-rose-300 ring-1 ring-rose-400/50' : 'glass text-white/60'
             }`}
           >
-            {pick(ui.saga.fail)}
+            <RotateCcw size={15} /> {pick(ui.saga.fail)}
           </button>
         </div>
       }

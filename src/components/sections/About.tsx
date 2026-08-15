@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
+import { User } from 'lucide-react'
 import { Reveal } from '../ui/Reveal'
 import { SectionHeading } from '../ui/SectionHeading'
 import { AnimatedCounter } from '../ui/AnimatedCounter'
@@ -16,13 +17,13 @@ export function About() {
   return (
     <section id={sectionIds.about} className="section-pad relative">
       <div className="container-page">
-        <SectionHeading kicker={pick(ui.about.kicker)} title={pick(ui.about.title)} />
+        <SectionHeading kicker={pick(ui.about.kicker)} title={pick(ui.about.title)} Icon={User} />
 
-        <div className="mt-14 grid gap-12 md:grid-cols-[320px_1fr] md:items-start">
+        <div className="mt-14 grid gap-12 lg:grid-cols-[300px_1fr] lg:items-start">
           {/* avatar */}
           <Reveal>
             <TiltCard max={12} className="relative mx-auto w-full max-w-[300px]">
-              <div className="relative overflow-hidden rounded-3xl border border-white/10 shadow-glow-violet">
+              <div className="relative overflow-hidden rounded-3xl border border-white/10 shadow-glow-blue">
                 <div
                   className="absolute inset-0 scale-110 blur-xl"
                   style={{ backgroundImage: `url(${base}${profile.avatarBlur})`, backgroundSize: 'cover' }}
@@ -38,7 +39,7 @@ export function About() {
                 />
                 <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink-950/60 via-transparent to-transparent" />
               </div>
-              <div className="pointer-events-none absolute -inset-2 -z-10 rounded-[2rem] bg-gradient-to-br from-accent-cyan/30 to-accent-violet/30 blur-2xl" />
+              <div className="pointer-events-none absolute -inset-2 -z-10 rounded-[2rem] bg-gradient-to-br from-accent-cyan/30 to-accent-blue/30 blur-2xl" />
             </TiltCard>
           </Reveal>
 
@@ -74,7 +75,7 @@ export function About() {
               </Reveal>
               <Reveal delay={0.28}>
                 <div className="glass h-full rounded-2xl p-5">
-                  <h3 className="font-mono text-xs uppercase tracking-[0.2em] text-accent-violet">
+                  <h3 className="font-mono text-xs uppercase tracking-[0.2em] text-accent-blue">
                     {pick(ui.education.languages)}
                   </h3>
                   {languages.map((l) => (

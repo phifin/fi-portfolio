@@ -29,7 +29,7 @@ function compute(): DeviceInfo {
   else if (isMobile || cores <= 4 || mem <= 4) tier = 'mid'
   if (cores <= 2 || mem <= 2) tier = 'low'
 
-  const dpr: [number, number] = tier === 'high' ? [1, 2] : tier === 'mid' ? [1, 1.5] : [1, 1]
+  const dpr: [number, number] = tier === 'high' ? [1, 1.6] : tier === 'mid' ? [1, 1.25] : [1, 1]
 
   return { tier, isMobile, isTouch, reducedMotion, dpr }
 }
