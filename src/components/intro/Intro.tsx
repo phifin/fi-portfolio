@@ -4,39 +4,43 @@ import { ChevronUp } from 'lucide-react'
 import { useLang } from '../../providers/LanguageProvider'
 import { profile } from '../../data/content'
 import { getLenis } from '../../hooks/useLenis'
-import { TechGlyph, logoHex } from '../diagram/techLogos'
+import { TechGlyph } from '../diagram/techLogos'
 
 const avatarUrl = `${import.meta.env.BASE_URL}${profile.avatar}`
 
-// tech tokens (all have real brand glyphs) that fly in and settle into orbit
-const TECHS = ['React', 'TypeScript', 'Go', 'Java', 'NestJS', 'Kafka', 'Temporal', 'PostgreSQL', 'MongoDB', 'Redis', 'Kubernetes', 'Docker']
+// techs grouped into MEANINGFUL layers — each cluster sits in its own arc with a label
+type Cat = { key: string; label: { en: string; vi: string }; color: string; techs: string[] }
+const CATS: Cat[] = [
+  { key: 'data', label: { en: 'Data & Cache', vi: 'Dữ liệu & Cache' }, color: '#38bdf8', techs: ['PostgreSQL', 'MongoDB', 'Redis'] },
+  { key: 'frontend', label: { en: 'Frontend', vi: 'Frontend' }, color: '#4f8cff', techs: ['React', 'TypeScript', 'Next.js'] },
+  { key: 'backend', label: { en: 'Backend', vi: 'Backend' }, color: '#2dd4ff', techs: ['Go', 'Java', 'NestJS'] },
+  { key: 'infra', label: { en: 'Infra · Ops', vi: 'Infra · Ops' }, color: '#8b9dff', techs: ['Kafka', 'Temporal', 'Docker', 'Kubernetes'] },
+]
 
-const BOX = 640 // design size of the orbit; scaled to fit viewport
-const CENTER = BOX / 2
+const BOX = 860
+const C = BOX / 2
+const RX = 372
+const RY = 256
+const START = -232 // degrees; arc sweeps the top + sides, leaving the bottom clear for the name
+const SPAN = 284
+const rad = (d: number) => (d * Math.PI) / 180
 
-// spread chips around the top + sides, leaving a gap at the bottom for the name
-const ORBIT = TECHS.map((t, i) => {
-  const deg = -235 + (i / (TECHS.length - 1)) * 290 // -235°..55°, 70° gap at bottom
-  const angle = (deg * Math.PI) / 180
-  const r = i % 2 === 0 ? 210 : 262
-  const hex = logoHex(t) ?? '#4f8cff'
-  return {
-    t, hex, angle,
-    x: Math.cos(angle) * r,
-    y: Math.sin(angle) * r,
-    fromX: Math.cos(angle) * 900,
-    fromY: Math.sin(angle) * 900,
-    bob: 4 + (i % 3) * 2,
-  }
+const FLAT = CATS.flatMap((c) => c.techs.map((t) => ({ t, color: c.color })))
+const ORBIT = FLAT.map((item, i) => {
+  const deg = START + ((i + 0.5) / FLAT.length) * SPAN
+  const a = rad(deg)
+  return { ...item, x: Math.cos(a) * RX, y: Math.sin(a) * RY, fromX: Math.cos(a) * 1200, fromY: Math.sin(a) * 900 }
 })
 
-// floating glass keyword/stat cards drifting behind the orbit for depth
-const KEYWORDS = [
-  { t: { en: 'Event-Driven', vi: 'Event-Driven' }, x: -360, y: -230 },
-  { t: { en: 'Microservices', vi: 'Microservices' }, x: 360, y: -230 },
-  { t: { en: 'Saga · Temporal', vi: 'Saga · Temporal' }, x: 386, y: 60 },
-  { t: { en: 'API Gateway', vi: 'API Gateway' }, x: -386, y: 60 },
-]
+// one bright category label per cluster, placed just outside its arc
+let _cursor = 0
+const CAT_LABELS = CATS.map((c) => {
+  const mid = _cursor + c.techs.length / 2 - 0.5
+  _cursor += c.techs.length
+  const deg = START + ((mid + 0.5) / FLAT.length) * SPAN
+  const a = rad(deg)
+  return { ...c, x: Math.cos(a) * (RX + 74), y: Math.sin(a) * (RY + 58) }
+})
 
 const strings = { pull: { en: 'Pull up to enter', vi: 'Kéo lên để vào' } }
 
@@ -50,13 +54,13 @@ export function Intro({ onDone }: { onDone: () => void }) {
   const [scale, setScale] = useState(1)
 
   useEffect(() => {
-    const fit = () => setScale(Math.min(1, window.innerWidth / 820, window.innerHeight / 860))
+    const fit = () => setScale(Math.min(1, window.innerWidth / 1000, window.innerHeight / 900))
     fit()
     window.addEventListener('resize', fit)
     const lenis = getLenis()
     lenis?.stop()
     document.body.style.overflow = 'hidden'
-    const t = setTimeout(() => setReady(true), rm ? 200 : 2400)
+    const t = setTimeout(() => setReady(true), rm ? 200 : 2200)
     return () => {
       clearTimeout(t)
       window.removeEventListener('resize', fit)
@@ -94,7 +98,7 @@ export function Intro({ onDone }: { onDone: () => void }) {
 
   const first = profile.name.split(' ').slice(0, -1).join(' ')
   const last = profile.name.split(' ').slice(-1)
-  const D = (s: number) => (rm ? 0 : s) // delay helper honouring reduced-motion
+  const D = (s: number) => (rm ? 0 : s)
 
   return (
     <motion.div
@@ -103,125 +107,116 @@ export function Intro({ onDone }: { onDone: () => void }) {
       animate={{ y: exiting ? '-100%' : 0 }}
       transition={{ duration: 0.85, ease: [0.76, 0, 0.24, 1] }}
     >
-      {/* ambient grid + radial glow (static, cheap) */}
-      <div className="grid-bg absolute inset-0 opacity-30" />
-      <div className="pointer-events-none absolute left-1/2 top-[42%] h-[620px] w-[620px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(79,140,255,0.20),transparent_68%)]" />
+      {/* ambient backdrop — grid + wide nebula glows so the sides aren't empty */}
+      <div className="grid-bg absolute inset-0 opacity-[0.35]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_16%_42%,rgba(79,140,255,0.14),transparent_42%),radial-gradient(circle_at_84%_42%,rgba(45,212,255,0.14),transparent_42%),radial-gradient(circle_at_50%_46%,rgba(79,140,255,0.16),transparent_60%)]" />
 
-      {/* orbit stage: everything animates transform/opacity only (GPU compositing) */}
-      <div className="absolute left-1/2 top-[42%] flex items-center justify-center" style={{ transform: `translate(-50%, -50%) scale(${scale})` }}>
+      {/* orbit stage — transform/opacity only */}
+      <div className="absolute left-1/2 top-[44%] flex items-center justify-center" style={{ transform: `translate(-50%, -50%) scale(${scale})` }}>
         <div className="relative" style={{ width: BOX, height: BOX }}>
-          {/* slow rotating dashed rings for depth */}
-          {!rm && [0, 1].map((i) => (
+          {/* single slow-rotating dashed ring (cheap) */}
+          {!rm && (
             <motion.div
-              key={i}
-              className="absolute left-1/2 top-1/2 rounded-full border border-dashed"
-              style={{
-                width: i ? 540 : 400, height: i ? 540 : 400, x: '-50%', y: '-50%',
-                borderColor: i ? 'rgba(79,140,255,0.16)' : 'rgba(45,212,255,0.18)',
-              }}
-              animate={{ rotate: i ? -360 : 360 }}
-              transition={{ duration: i ? 90 : 60, repeat: Infinity, ease: 'linear' }}
+              className="absolute left-1/2 top-1/2 rounded-full border border-dashed border-white/10"
+              style={{ width: RX * 2 + 40, height: RY * 2 + 40, x: '-50%', y: '-50%' }}
+              animate={{ rotate: 360 }}
+              transition={{ duration: 80, repeat: Infinity, ease: 'linear' }}
             />
-          ))}
+          )}
 
-          {/* floating keyword cards (parallax depth) — desktop only, they'd clip on phones */}
-          {scale > 0.7 && KEYWORDS.map((k, i) => (
-            <motion.div
-              key={k.t.en}
-              className="absolute left-1/2 top-1/2"
-              initial={{ x: k.x, y: k.y, opacity: 0, scale: 0.8 }}
-              animate={{ x: k.x, y: k.y, opacity: 1, scale: 1 }}
-              transition={{ delay: D(1.4 + i * 0.12), duration: rm ? 0 : 0.7 }}
-              style={{ willChange: 'transform' }}
-            >
-              <motion.span
-                animate={rm ? undefined : { y: [0, -6, 0] }}
-                transition={{ duration: 4 + i, repeat: Infinity, ease: 'easeInOut', delay: i * 0.4 }}
-                className="block -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 font-mono text-[11px] tracking-wide text-white/45 backdrop-blur-sm"
-              >
-                {pick(k.t)}
-              </motion.span>
-            </motion.div>
-          ))}
-
-          {/* spokes + inward data packets */}
+          {/* spokes + a few inward data packets */}
           <svg width={BOX} height={BOX} className="absolute inset-0 overflow-visible">
             {ORBIT.map((o, i) => (
               <motion.line
                 key={i}
-                x1={CENTER} y1={CENTER} x2={CENTER + o.x} y2={CENTER + o.y}
-                stroke={o.hex} strokeOpacity={0.2} strokeWidth={1}
+                x1={C} y1={C} x2={C + o.x} y2={C + o.y}
+                stroke={o.color} strokeOpacity={0.18} strokeWidth={1}
                 initial={{ pathLength: 0, opacity: 0 }}
                 animate={{ pathLength: 1, opacity: 1 }}
-                transition={{ delay: D(0.6 + i * 0.04), duration: rm ? 0 : 0.6 }}
+                transition={{ delay: D(0.6 + i * 0.03), duration: rm ? 0 : 0.6 }}
               />
             ))}
-            {!rm && ORBIT.filter((_, i) => i % 2 === 0).map((o, i) => (
+            {!rm && ORBIT.filter((_, i) => i % 3 === 0).map((o, i) => (
               <motion.circle
                 key={i}
-                r={2.6}
-                fill={o.hex}
-                style={{ filter: `drop-shadow(0 0 4px ${o.hex})` }}
-                initial={{ cx: CENTER + o.x, cy: CENTER + o.y, opacity: 0 }}
-                animate={{ cx: [CENTER + o.x, CENTER], cy: [CENTER + o.y, CENTER], opacity: [0, 1, 0] }}
-                transition={{ duration: 2.4, delay: 2.4 + i * 0.3, repeat: Infinity, repeatDelay: 1.2, ease: 'easeIn' }}
+                r={2.8}
+                fill={o.color}
+                style={{ filter: `drop-shadow(0 0 4px ${o.color})` }}
+                initial={{ cx: C + o.x, cy: C + o.y, opacity: 0 }}
+                animate={{ cx: [C + o.x, C], cy: [C + o.y, C], opacity: [0, 1, 0] }}
+                transition={{ duration: 2.6, delay: 2.2 + i * 0.5, repeat: Infinity, repeatDelay: 1.6, ease: 'easeIn' }}
               />
             ))}
           </svg>
 
-          {/* flying tech chips with real logos */}
+          {/* bright category labels — radial on desktop; hidden on phones (no room) */}
+          {scale >= 0.62 && CAT_LABELS.map((c, i) => (
+            <motion.div
+              key={c.key}
+              className="absolute left-1/2 top-1/2"
+              initial={{ x: c.x, y: c.y, opacity: 0 }}
+              animate={{ x: c.x, y: c.y, opacity: 1 }}
+              transition={{ delay: D(1.5 + i * 0.1), duration: rm ? 0 : 0.5 }}
+            >
+              <span
+                className="block -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-full border px-3 py-1 font-mono text-xs font-semibold uppercase tracking-[0.15em]"
+                style={{ color: c.color, borderColor: `${c.color}55`, background: `${c.color}12`, textShadow: `0 0 12px ${c.color}66` }}
+              >
+                {pick(c.label)}
+              </span>
+            </motion.div>
+          ))}
+
+          {/* flying tech chips with real logos (fly-in once, then rest — no infinite loop) */}
           {ORBIT.map((o, i) => (
             <motion.div
               key={o.t}
               className="absolute left-1/2 top-1/2"
               style={{ willChange: 'transform' }}
-              initial={{ x: o.fromX, y: o.fromY, opacity: 0, scale: 0.4 }}
+              initial={{ x: o.fromX, y: o.fromY, opacity: 0, scale: 0.5 }}
               animate={{ x: o.x, y: o.y, opacity: 1, scale: 1 }}
-              transition={{ delay: D(0.15 + i * 0.06), type: rm ? 'tween' : 'spring', stiffness: 90, damping: 14, duration: rm ? 0 : undefined }}
+              transition={{ delay: D(0.15 + i * 0.05), type: rm ? 'tween' : 'spring', stiffness: 80, damping: 15, duration: rm ? 0 : undefined }}
             >
-              <motion.span
-                animate={rm ? undefined : { y: [0, -o.bob, 0] }}
-                transition={{ duration: 3 + (i % 3), repeat: Infinity, ease: 'easeInOut', delay: i * 0.2 }}
-                className="flex -translate-x-1/2 -translate-y-1/2 items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-1.5 text-sm font-semibold backdrop-blur-sm"
-                style={{ borderColor: `${o.hex}66`, background: `${o.hex}14`, color: '#fff', boxShadow: `0 0 20px -8px ${o.hex}` }}
+              <span
+                className="flex -translate-x-1/2 -translate-y-1/2 items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-1.5 text-sm font-semibold"
+                style={{ borderColor: `${o.color}66`, background: `${o.color}16`, color: '#fff', boxShadow: `0 0 20px -8px ${o.color}` }}
               >
                 <TechGlyph name={o.t} size={17} />
                 {o.t}
-              </motion.span>
+              </span>
             </motion.div>
           ))}
 
-          {/* pulsing rings behind the avatar */}
-          {!rm && [0, 1].map((i) => (
+          {/* single pulsing ring behind the avatar */}
+          {!rm && (
             <motion.div
-              key={i}
-              className="absolute left-1/2 top-1/2 h-40 w-40 -translate-x-1/2 -translate-y-1/2 rounded-full border border-accent-cyan/40"
+              className="absolute left-1/2 top-1/2 h-44 w-44 -translate-x-1/2 -translate-y-1/2 rounded-full border border-accent-cyan/40"
               animate={{ scale: [1, 1.4, 1], opacity: [0.5, 0, 0.5] }}
-              transition={{ duration: 2.8, repeat: Infinity, ease: 'easeOut', delay: i * 1.4 }}
+              transition={{ duration: 3, repeat: Infinity, ease: 'easeOut' }}
             />
-          ))}
+          )}
 
           {/* avatar */}
           <motion.div
-            className="absolute left-1/2 top-1/2 h-36 w-36 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-full ring-2 ring-accent-cyan/70"
+            className="absolute left-1/2 top-1/2 h-40 w-40 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-full ring-2 ring-accent-cyan/70"
             style={{ boxShadow: '0 0 70px -12px rgba(45,212,255,0.75)', willChange: 'transform' }}
             initial={{ scale: 0.3, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: D(0.5), type: rm ? 'tween' : 'spring', stiffness: 160, damping: 15, duration: rm ? 0 : undefined }}
+            transition={{ delay: D(0.4), type: rm ? 'tween' : 'spring', stiffness: 160, damping: 15, duration: rm ? 0 : undefined }}
           >
-            <img src={avatarUrl} alt={profile.name} className="h-full w-full object-cover" width={144} height={144} />
+            <img src={avatarUrl} alt={profile.name} className="h-full w-full object-cover" width={160} height={160} />
           </motion.div>
         </div>
       </div>
 
-      {/* name + role, over a scrim so it never collides with the orbit */}
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex flex-col items-center px-6 pb-[8%] pt-24 text-center">
+      {/* name + role + stats over a scrim */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex flex-col items-center px-6 pb-28 pt-24 text-center sm:pb-[7%] sm:pt-28">
         <div className="absolute inset-0 bg-gradient-to-t from-ink-950 via-ink-950/85 to-transparent" />
         <div className="relative overflow-hidden">
           <motion.h1
             initial={{ y: '110%' }}
             animate={{ y: 0 }}
-            transition={{ delay: D(1.15), duration: rm ? 0 : 0.8, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ delay: D(1.1), duration: rm ? 0 : 0.8, ease: [0.22, 1, 0.36, 1] }}
             className="text-4xl font-extrabold tracking-tight sm:text-6xl"
           >
             {first} <span className="text-gradient">{last}</span>
@@ -230,28 +225,40 @@ export function Intro({ onDone }: { onDone: () => void }) {
         <motion.p
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: D(1.6), duration: rm ? 0 : 0.7 }}
+          transition={{ delay: D(1.5), duration: rm ? 0 : 0.7 }}
           className="relative mt-3 font-mono text-xs uppercase tracking-[0.3em] text-accent-cyan sm:text-sm"
         >
           {profile.role[lang]}
         </motion.p>
-        {/* live stats row */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: D(1.9), duration: rm ? 0 : 0.7 }}
-          className="relative mt-4 flex flex-wrap items-center justify-center gap-x-5 gap-y-1 font-mono text-[11px] text-white/45"
-        >
-          {[
-            { v: '3y', l: { en: 'in production', vi: 'kinh nghiệm' } },
-            { v: '30k+', l: { en: 'merchants', vi: 'merchant' } },
-            { v: '4M+', l: { en: 'orders / mo', vi: 'đơn / tháng' } },
-          ].map((s) => (
-            <span key={s.v}>
-              <span className="font-bold text-white/80">{s.v}</span> {pick(s.l)}
-            </span>
-          ))}
-        </motion.div>
+        {/* mobile category legend (radial labels are hidden on phones) */}
+        {scale < 0.62 && (
+          <div className="relative mt-3 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 font-mono text-[10px] uppercase tracking-wider">
+            {CATS.map((c) => (
+              <span key={c.key} className="inline-flex items-center gap-1" style={{ color: c.color }}>
+                <span className="h-1.5 w-1.5 rounded-full" style={{ background: c.color }} />
+                {pick(c.label)}
+              </span>
+            ))}
+          </div>
+        )}
+        {scale >= 0.62 && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: D(1.8), duration: rm ? 0 : 0.7 }}
+            className="relative mt-4 flex flex-wrap items-center justify-center gap-x-5 gap-y-1 font-mono text-[11px] text-white/50"
+          >
+            {[
+              { v: '3y', l: { en: 'in production', vi: 'kinh nghiệm' } },
+              { v: '30k+', l: { en: 'merchants', vi: 'merchant' } },
+              { v: '4M+', l: { en: 'orders / mo', vi: 'đơn / tháng' } },
+            ].map((s) => (
+              <span key={s.v}>
+                <span className="font-bold text-white/85">{s.v}</span> {pick(s.l)}
+              </span>
+            ))}
+          </motion.div>
+        )}
       </div>
 
       {/* pull-up handle */}

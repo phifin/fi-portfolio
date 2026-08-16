@@ -1,66 +1,77 @@
 /**
- * E-invoice provider logos rendered as vector marks.
- * FPT and Viettel are the real official SVGs (tri-colour FPT wordmark, Viettel red
- * mark). MISA and M-invoice are faithful reproductions in their real brand palette.
- * Each renders as a nested <svg> so it scales/centres itself inside the diagram.
+ * E-invoice PRODUCT logos (not the parent corporations):
+ *   FPT.eInvoice · meInvoice (MISA) · SInvoice (Viettel) · M-invoice
+ * Left-aligned icon + wordmark lockups drawn in each product's real palette;
+ * meInvoice uses its real icon SVG. Rendered inside the diagram <svg>.
  */
 
-export const PROVIDER_META: Record<string, { edge: string; glow: string }> = {
-  FPT: { edge: '#f37021', glow: '#f37021' },
-  MISA: { edge: '#e5323a', glow: '#e5323a' },
-  Viettel: { edge: '#ef0032', glow: '#ef0032' },
-  'M-Invoice': { edge: '#6b73ff', glow: '#ff3b30' },
+const FONT = "'Sora', system-ui, sans-serif"
+
+export const PROVIDER_META: Record<string, { edge: string; glow: string; sub: string }> = {
+  'FPT.eInvoice': { edge: '#16a34a', glow: '#0a7cc4', sub: 'by FPT IS' },
+  meInvoice: { edge: '#3990ff', glow: '#2662ff', sub: 'by MISA' },
+  SInvoice: { edge: '#ee0033', glow: '#ee0033', sub: 'by Viettel' },
+  'M-invoice': { edge: '#6b73ff', glow: '#ff3b30', sub: 'M-invoice JSC' },
 }
 
-/** Renders a provider logo, horizontally/vertically centred on (cx, cy) at target width w. */
-export function ProviderLogo({ name, cx, cy, w = 48 }: { name: string; cx: number; cy: number; w?: number }) {
+/** Left-aligned product logo lockup starting at x, vertically centred on cy. */
+export function ProviderLogo({ name, x, cy }: { name: string; x: number; cy: number }) {
   switch (name) {
-    case 'FPT': {
-      const h = w / 1.62
-      return (
-        <svg x={cx - w / 2} y={cy - h / 2} width={w} height={h} viewBox="0 0 34 21">
-          <path d="M6.68439 3.50089C4.75756 3.50089 3.12259 4.75793 2.55021 6.5013C2.53888 6.54111 2.52471 6.58093 2.51338 6.6179L2.41703 6.99331L0 17.499H6.08934C7.90849 17.499 9.45845 16.3415 10.0478 14.7204L10.2774 13.7193L12.6292 3.49805H6.68439V3.50089Z" fill="#08509F" />
-          <path d="M18.1691 0C16.18 0 14.5025 1.34236 13.984 3.17389C13.9443 3.3104 13.9131 3.44976 13.8876 3.59196L9.88379 21H15.8286C17.866 21 19.5746 19.5951 20.0506 17.6981H20.0535L24.1196 0H18.1691Z" fill="#F27123" />
-          <path d="M28.0555 3.50098C26.1967 3.50098 24.6099 4.6727 23.9865 6.31937C23.9553 6.40469 23.8448 6.75165 23.8448 6.75165L21.3711 17.5019H27.3159C29.3589 17.5019 31.0732 16.0885 31.5408 14.183C31.5408 14.183 31.5408 14.183 31.5408 14.1858L33.9975 3.50382H28.0555V3.50098Z" fill="#51B748" />
-          <path d="M4.03217 7.37699C3.69781 7.6557 3.48246 7.99413 3.41728 8.26431L2.15918 13.9637H2.23002C2.62105 13.9637 2.98942 13.8243 3.32378 13.5484C3.66097 13.2726 3.87349 12.9341 3.95566 12.5445L4.27869 11.0969H6.97908C7.37011 11.0969 7.74131 10.9576 8.07851 10.6817C8.4157 10.4058 8.63105 10.0646 8.71606 9.67208L8.73023 9.60098H4.61305L4.86524 8.46055H8.76706C9.1581 8.46055 9.52646 8.32119 9.86366 8.04817C10.198 7.7723 10.4049 7.42818 10.4955 7.03855L10.5125 6.96745H5.12593C4.73489 6.96176 4.36653 7.10112 4.03217 7.37699Z" fill="#fff" />
-          <path d="M31.52 7.30069C31.3047 7.08455 31.0213 6.97363 30.6813 6.97363H25.2975L25.289 7.02198C25.2691 7.12721 25.2578 7.22675 25.2578 7.3206C25.2578 7.6505 25.3683 7.92637 25.5837 8.14535C25.8019 8.3615 26.0824 8.47241 26.4252 8.47241H27.587L26.4196 13.9642H26.4932C26.8843 13.9642 27.2498 13.8248 27.5842 13.5518C27.9185 13.2759 28.1254 12.9375 28.2076 12.545L29.0718 8.46957H31.809L31.8175 8.42122C31.8374 8.32168 31.8487 8.21645 31.8487 8.11407C31.8459 7.78986 31.7354 7.51683 31.52 7.30069Z" fill="#fff" />
-          <path d="M19.7101 6.96223H16.0718L16.0747 6.95654H14.5785L13.0938 13.9641H13.1646C13.5556 13.9641 13.924 13.8248 14.2555 13.5489C14.587 13.273 14.7967 12.9346 14.8789 12.545L15.1821 11.1059H18.8544C19.2454 11.1059 19.611 10.9666 19.9453 10.6935C20.2768 10.4205 20.4894 10.0792 20.5772 9.68108L20.8521 8.41551C20.8719 8.31597 20.8832 8.21359 20.8832 8.10836C20.8832 7.78414 20.7727 7.51112 20.5517 7.29213C20.3364 7.07315 20.0502 6.96223 19.7101 6.96223ZM15.7488 8.46101H19.3531L19.1038 9.60714H15.4995L15.7488 8.46101Z" fill="#fff" />
-        </svg>
-      )
-    }
-    case 'Viettel': {
-      const h = w / 4.9
-      return (
-        <svg x={cx - w / 2} y={cy - h / 2} width={w} height={h} viewBox="0 0 800 170" fill="#ef0032">
-          <g transform="translate(57.1133,706.904)"><path d="M128.5-665.4h-13.3c-5.3,0-9.6,4.3-9.6,9.6v98.3c0,5.3,4.3,9.6,9.6,9.6h13.3c5.3,0,9.6-4.3,9.6-9.6v-98.3C138-661.2,133.8-665.4,128.5-665.4" /></g>
-          <g transform="translate(51.0322,706.904)"><path d="M86.9-665.4c-8.4,0-15.4,5-18.8,12.2l-35.2,74.9c-0.8,1.8-2.5,4.6-3.9,4.6c-1.4,0-3.1-2.9-3.9-4.6l-35.5-74.9c-3.4-7.2-10.4-12.2-18.8-12.2h-20.5L6.2-557.2c5.5,10.7,16.9,10.4,22.7,10.4c8,0,17.4-0.4,22.4-10.4l55.9-108.3H86.9z" /></g>
-          <g transform="translate(129.813,709.2)"><path d="M626.1-685.7c0-5.3-4.3-9.6-9.6-9.6h-13.3c-5.3,0-9.6,4.3-9.6,9.6v97.1c0,14.8,5.3,23.5,14.7,29.7c9.1,6,19.7,8.6,39.3,8.6h10.7c5.3,0,9.5-4.3,9.5-9.6v-10.4h-8c-5.8,0-18-0.2-25.2-5.1c-9.4-6.2-8.6-17.3-8.6-25.3V-685.7z" /></g>
-          <g transform="translate(103.37,694.481)"><path d="M445.1-555.6c-5.8,0-18-0.2-25.2-5.1c-9.4-6.2-8.6-17.3-8.6-25.3v-47.2h31.4c5.3,0,9.6-4.3,9.6-9.6V-653h-41v-18c0-5.3-4.3-9.6-9.6-9.6h-13.3c-5.3,0-9.6,4.3-9.6,9.6v18h-67.6v-18c0-5.3-4.3-9.6-9.6-9.6h-13.3c-5.3,0-9.6,4.3-9.6,9.6v18h-20.2v10.4c0,5.3,4.3,9.6,9.6,9.6h10.6v59.1c0,14.8,5.3,23.5,14.7,29.7c9.1,6,19.7,8.6,39.3,8.6h10.7c5.3,0,9.5-4.3,9.5-9.6v-10.4h-8c-5.8,0-18-0.2-25.2-5.1c-9.4-6.2-8.6-17.3-8.6-25.3v-47.2h67.6v59.1c0,14.8,5.3,23.5,14.7,29.7c9.1,6,19.6,8.6,39.3,8.6h10.6c5.3,0,9.6-4.3,9.6-9.6v-10.4H445.1z" /></g>
-          <g transform="translate(74.4307,701.739)"><path d="M247-619.8c0,3.1-0.8,6.9-7.2,6.9h-46.1c-11.7,0-21.2,5.3-21.2,12v-12c0.3-7.8,0-14.2,6.7-20.2c8.8-8,22.1-7.8,30.7-7.8c9.1,0,19.6,0.4,27.7,5.3C242.3-632.6,247-627.1,247-619.8 M275.8-552.4v-10.4h-71.7c-11.9,0-25.5-1.3-29.6-13.9c-1.1-3.6-1.9-11.1-1.9-16.2h85.3c5.8,0,11.4-0.9,15.8-4.4c6.1-4.8,6.9-11.7,6.9-17.7c0-14.8-3.6-29.4-20.8-38.1c-13.5-6.9-31.3-7.5-48.4-7.5c-13.8,0-38.8,0-54.8,11.1c-16.1,11.1-17.5,27.3-17.5,49.2c0,15.5,0.8,31.7,10.5,42.7c12.2,13.7,29.9,14.9,44.8,14.9h71.9C271.5-542.9,275.8-547.2,275.8-552.4" /></g>
-          <g transform="translate(119.077,701.739)"><path d="M552.6-619.8c0,3.1-0.8,6.9-7.2,6.9h-46.1c-11.7,0-21.2,5.3-21.2,12v-12c0.3-7.8,0-14.2,6.6-20.2c8.8-8,22.2-7.8,30.7-7.8c9.2,0,19.7,0.4,27.7,5.3C547.9-632.6,552.6-627.1,552.6-619.8 M581.4-552.4v-10.4h-71.7c-11.9,0-25.5-1.3-29.6-13.9c-1.1-3.6-1.9-11.1-1.9-16.2h85.3c5.8,0,11.4-0.9,15.8-4.4c6.1-4.8,6.9-11.7,6.9-17.7c0-14.8-3.6-29.4-20.8-38.1c-13.6-6.9-31.3-7.5-48.5-7.5c-13.8,0-38.8,0-54.8,11.1c-16,11.1-17.4,27.3-17.4,49.2c0,15.5,0.8,31.7,10.5,42.7c12.2,13.7,29.9,14.9,44.9,14.9h71.9C577.1-542.9,581.4-547.2,581.4-552.4" /></g>
-          <g transform="translate(57.1133,711.092)"><path d="M128.5-702.5h-13.3c-5.3,0-9.6,4.3-9.6,9.5v2.6v20.7h0.1c0.9-5.4,7.1-11.1,16.1-11.1h6.6c5.3,0,9.6-4.3,9.6-9.6v-2.6C138-698.2,133.8-702.5,128.5-702.5" /></g>
-        </svg>
-      )
-    }
-    case 'MISA':
-      return (
-        <text x={cx} y={cy} textAnchor="middle" dominantBaseline="central" fontFamily="'Sora', system-ui, sans-serif" fontSize={w * 0.4} fontWeight={800} letterSpacing={w * 0.01} fill="#e5323a">
-          MISA
-        </text>
-      )
-    case 'M-Invoice': {
-      // red swoosh + indigo "invoice" wordmark (minvoice.vn palette)
-      const fs = w * 0.3
-      const sx = cx - w / 2
+    case 'FPT.eInvoice':
       return (
         <g>
-          <path d={`M${sx} ${cy + fs * 0.5} q ${fs * 0.9} ${-fs * 1.1} ${fs * 1.7} ${-fs * 0.5} q ${-fs} ${fs * 0.15} ${-fs * 1.5} ${fs * 0.7} Z`} fill="#ff3b30" />
-          <text x={cx + w * 0.06} y={cy} textAnchor="middle" dominantBaseline="central" fontFamily="'Sora', system-ui, sans-serif" fontSize={fs} fontWeight={800} letterSpacing={-0.5} fill="#6b73ff">
-            invoice
+          {/* two-tone leaf swoosh */}
+          <path d={`M${x},${cy + 5} C${x + 2},${cy - 5} ${x + 14},${cy - 6} ${x + 17},${cy - 1} C${x + 11},${cy - 3} ${x + 4},${cy - 1} ${x + 2},${cy + 6} Z`} fill="#16a34a" />
+          <path d={`M${x + 1},${cy + 9} C${x + 4},${cy + 1} ${x + 15},${cy} ${x + 18},${cy + 5} C${x + 12},${cy + 3} ${x + 5},${cy + 4} ${x + 3},${cy + 10} Z`} fill="#0a7cc4" />
+          <text x={x + 24} y={cy} dominantBaseline="central" fontFamily={FONT} fontSize={14} fontWeight={800} fill="#eaf2ff">
+            FPT<tspan fill="#7fd8ff">.eInvoice</tspan>
+          </text>
+        </g>
+      )
+    case 'meInvoice': {
+      const s = 24
+      return (
+        <g>
+          {/* real meInvoice icon (blue gradient tile + white swoosh) */}
+          <svg x={x} y={cy - s / 2} width={s} height={s} viewBox="0 0 36 36">
+            <defs>
+              <linearGradient id="me-grad" x1="18" y1="0" x2="18" y2="36" gradientUnits="userSpaceOnUse">
+                <stop stopColor="#3990FF" />
+                <stop offset="1" stopColor="#2662FF" />
+              </linearGradient>
+            </defs>
+            <path d="M0 18C0 3.6 3.6 0 18 0C32.4 0 36 3.6 36 18C36 32.4 32.4 36 18 36C3.6 36 0 32.4 0 18Z" fill="url(#me-grad)" />
+            <path fillRule="evenodd" clipRule="evenodd" d="M11.2507 21.825C11.3922 23.1029 12.0376 24.187 13.0174 25.1668C15.3079 27.4573 19.0216 27.4573 21.3121 25.1668L27.7114 18.7674C28.6026 17.8762 28.6255 16.4385 27.763 15.5195C26.8635 14.561 25.3504 14.5339 24.4171 15.4595L18.2257 21.6C16.3881 23.4376 13.2251 23.4272 11.2507 21.825Z" fill="white" />
+            <path fillRule="evenodd" clipRule="evenodd" d="M9.22566 16.875C9.27542 18.0381 9.9077 19.0946 10.7957 19.9826C13.0507 22.05 15.7277 21.8641 17.6091 19.9826L22.91 14.6818C23.6663 13.9254 23.6741 12.7015 22.9273 11.9356C22.1887 11.1781 20.9814 11.1459 20.2035 11.8631L15.0912 16.5759C13.5274 18.1397 10.8715 18.3007 9.22566 16.875Z" fill="white" />
+            <path fillRule="evenodd" clipRule="evenodd" d="M8.28329 12.7305C8.20145 13.7361 8.54518 14.7698 9.31448 15.5391C10.7052 16.9298 12.9598 16.9297 14.3505 15.5391L18.6459 11.2436C19.3004 10.5892 19.3004 9.52818 18.6459 8.87376C17.9915 8.21933 16.9305 8.21933 16.276 8.87376L12.425 12.7248C11.2816 13.8682 9.429 13.8701 8.28329 12.7305Z" fill="white" />
+          </svg>
+          <text x={x + s + 6} y={cy} dominantBaseline="central" fontFamily={FONT} fontSize={14.5} fontWeight={800} fill="#eaf2ff">
+            <tspan fill="#3990ff">me</tspan>Invoice
           </text>
         </g>
       )
     }
+    case 'SInvoice':
+      return (
+        <g>
+          {/* red rounded S tile */}
+          <rect x={x} y={cy - 11} width={22} height={22} rx={6} fill="#ee0033" />
+          <text x={x + 11} y={cy + 0.5} textAnchor="middle" dominantBaseline="central" fontFamily={FONT} fontSize={15} fontWeight={900} fill="#fff">S</text>
+          <text x={x + 28} y={cy} dominantBaseline="central" fontFamily={FONT} fontSize={14.5} fontWeight={800} fill="#eaf2ff">
+            <tspan fill="#ff5470">S</tspan>Invoice
+          </text>
+        </g>
+      )
+    case 'M-invoice':
+      return (
+        <g>
+          {/* red swoosh + indigo wordmark (minvoice.vn palette) */}
+          <path d={`M${x},${cy + 6} q 10 -13 20 -6 q -11 1 -17 8 Z`} fill="#ff3b30" />
+          <text x={x + 22} y={cy} dominantBaseline="central" fontFamily={FONT} fontSize={14.5} fontWeight={800} fill="#8a91ff">
+            <tspan fill="#eaf2ff">M-</tspan>invoice
+          </text>
+        </g>
+      )
     default:
       return null
   }

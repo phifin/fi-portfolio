@@ -10,8 +10,7 @@ import { useLang } from '../../providers/LanguageProvider'
 import { ui } from '../../i18n'
 import { sectionIds } from '../../data/content'
 
-const PROVIDERS = ['FPT', 'MISA', 'Viettel', 'M-Invoice']
-const LOGO_W: Record<string, number> = { FPT: 54, MISA: 74, Viettel: 120, 'M-Invoice': 112 }
+const PROVIDERS = ['FPT.eInvoice', 'meInvoice', 'SInvoice', 'M-invoice']
 
 function useMiddleware(): { Icon: LucideIcon; label: { en: string; vi: string } }[] {
   return [
@@ -28,10 +27,8 @@ function ProviderNode({ x, y, w, h, name }: { x: number; y: number; w: number; h
   return (
     <g style={{ filter: `drop-shadow(0 0 8px ${meta.glow}55)` }}>
       <rect x={x} y={y} width={w} height={h} rx={12} fill="#0e1230" stroke={`${meta.edge}aa`} strokeWidth={1.4} />
-      <ProviderLogo name={name} cx={x + w / 2} cy={y + h / 2 - 6} w={LOGO_W[name]} />
-      <text x={x + w / 2} y={y + h - 12} textAnchor="middle" fill="rgba(255,255,255,0.4)" fontSize={9}>
-        e-invoice provider
-      </text>
+      <ProviderLogo name={name} x={x + 16} cy={y + h / 2 - 6} />
+      <text x={x + 16} y={y + h - 13} fill="rgba(255,255,255,0.4)" fontSize={9}>{meta.sub}</text>
     </g>
   )
 }

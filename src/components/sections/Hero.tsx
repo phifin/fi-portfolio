@@ -31,6 +31,10 @@ export function Hero() {
 
   return (
     <section ref={sectionRef} id={sectionIds.hero} className="relative min-h-[100svh] w-full overflow-hidden">
+      {/* ambient backdrop: blueprint grid + nebula glows */}
+      <div className="grid-bg pointer-events-none absolute inset-0 opacity-40" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_72%_38%,rgba(34,211,238,0.12),transparent_46%),radial-gradient(circle_at_18%_72%,rgba(79,140,255,0.12),transparent_48%)]" />
+
       {/* 3D canvas backdrop — frozen when off-screen */}
       <div className="absolute inset-0">
         <Canvas

@@ -48,8 +48,8 @@ export const ui = {
     kicker: { en: 'Deep dive · 03', vi: 'Đào sâu · 03' },
     title: { en: 'Go API Gateway', vi: 'Go API Gateway' },
     body: {
-      en: 'One API for both internal services and external partners. Hand-written middleware rate-limits and caches in Redis, batches bulk-sign requests, then normalizes and routes each call to the right provider (FPT, MISA, Viettel, M-Invoice) — no invoice data stored.',
-      vi: 'Một API cho cả internal service lẫn đối tác bên ngoài. Middleware tự viết lo rate limit và cache trong Redis, gom (batch) các request ký hàng loạt, rồi chuẩn hoá và route mỗi request tới đúng nhà cung cấp (FPT, MISA, Viettel, M-Invoice) — không lưu dữ liệu hoá đơn.',
+      en: 'One API for both internal services and external partners. Hand-written middleware rate-limits and caches in Redis, batches bulk-sign requests, then normalizes and routes each call to the right e-invoice provider (FPT.eInvoice, meInvoice, SInvoice, M-invoice) — no invoice data stored.',
+      vi: 'Một API cho cả internal service lẫn đối tác bên ngoài. Middleware tự viết lo rate limit và cache trong Redis, gom (batch) các request ký hàng loạt, rồi chuẩn hoá và route mỗi request tới đúng dịch vụ hoá đơn điện tử (FPT.eInvoice, meInvoice, SInvoice, M-invoice) — không lưu dữ liệu hoá đơn.',
     },
   },
   experience: {

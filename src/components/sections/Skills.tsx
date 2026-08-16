@@ -167,8 +167,20 @@ function ArchMap({ zone, onHover }: { zone: Zone; onHover: (id: string | null) =
     return n.zone !== zone
   }
   const isGlow = (n: Node) => zone === 'all' || (zone !== 'devops' && n.zone === zone)
+  const BAND: Partial<Record<Zone, { x: number; y: number; w: number; h: number; c: string }>> = {
+    fe: { x: 66, y: 12, w: 520, h: 92, c: DIA.blue },
+    be: { x: 58, y: 114, w: 834, h: 372, c: DIA.cyan },
+    db: { x: 70, y: 438, w: 552, h: 94, c: DIA.sky },
+  }
+  const band = BAND[zone]
   return (
     <svg viewBox="0 0 900 560" className="h-full w-full" preserveAspectRatio="xMidYMid meet">
+      {/* active-zone highlight so the current selection is obvious */}
+      {band && (
+        <rect x={band.x} y={band.y} width={band.w} height={band.h} rx={18}
+          fill={`${band.c}0d`} stroke={`${band.c}66`} strokeWidth={1.5} strokeDasharray="7 6"
+          style={{ transition: 'all 0.4s ease' }} />
+      )}
       {/* tier guides */}
       {[['FRONTEND', 60], ['BACKEND', 300], ['DATA', 486]].map(([t, y]) => (
         <text key={t as string} x={10} y={y as number} fill="rgba(255,255,255,0.22)" fontSize={9} fontFamily="ui-monospace, monospace" fontWeight={700} transform={`rotate(-90 10 ${y})`} textAnchor="middle" letterSpacing={2}>
@@ -183,7 +195,7 @@ function ArchMap({ zone, onHover }: { zone: Zone; onHover: (id: string | null) =
           <g key={e.id}>
             <Edge id={e.id} from={e.from} to={e.to} via={e.via} color={e.color} dashed={e.dashed} />
             {e.label && (
-              <text x={e.lx ?? (e.from[0] + e.to[0]) / 2} y={e.ly ?? e.from[1] - 6} textAnchor="middle" fill="rgba(255,255,255,0.6)" fontSize={9} fontFamily="ui-monospace, monospace">
+              <text x={e.lx ?? (e.from[0] + e.to[0]) / 2} y={e.ly ?? e.from[1] - 6} textAnchor="middle" fill={`${e.color}`} fontSize={13} fontWeight={600} fontFamily="ui-monospace, monospace" style={{ paintOrder: 'stroke', stroke: '#0a0d1f', strokeWidth: 3 }}>
                 {e.label}
               </text>
             )}
@@ -224,31 +236,34 @@ function NodeTooltip({ id }: { id: string }) {
   const cx = ((n.x + n.w / 2) / 900) * 100
   const above = n.y > 150
   const anchorY = above ? (n.y / 560) * 100 : ((n.y + n.h) / 560) * 100
-  const left = Math.min(84, Math.max(16, cx))
+  const left = Math.min(82, Math.max(18, cx))
   return (
     <motion.div
-      initial={{ opacity: 0, y: above ? 6 : -6, scale: 0.96 }}
+      initial={{ opacity: 0, y: above ? 8 : -8, scale: 0.97 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.96 }}
+      exit={{ opacity: 0, scale: 0.97 }}
       transition={{ duration: 0.16 }}
-      className="pointer-events-none absolute z-20 w-[230px]"
-      style={{ left: `${left}%`, top: `${anchorY}%`, transform: `translate(-50%, ${above ? '-108%' : '8%'})` }}
+      className="pointer-events-none absolute z-30 w-[300px]"
+      style={{ left: `${left}%`, top: `${anchorY}%`, transform: `translate(-50%, ${above ? '-112%' : '12%'})` }}
     >
-      <div className="glass-strong rounded-2xl border border-white/10 p-3 shadow-glow">
-        <div className="mb-2 flex items-center gap-2">
-          <span className="h-2 w-2 rounded-full" style={{ background: n.color, boxShadow: `0 0 8px ${n.color}` }} />
-          <span className="text-sm font-bold text-white">{n.title}</span>
+      <div className="glass-strong rounded-2xl border border-white/10 p-4 shadow-glow">
+        <div className="mb-3 flex items-center gap-2.5 border-b border-white/10 pb-2.5">
+          <span className="h-2.5 w-2.5 rounded-full" style={{ background: n.color, boxShadow: `0 0 10px ${n.color}` }} />
+          <span className="text-[15px] font-bold text-white">{n.title}</span>
+          {n.sub && <span className="ml-auto font-mono text-[10px] text-white/40">{n.sub}</span>}
         </div>
-        <div className="flex flex-col gap-1.5">
+        <div className="flex flex-col gap-2.5">
           {detail.map((d) => (
-            <div key={d.cat} className="flex flex-wrap items-center gap-1.5">
-              <span className="mr-0.5 font-mono text-[9px] uppercase tracking-wider text-white/35">{d.cat}</span>
-              {d.techs.map((t) => (
-                <span key={t} className="inline-flex items-center gap-1 rounded-md border border-white/10 bg-white/[0.05] px-1.5 py-0.5 text-[11px] font-medium text-white/85">
-                  {hasLogo(t) && <TechGlyph name={t} size={12} />}
-                  {t}
-                </span>
-              ))}
+            <div key={d.cat} className="grid grid-cols-[76px_1fr] items-start gap-2">
+              <span className="pt-1 font-mono text-[10px] uppercase leading-tight tracking-wider text-white/40">{d.cat}</span>
+              <div className="flex flex-wrap gap-1.5">
+                {d.techs.map((t) => (
+                  <span key={t} className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.06] px-2 py-1 text-[12px] font-medium text-white/90">
+                    {hasLogo(t) && <TechGlyph name={t} size={14} />}
+                    {t}
+                  </span>
+                ))}
+              </div>
             </div>
           ))}
         </div>
@@ -329,10 +344,10 @@ export function Skills() {
             <ArchStack />
           </Reveal>
         ) : (
-          <div className="mt-10 grid gap-6 lg:grid-cols-[260px_1fr]">
-            {/* zone selector */}
+          <div className="mt-9 flex flex-col gap-5">
+            {/* horizontal layer tabs */}
             <Reveal className="min-w-0">
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-wrap gap-2.5">
                 {skillGroups.map((g, i) => {
                   const Icon = groupIcon[g.key] ?? Server
                   const gc = accentHex[g.accent]
@@ -341,34 +356,38 @@ export function Skills() {
                     <button
                       key={g.key}
                       onClick={() => setActive(i)}
-                      className={`group flex w-full items-center gap-3 rounded-xl border px-4 py-3 text-left transition-all ${
-                        on ? 'border-white/20 bg-white/[0.06]' : 'border-white/5 bg-transparent hover:border-white/10'
+                      className={`group flex items-center gap-2.5 rounded-xl border px-4 py-2.5 text-left transition-all ${
+                        on ? 'bg-white/[0.07]' : 'border-white/5 bg-transparent hover:border-white/10'
                       }`}
+                      style={on ? { borderColor: `${gc}80`, boxShadow: `0 0 0 1px ${gc}40, 0 6px 20px -10px ${gc}` } : undefined}
                     >
                       <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg" style={{ background: on ? `${gc}22` : 'rgba(255,255,255,0.04)', border: `1px solid ${on ? `${gc}66` : 'rgba(255,255,255,0.08)'}` }}>
                         <Icon size={16} color={on ? gc : 'rgba(255,255,255,0.5)'} strokeWidth={2.2} />
                       </span>
                       <span className={`font-semibold ${on ? 'text-white' : 'text-white/60'}`}>{pick(g.title)}</span>
-                      <span className="ml-auto font-mono text-xs text-white/30">{String(g.skills.length).padStart(2, '0')}</span>
+                      <span className="font-mono text-xs" style={{ color: on ? gc : 'rgba(255,255,255,0.3)' }}>{String(g.skills.length).padStart(2, '0')}</span>
                     </button>
                   )
                 })}
-                <p className="mt-1 px-1 font-mono text-xs leading-relaxed text-white/35">{pick(ui.skills.hint)}</p>
               </div>
+              <p className="mt-3 font-mono text-xs leading-relaxed text-white/40">{pick(ui.skills.hint)}</p>
             </Reveal>
 
-            {/* the master architecture map */}
+            {/* the master architecture map — full width */}
             <Reveal delay={0.1} className="min-w-0">
-              <div className="glass relative overflow-hidden rounded-3xl p-3 sm:p-4">
-                <div className="pointer-events-none absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-15 blur-3xl" style={{ background: color }} />
+              <div className="glass relative rounded-3xl p-3 sm:p-6">
+                {/* clipped glow layer so the tooltip can overflow the card */}
+                <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-3xl">
+                  <div className="absolute left-1/2 top-1/2 h-80 w-[36rem] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-15 blur-3xl transition-colors duration-500" style={{ background: color }} />
+                </div>
                 <div className="relative aspect-[900/560] w-full">
                   <ArchMap zone={zone} onHover={setHover} />
                   <AnimatePresence>{hover && <NodeTooltip key={hover} id={hover} />}</AnimatePresence>
                 </div>
-                {/* active group chips */}
-                <div className="relative mt-1 flex flex-wrap gap-2 border-t border-white/5 pt-3">
+                {/* active layer chips */}
+                <div className="relative mt-2 flex flex-wrap gap-2 border-t border-white/5 pt-4">
                   {group.skills.map((s) => (
-                    <span key={s} className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-1 text-xs font-medium text-white/85" style={{ boxShadow: `0 0 0 1px ${color}22` }}>
+                    <span key={s} className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-1.5 text-xs font-medium text-white/85" style={{ boxShadow: `0 0 0 1px ${color}22` }}>
                       {hasLogo(s) && <TechGlyph name={s} size={13} />}
                       {s}
                     </span>
