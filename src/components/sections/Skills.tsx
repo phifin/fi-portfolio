@@ -344,7 +344,7 @@ export function Skills() {
             <ArchStack />
           </Reveal>
         ) : (
-          <div className="mt-9 flex flex-col gap-5">
+          <div className="mt-8 flex flex-col gap-4">
             {/* horizontal layer tabs */}
             <Reveal className="min-w-0">
               <div className="flex flex-wrap gap-2.5">
@@ -373,9 +373,9 @@ export function Skills() {
               <p className="mt-3 font-mono text-xs leading-relaxed text-white/40">{pick(ui.skills.hint)}</p>
             </Reveal>
 
-            {/* the master architecture map — full width */}
+            {/* the master architecture map — height-capped so tabs + diagram share one screen */}
             <Reveal delay={0.1} className="min-w-0">
-              <div className="glass relative rounded-3xl p-3 sm:p-6">
+              <div className="glass relative mx-auto w-full rounded-3xl p-3 sm:p-6" style={{ maxWidth: 'min(100%, calc(58vh * 900 / 560))' }}>
                 {/* clipped glow layer so the tooltip can overflow the card */}
                 <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-3xl">
                   <div className="absolute left-1/2 top-1/2 h-80 w-[36rem] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-15 blur-3xl transition-colors duration-500" style={{ background: color }} />

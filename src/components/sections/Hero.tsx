@@ -5,6 +5,7 @@ import { AdaptiveDpr, PerformanceMonitor } from '@react-three/drei'
 import { motion } from 'framer-motion'
 import { Github, Linkedin } from 'lucide-react'
 import { HeroScene } from '../three/HeroScene'
+import { HeroGraphic } from './HeroGraphic'
 import { useDeviceTier } from '../../hooks/useDeviceTier'
 import { useLang } from '../../providers/LanguageProvider'
 import { ui } from '../../i18n'
@@ -62,8 +63,13 @@ export function Hero() {
         </Canvas>
       </div>
 
-      {/* gradient vignette so text stays legible over the scene */}
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_50%,transparent_30%,rgba(5,6,14,0.7)_100%)]" />
+      {/* bright, always-visible tech graphic on the right (WebGL-independent) */}
+      <div className="pointer-events-none absolute right-[-4%] top-1/2 hidden aspect-square w-[52%] max-w-[600px] -translate-y-1/2 opacity-90 drop-shadow-[0_0_40px_rgba(34,211,238,0.25)] md:block lg:right-[2%] lg:w-[46%]">
+        <HeroGraphic />
+      </div>
+
+      {/* soft vignette — keep the left copy legible without hiding the graphic */}
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_28%_50%,rgba(5,6,14,0.55),transparent_60%)]" />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-ink-950 to-transparent" />
 
       {/* overlay content */}

@@ -19,7 +19,7 @@ export function About() {
       <div className="container-page">
         <SectionHeading kicker={pick(ui.about.kicker)} title={pick(ui.about.title)} Icon={User} />
 
-        <div className="mt-14 grid gap-12 lg:grid-cols-[300px_1fr] lg:items-start">
+        <div className="mt-8 grid gap-8 lg:grid-cols-[280px_1fr] lg:items-start">
           {/* avatar */}
           <Reveal>
             <TiltCard max={12} className="relative mx-auto w-full max-w-[300px]">
@@ -49,7 +49,7 @@ export function About() {
               <p className="text-lg leading-relaxed text-white/75">{pick(profile.summary)}</p>
             </Reveal>
 
-            <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-4">
+            <div className="mt-7 grid grid-cols-2 gap-3 sm:grid-cols-4">
               {stats.map((s, i) => (
                 <Reveal key={i} delay={0.1 + i * 0.08}>
                   <div className="glass rounded-2xl p-4 text-center">
@@ -62,7 +62,7 @@ export function About() {
               ))}
             </div>
 
-            <div className="mt-10 grid gap-4 sm:grid-cols-2">
+            <div className="mt-6 grid gap-4 sm:grid-cols-2">
               <Reveal delay={0.2}>
                 <div className="glass h-full rounded-2xl p-5">
                   <h3 className="font-mono text-xs uppercase tracking-[0.2em] text-accent-cyan">
