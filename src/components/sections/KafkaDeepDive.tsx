@@ -8,29 +8,35 @@ import { ui } from '../../i18n'
 import { sectionIds } from '../../data/content'
 
 function KafkaDiagramH() {
+  // Row 1 = ingest pipeline (top); Row 2 = consumers fanned out below Kafka.
   return (
-    <svg viewBox="0 0 600 300" className="h-full w-full" preserveAspectRatio="xMidYMid meet">
-      <Edge id="k1" from={[130, 145]} to={[142, 145]} color={DIA.green} />
-      <Edge id="k2" from={[212, 145]} to={[224, 145]} color={DIA.green} />
-      <Edge id="k3" from={[344, 145]} to={[356, 148]} color={DIA.amber} />
-      <Edge id="k4" from={[458, 130]} to={[476, 62]} via={[470, 96]} color={DIA.blue} />
-      <Edge id="k5" from={[458, 150]} to={[476, 150]} color={DIA.blue} />
-      <Edge id="k6" from={[458, 168]} to={[476, 236]} via={[470, 202]} color={DIA.blue} />
+    <svg viewBox="0 0 620 390" className="h-full w-full" preserveAspectRatio="xMidYMid meet">
+      {/* pipeline edges */}
+      <Edge id="k1" from={[166, 96]} to={[196, 96]} color={DIA.green} />
+      <Edge id="k2" from={[276, 96]} to={[306, 96]} color={DIA.amber} />
+      <Edge id="k3" from={[452, 96]} to={[482, 98]} color={DIA.amber} />
+      {/* fan-out edges */}
+      <Edge id="k4" from={[538, 138]} to={[196, 268]} via={[300, 220]} color={DIA.blue} />
+      <Edge id="k5" from={[538, 138]} to={[380, 268]} via={[440, 210]} color={DIA.blue} />
+      <Edge id="k6" from={[538, 138]} to={[536, 268]} via={[540, 210]} color={DIA.blue} />
 
-      <FlowPackets points={[[130, 145], [142, 145]]} color={DIA.green} count={2} dur={1.4} />
-      <FlowPackets points={[[212, 145], [283, 145], [354, 148]]} color={DIA.amber} count={3} dur={2} />
-      <FlowPackets points={[[458, 148], [476, 62]]} color={DIA.sky} count={2} dur={1.6} />
-      <FlowPackets points={[[458, 150], [476, 150]]} color={DIA.sky} count={2} dur={1.5} />
-      <FlowPackets points={[[458, 150], [476, 236]]} color={DIA.sky} count={2} dur={1.7} />
+      <FlowPackets points={[[166, 96], [196, 96]]} color={DIA.green} count={2} dur={1.3} />
+      <FlowPackets points={[[276, 96], [306, 96]]} color={DIA.amber} count={2} dur={1.3} />
+      <FlowPackets points={[[452, 98], [482, 98]]} color={DIA.amber} count={2} dur={1.3} />
+      <FlowPackets points={[[538, 138], [300, 220], [196, 268]]} color={DIA.sky} count={3} dur={2} />
+      <FlowPackets points={[[538, 138], [440, 210], [380, 268]]} color={DIA.sky} count={3} dur={1.9} />
+      <FlowPackets points={[[538, 138], [540, 210], [536, 268]]} color={DIA.sky} count={2} dur={1.7} />
 
-      <ServiceNode x={10} y={120} w={120} h={50} title="Order Service" sub="Java · PostgreSQL" color={DIA.cyan} Icon={Server} />
-      <Datastore x={142} y={112} w={70} h={66} title="Outbox" sub="transactional" color={DIA.green} />
-      <ServiceNode x={224} y={120} w={120} h={50} title="Debezium" sub="CDC · stream" color={DIA.amber} Icon={Radio} />
-      <TopicNode x={356} y={110} w={104} h={76} title="Kafka" sub="topic · partitions" color={DIA.blue} />
+      {/* row 1: pipeline */}
+      <ServiceNode x={20} y={66} w={146} h={60} title="Order Service" sub="Java · PostgreSQL" color={DIA.cyan} Icon={Server} />
+      <Datastore x={196} y={58} w={80} h={78} title="Outbox" sub="transactional" color={DIA.green} />
+      <ServiceNode x={306} y={66} w={146} h={60} title="Debezium" sub="CDC · stream" color={DIA.amber} Icon={Radio} />
+      <TopicNode x={482} y={54} w={116} h={86} title="Kafka" sub="topic · partitions" color={DIA.blue} />
 
-      <ServiceNode x={476} y={38} w={116} h={46} title="Orders" sub="consumer" color={DIA.sky} Icon={Boxes} />
-      <ServiceNode x={476} y={127} w={116} h={46} title="Invoices" sub="consumer" color={DIA.sky} Icon={FileText} />
-      <ServiceNode x={476} y={216} w={116} h={46} title="Notify" sub="consumer" color={DIA.sky} Icon={Bell} />
+      {/* row 2: consumers */}
+      <ServiceNode x={126} y={268} w={140} h={58} title="Orders" sub="consumer" color={DIA.sky} Icon={Boxes} />
+      <ServiceNode x={310} y={268} w={140} h={58} title="Invoices" sub="consumer" color={DIA.sky} Icon={FileText} />
+      <ServiceNode x={466} y={268} w={140} h={58} title="Notify" sub="consumer" color={DIA.sky} Icon={Bell} />
     </svg>
   )
 }

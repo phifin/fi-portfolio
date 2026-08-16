@@ -24,12 +24,8 @@ export function DeepDiveLayout({ id, kicker, title, body, Icon, children, flip, 
         <div className={`grid items-center gap-10 lg:grid-cols-2 ${flip ? 'lg:[&>*:first-child]:order-2' : ''}`}>
           <Reveal>
             <div className="flex flex-col gap-4">
-              <span className="chip w-fit font-mono uppercase tracking-[0.2em] text-accent-blue">
-                {Icon ? (
-                  <Icon size={13} className="text-accent-blue" strokeWidth={2.4} />
-                ) : (
-                  <span className="h-1.5 w-1.5 rounded-full bg-accent-blue shadow-glow-blue" />
-                )}
+              <span className="kicker w-fit text-accent-blue">
+                {Icon && <Icon size={15} strokeWidth={2.2} />}
                 {kicker}
               </span>
               <h2 className="text-3xl font-bold leading-tight sm:text-4xl">{title}</h2>

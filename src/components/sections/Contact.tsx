@@ -21,8 +21,8 @@ export function Contact() {
       <div className="container-page relative">
         <div className="glass-strong relative overflow-hidden rounded-[2rem] px-6 py-14 text-center sm:px-14">
           <Reveal>
-            <span className="chip mx-auto w-fit font-mono uppercase tracking-[0.2em] text-accent-cyan">
-              <Mail size={13} className="text-accent-cyan" strokeWidth={2.4} />
+            <span className="kicker mx-auto w-fit text-accent-cyan">
+              <Mail size={15} strokeWidth={2.2} />
               {pick(ui.contact.kicker)}
             </span>
           </Reveal>

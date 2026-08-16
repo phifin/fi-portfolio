@@ -35,12 +35,14 @@ src/
     useDeviceTier.ts     ← phân tầng máy (high/mid/low, isMobile) để giảm tải 3D
     useLenis.ts          ← smooth scroll + scrollToId(id) + deep-link
   components/
+    intro/    Intro.tsx              (màn intro + kéo rèm khi load; skip nếu có ?static hoặc #hash)
     layout/   Nav, LanguageToggle, Footer
     ui/       Reveal, SectionHeading, AnimatedCounter, TiltCard, DeepDiveLayout, DiagramLegend
     three/    HeroScene              (canvas 3D DUY NHẤT)
     diagram/  primitives.tsx         (shape + icon + flow cho sơ đồ SVG)
     sections/ Hero, About, Skills, KafkaDeepDive, SagaDeepDive,
-              GatewayDeepDive, Experience, Projects, Contact
+              GatewayDeepDive, Experience, Contact
+              (Projects đã gộp vào Experience — bỏ trùng lặp)
   App.tsx                ← ghép section theo thứ tự + scroll progress + deep-link
 ```
 
@@ -106,9 +108,16 @@ npm run preview    # xem bản build
 - Deploy tự động qua **GitHub Actions**: `.github/workflows/deploy.yml` (build + upload Pages) khi push `main`.
 - **Bật 1 lần trên GitHub**: repo Settings → Pages → Source = **GitHub Actions**.
 
-## 10. Debug flag
+## 10. Intro & một số section
 
-`?static` trên URL → `Reveal` render thẳng (bỏ animation whileInView). Dùng để chụp/screenshot section mà không cần scroll. Vô hại cho production.
+- **Intro** (`components/intro/Intro.tsx`): load vào trang → dựng poster (mạng lưới + monogram + tên), rồi handle "kéo lên để vào" (wheel/touch/kéo/click đều được). Khoá scroll (Lenis stop + body overflow) khi intro còn. Hiện mỗi lần load; **skip** khi URL có `?static` hoặc `#hash` (deep-link).
+- **Skills** (`sections/Skills.tsx`): desktop = **constellation** (hub danh mục + node công nghệ nối tơ, hạt chạy); mobile = chip list gọn. Chọn theo `isMobile`.
+- **Experience**: nguồn dữ liệu dự án duy nhất — mỗi project là card full-width, highlights xếp lưới 2 cột.
+- **Kicker** section dùng class `.kicker` (icon + chữ mono, không border/nền).
+
+## 11. Debug flag
+
+`?static` trên URL → `Reveal` render thẳng (bỏ animation whileInView) + bỏ qua Intro. Dùng để chụp/screenshot section mà không cần scroll. Vô hại cho production.
 
 ## 11. Checklist khi update CV
 

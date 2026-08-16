@@ -68,7 +68,11 @@ html.lenis body {
   }
 
   .section-pad {
-    @apply py-24 sm:py-32;
+    @apply py-14 sm:py-20;
+  }
+
+  .kicker {
+    @apply inline-flex items-center gap-2 font-mono text-xs font-medium uppercase tracking-[0.25em];
   }
 }
 

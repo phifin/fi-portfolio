@@ -1,7 +1,8 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { motion, useScroll, useSpring } from 'framer-motion'
 import { LanguageProvider } from './providers/LanguageProvider'
 import { useLenis, scrollToId } from './hooks/useLenis'
+import { Intro } from './components/intro/Intro'
 import { Nav } from './components/layout/Nav'
 import { Footer } from './components/layout/Footer'
 import { Hero } from './components/sections/Hero'
@@ -11,7 +12,6 @@ import { KafkaDeepDive } from './components/sections/KafkaDeepDive'
 import { SagaDeepDive } from './components/sections/SagaDeepDive'
 import { GatewayDeepDive } from './components/sections/GatewayDeepDive'
 import { Experience } from './components/sections/Experience'
-import { Projects } from './components/sections/Projects'
 import { Contact } from './components/sections/Contact'
 
 function ScrollProgress() {
@@ -27,6 +27,10 @@ function ScrollProgress() {
 
 export default function App() {
   useLenis()
+  // Skip the intro when deep-linking to a section or in static/screenshot mode.
+  const [showIntro, setShowIntro] = useState(
+    () => !(typeof window !== 'undefined' && (window.location.search.includes('static') || window.location.hash)),
+  )
 
   // Deep-link support: scroll to #section when the page opens with a hash.
   useEffect(() => {
@@ -38,6 +42,7 @@ export default function App() {
 
   return (
     <LanguageProvider>
+      {showIntro && <Intro onDone={() => setShowIntro(false)} />}
       <ScrollProgress />
       <Nav />
       <main className="relative">
@@ -48,7 +53,6 @@ export default function App() {
         <SagaDeepDive />
         <GatewayDeepDive />
         <Experience />
-        <Projects />
         <Contact />
       </main>
       <Footer />
