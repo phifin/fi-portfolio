@@ -63,8 +63,8 @@ export function Hero() {
         </Canvas>
       </div>
 
-      {/* bright, always-visible tech graphic on the right (WebGL-independent) */}
-      <div className="pointer-events-none absolute right-[-4%] top-1/2 hidden aspect-square w-[52%] max-w-[600px] -translate-y-1/2 opacity-90 drop-shadow-[0_0_40px_rgba(34,211,238,0.25)] md:block lg:right-[2%] lg:w-[46%]">
+      {/* isometric workstation scene on the right (WebGL-independent, always visible) */}
+      <div className="pointer-events-none absolute right-[1%] top-1/2 hidden aspect-square w-[50%] max-w-[660px] -translate-y-1/2 md:block lg:right-[3%] lg:w-[46%]">
         <HeroGraphic />
       </div>
 
@@ -110,7 +110,7 @@ export function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, delay: 0.7 }}
-          className="mt-6 max-w-2xl text-lg text-white/70 sm:text-xl"
+          className="mt-6 max-w-2xl border-l-2 border-accent-cyan/60 pl-4 text-lg leading-relaxed text-white/70 sm:text-xl"
         >
           {pick(profile.tagline)}
         </motion.p>

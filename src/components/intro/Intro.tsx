@@ -21,8 +21,8 @@ const CATS: Cat[] = [
 const BOX = 880
 const C = BOX / 2
 const RINGS = [
-  { rx: 250, ry: 168 },
-  { rx: 396, ry: 264 },
+  { rx: 250, ry: 150 },
+  { rx: 396, ry: 222 },
 ] as const
 const START = -228 // deg — sweep the top and both sides, leaving a gap at bottom-centre for the name
 const SPAN = 276
@@ -71,7 +71,7 @@ export function Intro({ onDone }: { onDone: () => void }) {
 
   useEffect(() => {
     const fit = () => {
-      setScale(Math.min(1, window.innerWidth / 1040, window.innerHeight / 860))
+      setScale(Math.min(1, window.innerWidth / 1040, window.innerHeight / 900))
       setCompact(window.innerWidth < 680)
       setShort(window.innerHeight < 880)
     }
@@ -208,7 +208,7 @@ export function Intro({ onDone }: { onDone: () => void }) {
         </div>
       ) : (
         /* ── desktop / tablet: one centred identity column with the orbit haloing the avatar ── */
-        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center px-6 pb-14 text-center">
+        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center px-6 text-center">
           {/* avatar core, with the orbit composition centred on it and overflowing */}
           <div className="relative flex items-center justify-center">
             <motion.div className="pointer-events-none absolute left-1/2 top-1/2" style={{ x: px, y: py }}>

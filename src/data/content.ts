@@ -45,6 +45,7 @@ export type SkillGroup = {
   key: string
   title: Bi
   accent: 'cyan' | 'blue' | 'sky'
+  blurb: Bi
   /** the stack, broken into named sub-categories (lang / framework / pattern …) */
   categories: SkillCategory[]
 }
@@ -54,6 +55,7 @@ export const skillGroups: SkillGroup[] = [
     key: 'backend',
     title: { en: 'Backend', vi: 'Backend' },
     accent: 'cyan',
+    blurb: { en: 'Core technologies and tools I use to build robust, scalable backend systems.', vi: 'Công nghệ cốt lõi mình dùng để xây backend ổn định và mở rộng tốt.' },
     categories: [
       { label: { en: 'Language', vi: 'Ngôn ngữ' }, items: ['Go', 'Java', 'TypeScript'] },
       { label: { en: 'Frameworks', vi: 'Framework' }, items: ['net/http', 'Gin', 'Chi', 'Spring', 'NestJS'] },
@@ -67,6 +69,7 @@ export const skillGroups: SkillGroup[] = [
     key: 'frontend',
     title: { en: 'Frontend', vi: 'Frontend' },
     accent: 'blue',
+    blurb: { en: 'How I build fast, data-heavy interfaces that still feel effortless.', vi: 'Cách mình xây giao diện nhanh, nhiều dữ liệu mà vẫn mượt.' },
     categories: [
       { label: { en: 'Language', vi: 'Ngôn ngữ' }, items: ['JavaScript', 'TypeScript'] },
       { label: { en: 'Framework', vi: 'Framework' }, items: ['React', 'Next.js'] },
@@ -79,6 +82,7 @@ export const skillGroups: SkillGroup[] = [
     key: 'data',
     title: { en: 'Databases & Caching', vi: 'Cơ sở dữ liệu & Cache' },
     accent: 'sky',
+    blurb: { en: 'Where state lives — relational, document and in-memory.', vi: 'Nơi lưu trạng thái — quan hệ, document và in-memory.' },
     categories: [
       { label: { en: 'Relational', vi: 'Quan hệ (SQL)' }, items: ['PostgreSQL'] },
       { label: { en: 'Document', vi: 'Document (NoSQL)' }, items: ['MongoDB'] },
@@ -89,6 +93,7 @@ export const skillGroups: SkillGroup[] = [
     key: 'devops',
     title: { en: 'DevOps & Observability', vi: 'DevOps & Observability' },
     accent: 'cyan',
+    blurb: { en: 'Shipping and observing services in production.', vi: 'Ship và giám sát service trên production.' },
     categories: [
       { label: { en: 'Containers', vi: 'Container' }, items: ['Docker', 'Kubernetes', 'Helm'] },
       { label: { en: 'Delivery', vi: 'Delivery' }, items: ['GitOps', 'CI/CD', 'Rancher'] },
@@ -100,6 +105,7 @@ export const skillGroups: SkillGroup[] = [
     key: 'practices',
     title: { en: 'Practices', vi: 'Phương pháp' },
     accent: 'blue',
+    blurb: { en: 'How I work with a team and keep systems healthy.', vi: 'Cách mình làm việc nhóm và giữ hệ thống khoẻ mạnh.' },
     categories: [
       { label: { en: 'Process', vi: 'Quy trình' }, items: ['Agile', 'Code Review'] },
       { label: { en: 'System Design', vi: 'Thiết kế hệ thống' }, items: ['Multi-tenant Architecture'] },
