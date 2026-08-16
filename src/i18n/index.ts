@@ -24,7 +24,7 @@ export const ui = {
   skills: {
     kicker: { en: 'Toolbox', vi: 'Bộ công cụ' },
     title: { en: 'Skills & Technologies', vi: 'Kỹ năng & Công nghệ' },
-    hint: { en: 'Tap a cluster to focus', vi: 'Chạm vào một cụm để tập trung' },
+    hint: { en: 'Select a layer to highlight it on the live architecture map — one real system, front to back.', vi: 'Chọn một tầng để làm nổi bật trên sơ đồ kiến trúc — một hệ thống thật, từ front tới back.' },
   },
   kafka: {
     kicker: { en: 'Deep dive · 01', vi: 'Đào sâu · 01' },
@@ -38,8 +38,8 @@ export const ui = {
     kicker: { en: 'Deep dive · 02', vi: 'Đào sâu · 02' },
     title: { en: 'Temporal Saga & Compensation', vi: 'Temporal Saga & Bù trừ' },
     body: {
-      en: 'A distributed transaction across order and payment services. On the happy path each step commits; on failure, compensating transactions roll the state back — orchestrated by Temporal.',
-      vi: 'Một transaction phân tán qua order và payment service. Happy path thì mỗi bước commit; khi lỗi, compensating transaction rollback trạng thái — điều phối bởi Temporal.',
+      en: 'Temporal is the orchestration infra. The Order Worker runs OrderWorkflow; scheduling a payment pushes an activity onto the payment-task-queue, which the Payment Worker pulls and executes. On failure the workflow runs a compensating transaction to roll the order back.',
+      vi: 'Temporal là hạ tầng điều phối. Order Worker chạy OrderWorkflow; khi cần thanh toán, workflow đẩy một activity vào payment-task-queue để Payment Worker tự pull về và execute. Khi lỗi, workflow chạy compensating transaction để rollback đơn hàng.',
     },
     happy: { en: 'Happy path', vi: 'Happy path' },
     fail: { en: 'Payment fails → compensate', vi: 'Thanh toán lỗi → bù trừ' },
@@ -48,8 +48,8 @@ export const ui = {
     kicker: { en: 'Deep dive · 03', vi: 'Đào sâu · 03' },
     title: { en: 'Go API Gateway', vi: 'Go API Gateway' },
     body: {
-      en: 'One API in front of four e-invoice vendors. Hand-written middleware handles rate limiting and caching in Redis, then normalizes and routes each request to the right provider — no invoice data stored.',
-      vi: 'Một API đứng trước bốn nhà cung cấp e-invoice. Middleware tự viết lo rate limit và cache trong Redis, sau đó chuẩn hoá và route mỗi request tới đúng nhà cung cấp — không lưu dữ liệu hoá đơn.',
+      en: 'One API for both internal services and external partners. Hand-written middleware rate-limits and caches in Redis, batches bulk-sign requests, then normalizes and routes each call to the right provider (FPT, MISA, Viettel, M-Invoice) — no invoice data stored.',
+      vi: 'Một API cho cả internal service lẫn đối tác bên ngoài. Middleware tự viết lo rate limit và cache trong Redis, gom (batch) các request ký hàng loạt, rồi chuẩn hoá và route mỗi request tới đúng nhà cung cấp (FPT, MISA, Viettel, M-Invoice) — không lưu dữ liệu hoá đơn.',
     },
   },
   experience: {

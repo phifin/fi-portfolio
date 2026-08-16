@@ -3,8 +3,10 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useLang } from '../../providers/LanguageProvider'
 import { ui } from '../../i18n'
 import { scrollToId } from '../../hooks/useLenis'
-import { sectionIds } from '../../data/content'
+import { sectionIds, profile } from '../../data/content'
 import { LanguageToggle } from './LanguageToggle'
+
+const avatarUrl = `${import.meta.env.BASE_URL}${profile.avatarSmall}`
 
 const links = [
   { id: sectionIds.about, label: ui.nav.about },
@@ -43,9 +45,9 @@ export function Nav() {
             scrolled ? 'glass-strong shadow-glow' : 'bg-transparent'
           }`}
         >
-          <button onClick={() => go(sectionIds.hero)} className="group flex items-center gap-2">
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-accent-cyan to-accent-blue font-mono text-sm font-bold text-ink-950">
-              VP
+          <button onClick={() => go(sectionIds.hero)} className="group flex items-center gap-2.5">
+            <span className="h-9 w-9 overflow-hidden rounded-full ring-2 ring-accent-blue/60 ring-offset-2 ring-offset-transparent transition-all group-hover:ring-accent-cyan">
+              <img src={avatarUrl} alt="Vo Nhu Phi" className="h-full w-full object-cover" width={36} height={36} />
             </span>
             <span className="hidden font-semibold tracking-tight sm:block">Vo Nhu Phi</span>
           </button>

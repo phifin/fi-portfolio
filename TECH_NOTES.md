@@ -72,9 +72,10 @@ Thêm ngôn ngữ mới: thêm mã vào type `Lang`, thêm nhánh trong mọi ob
 3 diagram minh hoạ kiến trúc, **tất cả là SVG động** (framer-motion) — chuẩn ký hiệu sơ đồ, chữ nằm gọn trong object, nhẹ & sắc nét. Layout chung qua `ui/DeepDiveLayout` (prop `flip` đảo trái/phải, `wide` cho khung 16:10, `Icon` cho kicker).
 
 - **Vocabulary dùng chung**: `components/diagram/primitives.tsx` — `ServiceNode` (box + icon lucide), `Datastore` (cylinder = kho dữ liệu), `TopicNode` (Kafka có partition), `Edge` (mũi tên), `FlowPackets` (hạt chạy dọc waypoints). Bảng màu `DIA`.
+- **Logo provider**: `components/diagram/providerLogos.tsx` — wordmark SVG theo màu brand thật (FPT tri-màu, Viettel/MISA đỏ, M-Invoice teal) + `PROVIDER_META` (màu edge/glow). Muốn thay logo chính thức → sửa `ProviderLogo`.
 - **KafkaDeepDive** — Order Service → Outbox (cylinder) → Debezium → Kafka (topic) → 3 consumer.
-- **SagaDeepDive** — Temporal / Order / Payment, toggle Happy/Fail (compensating transaction), pulse chạy theo bước.
-- **GatewayDeepDive** — Client → Go Gateway (4 middleware) → 4 provider + Redis (cylinder).
+- **SagaDeepDive** — mô hình Temporal thật: **Temporal Cluster** (2 task queue: order-task-queue, payment-task-queue) + **Order Worker** chạy OrderWorkflow + **Payment Worker** pull activity từ payment-task-queue. Toggle Happy/Fail (compensation), caption chạy theo bước.
+- **GatewayDeepDive** — 2 loại client (Internal Services + External Partners) → Go Gateway (5 middleware, có **Batch bulk-sign**) → 4 provider (logo brand) + Redis (cylinder).
 - Legend dùng `ui/DiagramLegend` (icon chip, **không dùng chấm tròn**).
 
 > Chỉ còn **1 WebGL canvas duy nhất** (Hero, `three/HeroScene.tsx`). Sơ đồ đã chuyển hết sang SVG để hết lag. Thêm diagram mới → clone pattern SVG bằng primitives ở trên.
@@ -110,8 +111,9 @@ npm run preview    # xem bản build
 
 ## 10. Intro & một số section
 
-- **Intro** (`components/intro/Intro.tsx`): load vào trang → dựng poster (mạng lưới + monogram + tên), rồi handle "kéo lên để vào" (wheel/touch/kéo/click đều được). Khoá scroll (Lenis stop + body overflow) khi intro còn. Hiện mỗi lần load; **skip** khi URL có `?static` hoặc `#hash` (deep-link).
-- **Skills** (`sections/Skills.tsx`): desktop = **constellation** (hub danh mục + node công nghệ nối tơ, hạt chạy); mobile = chip list gọn. Chọn theo `isMobile`.
+- **Intro** (`components/intro/Intro.tsx`): load → các chip công nghệ **bay vào** quỹ đạo quanh **avatar thật** (ảnh mặt), rồi tên + role, rồi handle "kéo lên để vào" (wheel/touch/kéo/click). Chỉ animate `transform`/`opacity` (+`will-change`) để mượt; tôn trọng `prefers-reduced-motion`. Orbit là box 600px scale vừa viewport (state `scale` theo resize). Khoá scroll khi intro còn; **skip** khi URL có `?static` hoặc `#hash`.
+- **Skills** (`sections/Skills.tsx`): desktop = **1 sơ đồ kiến trúc tổng** của cả hệ (FE → Gateway → Services + infra → DB), chọn tầng ở cột trái để **highlight** vùng tương ứng trên map (dim các vùng khác) + hiện chip kỹ năng của tầng. Mobile = `ArchStack` (các tầng xếp dọc, mũi tên FE→BE→DB, chip đầy đủ). Node/edge định nghĩa trong `NODES`/`EDGES`; map tầng→zone trong `groupZone`.
+- **Avatar**: dùng ảnh thật (`public/avatar*.webp`) ở Nav + Intro (không còn monogram "VP").
 - **Experience**: nguồn dữ liệu dự án duy nhất — mỗi project là card full-width, highlights xếp lưới 2 cột.
 - **Kicker** section dùng class `.kicker` (icon + chữ mono, không border/nền).
 

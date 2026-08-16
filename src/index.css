@@ -68,7 +68,7 @@ html.lenis body {
   }
 
   .section-pad {
-    @apply py-14 sm:py-20;
+    @apply py-9 sm:py-12;
   }
 
   .kicker {
