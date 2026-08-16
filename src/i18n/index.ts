@@ -38,8 +38,8 @@ export const ui = {
     kicker: { en: 'Deep dive · 02', vi: 'Đào sâu · 02' },
     title: { en: 'Temporal Saga & Compensation', vi: 'Temporal Saga & Bù trừ' },
     body: {
-      en: 'Temporal is the orchestration infra. The Order Worker runs OrderWorkflow; scheduling a payment pushes an activity onto the payment-task-queue, which the Payment Worker pulls and executes. On failure the workflow runs a compensating transaction to roll the order back.',
-      vi: 'Temporal là hạ tầng điều phối. Order Worker chạy OrderWorkflow; khi cần thanh toán, workflow đẩy một activity vào payment-task-queue để Payment Worker tự pull về và execute. Khi lỗi, workflow chạy compensating transaction để rollback đơn hàng.',
+      en: 'Temporal is the orchestration infra. The Order Worker runs OrderWorkflow: it first reserves stock in Inventory, then pushes a ChargePayment activity onto the payment-task-queue for the Payment Worker to pull and execute. If payment fails, the compensating transaction releases the reserved stock and rolls the order back.',
+      vi: 'Temporal là hạ tầng điều phối. Order Worker chạy OrderWorkflow: trước tiên giữ hàng trong Inventory, rồi đẩy activity ChargePayment vào payment-task-queue để Payment Worker pull về và execute. Nếu thanh toán lỗi, compensating transaction trả lại hàng đã giữ và rollback đơn hàng.',
     },
     happy: { en: 'Happy path', vi: 'Happy path' },
     fail: { en: 'Payment fails → compensate', vi: 'Thanh toán lỗi → bù trừ' },

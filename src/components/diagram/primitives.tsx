@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import type { LucideIcon } from 'lucide-react'
+import { TechGlyph, hasLogo } from './techLogos'
 
 /** Shared professional SVG diagram vocabulary: service boxes, datastores,
  *  topic/queue shapes, edges with arrowheads and animated flow packets. */
@@ -43,6 +44,7 @@ export function ServiceNode({
   sub,
   color,
   Icon,
+  logo,
   active = false,
 }: {
   x: number
@@ -52,9 +54,12 @@ export function ServiceNode({
   title: string
   sub?: string
   color: string
-  Icon: LucideIcon
+  Icon?: LucideIcon
+  /** real brand glyph key (techLogos); takes precedence over Icon */
+  logo?: string
   active?: boolean
 }) {
+  const useLogo = logo && hasLogo(logo)
   return (
     <g>
       <rect
@@ -68,7 +73,14 @@ export function ServiceNode({
         strokeWidth={active ? 2 : 1.4}
         style={{ filter: `drop-shadow(0 0 ${active ? 12 : 7}px ${hexA(color, active ? 0.55 : 0.3)})` }}
       />
-      <IconChip x={x + 10} y={y + h / 2 - 11} Icon={Icon} color={color} />
+      {useLogo ? (
+        <>
+          <rect x={x + 10} y={y + h / 2 - 11} width={22} height={22} rx={6} fill={hexA(color, 0.1)} stroke={hexA(color, 0.28)} />
+          <TechGlyph name={logo!} x={x + 13} y={y + h / 2 - 8} size={16} />
+        </>
+      ) : Icon ? (
+        <IconChip x={x + 10} y={y + h / 2 - 11} Icon={Icon} color={color} />
+      ) : null}
       <text x={x + 42} y={y + (sub ? h / 2 - 2 : h / 2 + 4)} fill="#fff" fontSize={12.5} fontWeight={700}>
         {title}
       </text>
@@ -90,6 +102,7 @@ export function Datastore({
   title,
   sub,
   color,
+  logo,
 }: {
   x: number
   y: number
@@ -98,19 +111,22 @@ export function Datastore({
   title: string
   sub?: string
   color: string
+  logo?: string
 }) {
   const ry = 9
   const cx = x + w / 2
+  const useLogo = logo && hasLogo(logo)
   const d = `M${x},${y + ry} A${w / 2},${ry} 0 0 1 ${x + w},${y + ry} L${x + w},${y + h - ry} A${w / 2},${ry} 0 0 1 ${x},${y + h - ry} Z`
   return (
     <g style={{ filter: `drop-shadow(0 0 8px ${hexA(color, 0.35)})` }}>
       <path d={d} fill="#0e1230" stroke={hexA(color, 0.7)} strokeWidth={1.4} />
       <ellipse cx={cx} cy={y + ry} rx={w / 2} ry={ry} fill={hexA(color, 0.18)} stroke={hexA(color, 0.7)} strokeWidth={1.4} />
-      <text x={cx} y={y + h / 2 + 1} textAnchor="middle" fill="#fff" fontSize={12.5} fontWeight={700}>
+      {useLogo && <TechGlyph name={logo!} x={x + 12} y={y + h / 2 - 8} size={16} />}
+      <text x={cx} y={y + (sub ? h / 2 + 4 : h / 2 + 9)} textAnchor="middle" dominantBaseline="middle" fill="#fff" fontSize={12.5} fontWeight={700}>
         {title}
       </text>
       {sub && (
-        <text x={cx} y={y + h / 2 + 15} textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize={9.5}>
+        <text x={cx} y={y + h / 2 + 19} textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.5)" fontSize={9.5}>
           {sub}
         </text>
       )}
@@ -127,6 +143,7 @@ export function TopicNode({
   title,
   sub,
   color,
+  logo,
 }: {
   x: number
   y: number
@@ -135,13 +152,16 @@ export function TopicNode({
   title: string
   sub?: string
   color: string
+  logo?: string
 }) {
   const parts = [0, 1, 2]
   const bandH = 12
+  const useLogo = logo && hasLogo(logo)
   return (
     <g style={{ filter: `drop-shadow(0 0 10px ${hexA(color, 0.4)})` }}>
       <rect x={x} y={y} width={w} height={h} rx={10} fill="#0e1230" stroke={hexA(color, 0.75)} strokeWidth={1.6} />
-      <text x={x + w / 2} y={y + 17} textAnchor="middle" fill="#fff" fontSize={12.5} fontWeight={700}>
+      {useLogo && <TechGlyph name={logo!} x={x + w / 2 - 46} y={y + 6} size={15} />}
+      <text x={x + w / 2 + (useLogo ? 8 : 0)} y={y + 17} textAnchor="middle" fill="#fff" fontSize={12.5} fontWeight={700}>
         {title}
       </text>
       {parts.map((p) => (
@@ -200,16 +220,19 @@ export function Edge({
   return (
     <>
       <defs>
-        <marker id={`ah-${id}`} markerWidth={8} markerHeight={8} refX={6} refY={3} orient="auto">
-          <path d="M0,0 L6,3 L0,6 Z" fill={color} />
+        <marker id={`ah-${id}`} markerWidth={11} markerHeight={11} refX={7.5} refY={4} orient="auto">
+          <path d="M0,0 L8,4 L0,8 Z" fill={color} />
         </marker>
       </defs>
+      {/* soft halo so the line reads clearly over the grid */}
+      <path d={d} fill="none" stroke={hexA(color, 0.14)} strokeWidth={5} strokeLinecap="round" />
       <path
         d={d}
         fill="none"
-        stroke={hexA(color, 0.35)}
-        strokeWidth={1.6}
-        strokeDasharray={dashed ? '5 5' : undefined}
+        stroke={hexA(color, 0.7)}
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeDasharray={dashed ? '6 5' : undefined}
         markerEnd={`url(#ah-${id})`}
       />
     </>

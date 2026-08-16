@@ -71,10 +71,12 @@ Thêm ngôn ngữ mới: thêm mã vào type `Lang`, thêm nhánh trong mọi ob
 
 3 diagram minh hoạ kiến trúc, **tất cả là SVG động** (framer-motion) — chuẩn ký hiệu sơ đồ, chữ nằm gọn trong object, nhẹ & sắc nét. Layout chung qua `ui/DeepDiveLayout` (prop `flip` đảo trái/phải, `wide` cho khung 16:10, `Icon` cho kicker).
 
-- **Vocabulary dùng chung**: `components/diagram/primitives.tsx` — `ServiceNode` (box + icon lucide), `Datastore` (cylinder = kho dữ liệu), `TopicNode` (Kafka có partition), `Edge` (mũi tên), `FlowPackets` (hạt chạy dọc waypoints). Bảng màu `DIA`.
-- **Logo provider**: `components/diagram/providerLogos.tsx` — wordmark SVG theo màu brand thật (FPT tri-màu, Viettel/MISA đỏ, M-Invoice teal) + `PROVIDER_META` (màu edge/glow). Muốn thay logo chính thức → sửa `ProviderLogo`.
+- **Vocabulary dùng chung**: `components/diagram/primitives.tsx` — `ServiceNode` (box + icon lucide **hoặc** logo brand qua prop `logo`), `Datastore` (cylinder, có `logo`), `TopicNode` (Kafka có partition, có `logo`), `Edge` (mũi tên — có halo + đầu mũi tên to cho rõ hướng), `FlowPackets`. Bảng màu `DIA`.
+- **Logo công nghệ (thật)**: `components/diagram/techLogos.tsx` — `TechGlyph`, `hasLogo`, `logoHex`. Paths lấy từ **simple-icons** (đã sinh sẵn ra `siPaths.ts`, xem dưới); Java tự vẽ tay (không có trong simple-icons); màu brand quá tối được tự làm sáng để đọc trên nền dark. Dùng cho: chip Intro, node sơ đồ Skills, tooltip hover, chip skill.
+  - **`siPaths.ts` (auto-generated)**: đừng sửa tay. `simple-icons` là **devDependency**. Thêm/bớt logo: sửa map trong đoạn generator (xem git history commit round 4) rồi chạy lại `node gen-logos.mjs`. Alias (golang→go, next.js→nextjs…) khai trong `techLogos.tsx`.
+- **Logo provider**: `components/diagram/providerLogos.tsx` — **FPT & Viettel là SVG chính thức thật** (tải từ Wikimedia). MISA & M-invoice là mark dựng lại theo đúng palette brand. `ProviderLogo({name,cx,cy,w})` render nested `<svg>` tự canh giữa. `PROVIDER_META` = màu edge/glow.
 - **KafkaDeepDive** — Order Service → Outbox (cylinder) → Debezium → Kafka (topic) → 3 consumer.
-- **SagaDeepDive** — mô hình Temporal thật: **Temporal Cluster** (2 task queue: order-task-queue, payment-task-queue) + **Order Worker** chạy OrderWorkflow + **Payment Worker** pull activity từ payment-task-queue. Toggle Happy/Fail (compensation), caption chạy theo bước.
+- **SagaDeepDive** — mô hình Temporal thật: **Temporal Cluster** (2 task queue) + 3 node **Order Worker / Inventory / Payment Worker**. Luồng: reserve stock vào Inventory → đẩy ChargePayment activity → Payment Worker pull. Fail → compensation **trả lại số lượng đã giữ** + rollback đơn. Toggle Happy/Fail, caption chạy theo bước.
 - **GatewayDeepDive** — 2 loại client (Internal Services + External Partners) → Go Gateway (5 middleware, có **Batch bulk-sign**) → 4 provider (logo brand) + Redis (cylinder).
 - Legend dùng `ui/DiagramLegend` (icon chip, **không dùng chấm tròn**).
 
@@ -111,8 +113,9 @@ npm run preview    # xem bản build
 
 ## 10. Intro & một số section
 
-- **Intro** (`components/intro/Intro.tsx`): load → các chip công nghệ **bay vào** quỹ đạo quanh **avatar thật** (ảnh mặt), rồi tên + role, rồi handle "kéo lên để vào" (wheel/touch/kéo/click). Chỉ animate `transform`/`opacity` (+`will-change`) để mượt; tôn trọng `prefers-reduced-motion`. Orbit là box 600px scale vừa viewport (state `scale` theo resize). Khoá scroll khi intro còn; **skip** khi URL có `?static` hoặc `#hash`.
-- **Skills** (`sections/Skills.tsx`): desktop = **1 sơ đồ kiến trúc tổng** của cả hệ (FE → Gateway → Services + infra → DB), chọn tầng ở cột trái để **highlight** vùng tương ứng trên map (dim các vùng khác) + hiện chip kỹ năng của tầng. Mobile = `ArchStack` (các tầng xếp dọc, mũi tên FE→BE→DB, chip đầy đủ). Node/edge định nghĩa trong `NODES`/`EDGES`; map tầng→zone trong `groupZone`.
+- **Intro** (`components/intro/Intro.tsx`): chip công nghệ (**có logo brand thật** qua `TechGlyph`) **bay vào** quỹ đạo quanh avatar; thêm chiều sâu: 2 vòng dashed xoay, packet chạy vào tâm theo spoke, 4 card keyword drift (chỉ hiện desktop, `scale>0.7`), hàng stats. Orbit chừa **khoảng trống ở đáy** (arc -235°..55°) để tên không đè chip; tên đặt trên scrim gradient. Chỉ animate `transform`/`opacity`. **Skip** khi `?static`/`#hash`.
+- **Skills** (`sections/Skills.tsx`): desktop = **1 sơ đồ kiến trúc tổng** (FE → Gateway → Services + infra → DB) với **logo thật trên node**; chọn tầng cột trái để **highlight** vùng. **Hover node → tooltip** phân loại stack (Language/Framework/Store… trong `NODE_DETAIL`). Kiến trúc đã sửa: Payment **không gọi gRPC trực tiếp** — đi qua Temporal (order → temporal task-queue → payment, dashed async). Mobile = `ArchStack`. Node/edge trong `NODES`/`EDGES`; tầng→zone trong `groupZone`.
+- **Nav** (`layout/Nav.tsx`): tự **ẩn khi cuộn xuống, hiện khi cuộn lên** (state `hidden` theo hướng scroll).
 - **Avatar**: dùng ảnh thật (`public/avatar*.webp`) ở Nav + Intro (không còn monogram "VP").
 - **Experience**: nguồn dữ liệu dự án duy nhất — mỗi project là card full-width, highlights xếp lưới 2 cột.
 - **Kicker** section dùng class `.kicker` (icon + chữ mono, không border/nền).

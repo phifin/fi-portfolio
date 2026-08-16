@@ -4,39 +4,44 @@ import { ChevronUp } from 'lucide-react'
 import { useLang } from '../../providers/LanguageProvider'
 import { profile } from '../../data/content'
 import { getLenis } from '../../hooks/useLenis'
+import { TechGlyph, logoHex } from '../diagram/techLogos'
 
 const avatarUrl = `${import.meta.env.BASE_URL}${profile.avatar}`
 
-// tech tokens that fly in and settle into orbit around the avatar
-const TECHS = [
-  { t: 'React', c: '#61dafb' },
-  { t: 'Go', c: '#2dd4ff' },
-  { t: 'Java', c: '#f89820' },
-  { t: 'Kafka', c: '#4f8cff' },
-  { t: 'Temporal', c: '#8b9dff' },
-  { t: 'gRPC', c: '#34d399' },
-  { t: 'PostgreSQL', c: '#38bdf8' },
-  { t: 'TypeScript', c: '#5b9bff' },
-  { t: 'Kubernetes', c: '#60a5fa' },
-  { t: 'Redis', c: '#fb7185' },
-]
+// tech tokens (all have real brand glyphs) that fly in and settle into orbit
+const TECHS = ['React', 'TypeScript', 'Go', 'Java', 'NestJS', 'Kafka', 'Temporal', 'PostgreSQL', 'MongoDB', 'Redis', 'Kubernetes', 'Docker']
 
-const BOX = 600 // design size of the orbit; scaled to fit viewport
+const BOX = 640 // design size of the orbit; scaled to fit viewport
 const CENTER = BOX / 2
 
-// precompute a settled orbit position + an off-screen fly-in origin for each chip
-const ORBIT = TECHS.map((tech, i) => {
-  const angle = (i / TECHS.length) * Math.PI * 2 - Math.PI / 2
-  const r = i % 2 === 0 ? 208 : 258
-  const x = Math.cos(angle) * r
-  const y = Math.sin(angle) * r
-  return { ...tech, x, y, fromX: Math.cos(angle) * 780, fromY: Math.sin(angle) * 780, bob: 5 + (i % 3) * 2 }
+// spread chips around the top + sides, leaving a gap at the bottom for the name
+const ORBIT = TECHS.map((t, i) => {
+  const deg = -235 + (i / (TECHS.length - 1)) * 290 // -235°..55°, 70° gap at bottom
+  const angle = (deg * Math.PI) / 180
+  const r = i % 2 === 0 ? 210 : 262
+  const hex = logoHex(t) ?? '#4f8cff'
+  return {
+    t, hex, angle,
+    x: Math.cos(angle) * r,
+    y: Math.sin(angle) * r,
+    fromX: Math.cos(angle) * 900,
+    fromY: Math.sin(angle) * 900,
+    bob: 4 + (i % 3) * 2,
+  }
 })
+
+// floating glass keyword/stat cards drifting behind the orbit for depth
+const KEYWORDS = [
+  { t: { en: 'Event-Driven', vi: 'Event-Driven' }, x: -360, y: -230 },
+  { t: { en: 'Microservices', vi: 'Microservices' }, x: 360, y: -230 },
+  { t: { en: 'Saga · Temporal', vi: 'Saga · Temporal' }, x: 386, y: 60 },
+  { t: { en: 'API Gateway', vi: 'API Gateway' }, x: -386, y: 60 },
+]
 
 const strings = { pull: { en: 'Pull up to enter', vi: 'Kéo lên để vào' } }
 
 export function Intro({ onDone }: { onDone: () => void }) {
-  const { lang } = useLang()
+  const { lang, pick } = useLang()
   const [ready, setReady] = useState(false)
   const [exiting, setExiting] = useState(false)
   const exitingRef = useRef(false)
@@ -45,13 +50,13 @@ export function Intro({ onDone }: { onDone: () => void }) {
   const [scale, setScale] = useState(1)
 
   useEffect(() => {
-    const fit = () => setScale(Math.min(1, window.innerWidth / 740, window.innerHeight / 780))
+    const fit = () => setScale(Math.min(1, window.innerWidth / 820, window.innerHeight / 860))
     fit()
     window.addEventListener('resize', fit)
     const lenis = getLenis()
     lenis?.stop()
     document.body.style.overflow = 'hidden'
-    const t = setTimeout(() => setReady(true), rm ? 200 : 2300)
+    const t = setTimeout(() => setReady(true), rm ? 200 : 2400)
     return () => {
       clearTimeout(t)
       window.removeEventListener('resize', fit)
@@ -100,26 +105,71 @@ export function Intro({ onDone }: { onDone: () => void }) {
     >
       {/* ambient grid + radial glow (static, cheap) */}
       <div className="grid-bg absolute inset-0 opacity-30" />
-      <div className="pointer-events-none absolute left-1/2 top-1/2 h-[560px] w-[560px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(79,140,255,0.18),transparent_68%)]" />
+      <div className="pointer-events-none absolute left-1/2 top-[42%] h-[620px] w-[620px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(79,140,255,0.20),transparent_68%)]" />
 
-      {/* orbit: everything animates transform/opacity only (GPU compositing) */}
-      <div className="absolute left-1/2 top-[46%] flex items-center justify-center" style={{ transform: `translate(-50%, -50%) scale(${scale})` }}>
+      {/* orbit stage: everything animates transform/opacity only (GPU compositing) */}
+      <div className="absolute left-1/2 top-[42%] flex items-center justify-center" style={{ transform: `translate(-50%, -50%) scale(${scale})` }}>
         <div className="relative" style={{ width: BOX, height: BOX }}>
-          {/* spokes from centre to each settled chip */}
+          {/* slow rotating dashed rings for depth */}
+          {!rm && [0, 1].map((i) => (
+            <motion.div
+              key={i}
+              className="absolute left-1/2 top-1/2 rounded-full border border-dashed"
+              style={{
+                width: i ? 540 : 400, height: i ? 540 : 400, x: '-50%', y: '-50%',
+                borderColor: i ? 'rgba(79,140,255,0.16)' : 'rgba(45,212,255,0.18)',
+              }}
+              animate={{ rotate: i ? -360 : 360 }}
+              transition={{ duration: i ? 90 : 60, repeat: Infinity, ease: 'linear' }}
+            />
+          ))}
+
+          {/* floating keyword cards (parallax depth) — desktop only, they'd clip on phones */}
+          {scale > 0.7 && KEYWORDS.map((k, i) => (
+            <motion.div
+              key={k.t.en}
+              className="absolute left-1/2 top-1/2"
+              initial={{ x: k.x, y: k.y, opacity: 0, scale: 0.8 }}
+              animate={{ x: k.x, y: k.y, opacity: 1, scale: 1 }}
+              transition={{ delay: D(1.4 + i * 0.12), duration: rm ? 0 : 0.7 }}
+              style={{ willChange: 'transform' }}
+            >
+              <motion.span
+                animate={rm ? undefined : { y: [0, -6, 0] }}
+                transition={{ duration: 4 + i, repeat: Infinity, ease: 'easeInOut', delay: i * 0.4 }}
+                className="block -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 font-mono text-[11px] tracking-wide text-white/45 backdrop-blur-sm"
+              >
+                {pick(k.t)}
+              </motion.span>
+            </motion.div>
+          ))}
+
+          {/* spokes + inward data packets */}
           <svg width={BOX} height={BOX} className="absolute inset-0 overflow-visible">
             {ORBIT.map((o, i) => (
               <motion.line
                 key={i}
                 x1={CENTER} y1={CENTER} x2={CENTER + o.x} y2={CENTER + o.y}
-                stroke={o.c} strokeOpacity={0.22} strokeWidth={1}
+                stroke={o.hex} strokeOpacity={0.2} strokeWidth={1}
                 initial={{ pathLength: 0, opacity: 0 }}
                 animate={{ pathLength: 1, opacity: 1 }}
-                transition={{ delay: D(0.6 + i * 0.05), duration: rm ? 0 : 0.6 }}
+                transition={{ delay: D(0.6 + i * 0.04), duration: rm ? 0 : 0.6 }}
+              />
+            ))}
+            {!rm && ORBIT.filter((_, i) => i % 2 === 0).map((o, i) => (
+              <motion.circle
+                key={i}
+                r={2.6}
+                fill={o.hex}
+                style={{ filter: `drop-shadow(0 0 4px ${o.hex})` }}
+                initial={{ cx: CENTER + o.x, cy: CENTER + o.y, opacity: 0 }}
+                animate={{ cx: [CENTER + o.x, CENTER], cy: [CENTER + o.y, CENTER], opacity: [0, 1, 0] }}
+                transition={{ duration: 2.4, delay: 2.4 + i * 0.3, repeat: Infinity, repeatDelay: 1.2, ease: 'easeIn' }}
               />
             ))}
           </svg>
 
-          {/* flying tech chips */}
+          {/* flying tech chips with real logos */}
           {ORBIT.map((o, i) => (
             <motion.div
               key={o.t}
@@ -127,32 +177,34 @@ export function Intro({ onDone }: { onDone: () => void }) {
               style={{ willChange: 'transform' }}
               initial={{ x: o.fromX, y: o.fromY, opacity: 0, scale: 0.4 }}
               animate={{ x: o.x, y: o.y, opacity: 1, scale: 1 }}
-              transition={{ delay: D(0.15 + i * 0.07), type: rm ? 'tween' : 'spring', stiffness: 90, damping: 14, duration: rm ? 0 : undefined }}
+              transition={{ delay: D(0.15 + i * 0.06), type: rm ? 'tween' : 'spring', stiffness: 90, damping: 14, duration: rm ? 0 : undefined }}
             >
               <motion.span
                 animate={rm ? undefined : { y: [0, -o.bob, 0] }}
                 transition={{ duration: 3 + (i % 3), repeat: Infinity, ease: 'easeInOut', delay: i * 0.2 }}
-                className="block -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-full border px-3.5 py-1.5 text-sm font-semibold"
-                style={{ borderColor: `${o.c}66`, background: `${o.c}18`, color: '#fff', boxShadow: `0 0 18px -6px ${o.c}` }}
+                className="flex -translate-x-1/2 -translate-y-1/2 items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-1.5 text-sm font-semibold backdrop-blur-sm"
+                style={{ borderColor: `${o.hex}66`, background: `${o.hex}14`, color: '#fff', boxShadow: `0 0 20px -8px ${o.hex}` }}
               >
+                <TechGlyph name={o.t} size={17} />
                 {o.t}
               </motion.span>
             </motion.div>
           ))}
 
-          {/* pulsing ring behind the avatar */}
-          {!rm && (
+          {/* pulsing rings behind the avatar */}
+          {!rm && [0, 1].map((i) => (
             <motion.div
+              key={i}
               className="absolute left-1/2 top-1/2 h-40 w-40 -translate-x-1/2 -translate-y-1/2 rounded-full border border-accent-cyan/40"
-              animate={{ scale: [1, 1.35, 1], opacity: [0.5, 0, 0.5] }}
-              transition={{ duration: 2.6, repeat: Infinity, ease: 'easeOut' }}
+              animate={{ scale: [1, 1.4, 1], opacity: [0.5, 0, 0.5] }}
+              transition={{ duration: 2.8, repeat: Infinity, ease: 'easeOut', delay: i * 1.4 }}
             />
-          )}
+          ))}
 
           {/* avatar */}
           <motion.div
             className="absolute left-1/2 top-1/2 h-36 w-36 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-full ring-2 ring-accent-cyan/70"
-            style={{ boxShadow: '0 0 60px -12px rgba(45,212,255,0.7)', willChange: 'transform' }}
+            style={{ boxShadow: '0 0 70px -12px rgba(45,212,255,0.75)', willChange: 'transform' }}
             initial={{ scale: 0.3, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: D(0.5), type: rm ? 'tween' : 'spring', stiffness: 160, damping: 15, duration: rm ? 0 : undefined }}
@@ -162,9 +214,10 @@ export function Intro({ onDone }: { onDone: () => void }) {
         </div>
       </div>
 
-      {/* name + role */}
-      <div className="pointer-events-none absolute inset-x-0 bottom-[8%] z-10 flex flex-col items-center px-6 text-center">
-        <div className="overflow-hidden">
+      {/* name + role, over a scrim so it never collides with the orbit */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex flex-col items-center px-6 pb-[8%] pt-24 text-center">
+        <div className="absolute inset-0 bg-gradient-to-t from-ink-950 via-ink-950/85 to-transparent" />
+        <div className="relative overflow-hidden">
           <motion.h1
             initial={{ y: '110%' }}
             animate={{ y: 0 }}
@@ -178,10 +231,27 @@ export function Intro({ onDone }: { onDone: () => void }) {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: D(1.6), duration: rm ? 0 : 0.7 }}
-          className="mt-3 font-mono text-xs uppercase tracking-[0.3em] text-accent-cyan sm:text-sm"
+          className="relative mt-3 font-mono text-xs uppercase tracking-[0.3em] text-accent-cyan sm:text-sm"
         >
           {profile.role[lang]}
         </motion.p>
+        {/* live stats row */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: D(1.9), duration: rm ? 0 : 0.7 }}
+          className="relative mt-4 flex flex-wrap items-center justify-center gap-x-5 gap-y-1 font-mono text-[11px] text-white/45"
+        >
+          {[
+            { v: '3y', l: { en: 'in production', vi: 'kinh nghiệm' } },
+            { v: '30k+', l: { en: 'merchants', vi: 'merchant' } },
+            { v: '4M+', l: { en: 'orders / mo', vi: 'đơn / tháng' } },
+          ].map((s) => (
+            <span key={s.v}>
+              <span className="font-bold text-white/80">{s.v}</span> {pick(s.l)}
+            </span>
+          ))}
+        </motion.div>
       </div>
 
       {/* pull-up handle */}
@@ -191,7 +261,7 @@ export function Intro({ onDone }: { onDone: () => void }) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-x-0 bottom-0 z-20 flex flex-col items-center gap-2 pb-7"
+            className="absolute inset-x-0 bottom-0 z-20 flex flex-col items-center gap-2 pb-6"
           >
             <motion.button
               onClick={exit}

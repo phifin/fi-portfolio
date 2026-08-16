@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Workflow, Cog, CreditCard, CheckCircle2, RotateCcw, ListOrdered } from 'lucide-react'
+import { Workflow, Cog, CreditCard, Boxes, CheckCircle2, RotateCcw, ListOrdered } from 'lucide-react'
 import { DeepDiveLayout } from '../ui/DeepDiveLayout'
 import { ServiceNode, Edge, DIA } from '../diagram/primitives'
 import { useDeviceTier } from '../../hooks/useDeviceTier'
@@ -10,7 +10,8 @@ import { sectionIds } from '../../data/content'
 
 type Mode = 'happy' | 'fail'
 type XY = [number, number]
-type Step = { from: XY; to: XY; via?: XY; label: { en: string; vi: string }; color: string }
+type Node3 = 'order' | 'inv' | 'pay'
+type Step = { from: XY; to: XY; via?: XY; label: { en: string; vi: string }; color: string; hot: Node3[]; q: 'order' | 'payment' | null }
 
 type Layout = {
   vb: string
@@ -19,11 +20,11 @@ type Layout = {
   orderQ: XY
   payQ: XY
   order: { x: number; y: number; w: number; h: number }
+  inv: { x: number; y: number; w: number; h: number }
   payment: { x: number; y: number; w: number; h: number }
   steps: (mode: Mode) => Step[]
 }
 
-/** Reusable task-queue pill inside the Temporal cluster. */
 function QueuePill({ x, y, w, label, active }: { x: number; y: number; w: number; label: string; active: boolean }) {
   const h = 26
   const c = active ? DIA.cyan : DIA.blue
@@ -54,7 +55,7 @@ function TemporalCluster({ box, qW, orderQ, payQ, activeQueue }: { box: { x: num
         strokeDasharray="6 5"
         style={{ filter: `drop-shadow(0 0 16px ${DIA.blue}33)` }}
       />
-      <Workflow x={box.x + box.w / 2 - 46} y={box.y + 11} width={14} height={14} color={DIA.blue} strokeWidth={2} />
+      <Workflow x={box.x + box.w / 2 - 72} y={box.y + 11} width={14} height={14} color={DIA.blue} strokeWidth={2} />
       <text x={box.x + box.w / 2 + 8} y={box.y + 22} textAnchor="middle" fill="#fff" fontSize={12.5} fontWeight={700}>Temporal Cluster</text>
       <text x={box.x + box.w / 2} y={box.y + 37} textAnchor="middle" fill="rgba(255,255,255,0.45)" fontSize={9}>durable orchestration · task queues</text>
       <QueuePill x={orderQ[0]} y={orderQ[1]} w={qW} label="order-task-queue" active={activeQueue === 'order'} />
@@ -64,39 +65,59 @@ function TemporalCluster({ box, qW, orderQ, payQ, activeQueue }: { box: { x: num
 }
 
 const L_H: Layout = {
-  vb: '0 0 460 316',
-  cluster: { x: 118, y: 16, w: 224, h: 112 },
-  qW: 196,
-  orderQ: [132, 62],
-  payQ: [132, 96],
-  order: { x: 18, y: 214, w: 188, h: 82 },
-  payment: { x: 254, y: 214, w: 188, h: 82 },
-  steps: (mode) => [
-    { from: [112, 214], to: [180, 88], via: [116, 150], label: { en: '1 · Worker polls order-task-queue → runs OrderWorkflow', vi: '1 · Worker poll order-task-queue → chạy OrderWorkflow' }, color: DIA.cyan },
-    { from: [150, 214], to: [282, 122], via: [232, 165], label: { en: '2 · Workflow schedules ChargePayment activity → payment-task-queue', vi: '2 · Workflow đẩy activity ChargePayment → payment-task-queue' }, color: DIA.blue },
-    { from: [300, 122], to: [348, 214], via: [344, 165], label: { en: '3 · Payment worker pulls task → charges', vi: '3 · Payment worker pull task → thu tiền' }, color: DIA.cyan },
-    mode === 'happy'
-      ? { from: [348, 214], to: [180, 88], via: [232, 158], label: { en: '4 · Reports success → workflow confirms order', vi: '4 · Báo thành công → workflow xác nhận đơn' }, color: DIA.green }
-      : { from: [348, 214], to: [180, 88], via: [232, 158], label: { en: '4 · Reports failure → workflow runs compensation (rollback)', vi: '4 · Báo lỗi → workflow chạy compensation (rollback)' }, color: DIA.rose },
-  ],
+  vb: '0 0 480 344',
+  cluster: { x: 116, y: 14, w: 248, h: 104 },
+  qW: 216,
+  orderQ: [132, 50],
+  payQ: [132, 84],
+  order: { x: 8, y: 240, w: 150, h: 84 },
+  inv: { x: 166, y: 240, w: 148, h: 84 },
+  payment: { x: 322, y: 240, w: 150, h: 84 },
+  steps: (mode) => {
+    const base: Step[] = [
+      { from: [83, 240], to: [190, 66], via: [96, 158], color: DIA.cyan, hot: ['order'], q: 'order', label: { en: '1 · Worker polls order-task-queue → runs OrderWorkflow', vi: '1 · Worker poll order-task-queue → chạy OrderWorkflow' } },
+      { from: [150, 262], to: [240, 240], via: [198, 248], color: DIA.amber, hot: ['inv'], q: null, label: { en: '2 · Workflow reserves stock → Inventory (decrement qty)', vi: '2 · Workflow giữ hàng → Inventory (trừ số lượng)' } },
+      { from: [156, 250], to: [300, 97], via: [252, 150], color: DIA.blue, hot: ['pay'], q: 'payment', label: { en: '3 · Schedules ChargePayment → payment-task-queue', vi: '3 · Đẩy ChargePayment → payment-task-queue' } },
+      { from: [397, 240], to: [324, 97], via: [404, 152], color: DIA.cyan, hot: ['pay'], q: 'payment', label: { en: '4 · Payment Worker pulls task → charges card', vi: '4 · Payment Worker pull task → thu tiền' } },
+    ]
+    if (mode === 'happy')
+      return [...base,
+        { from: [397, 240], to: [83, 240], via: [240, 210], color: DIA.green, hot: ['order', 'inv'], q: null, label: { en: '5 · Success → confirm order & commit reserved stock', vi: '5 · Thành công → xác nhận đơn & chốt hàng đã giữ' } },
+      ]
+    return [
+      ...base.slice(0, 3),
+      { from: [397, 240], to: [324, 97], via: [404, 152], color: DIA.rose, hot: ['pay'], q: 'payment', label: { en: '4 · Payment Worker pulls task → charge FAILS', vi: '4 · Payment Worker pull task → thu tiền THẤT BẠI' } },
+      { from: [397, 240], to: [240, 240], via: [320, 206], color: DIA.rose, hot: ['inv'], q: null, label: { en: '5 · Compensate: release reserved stock (+qty back)', vi: '5 · Bù trừ: trả lại hàng đã giữ (+cộng lại số lượng)' } },
+      { from: [166, 282], to: [158, 282], via: [128, 336], color: DIA.rose, hot: ['order'], q: null, label: { en: '6 · Roll order status back → CANCELLED', vi: '6 · Rollback trạng thái đơn → ĐÃ HUỶ' } },
+    ]
+  },
 }
 
 const L_V: Layout = {
-  vb: '0 0 320 452',
-  cluster: { x: 20, y: 14, w: 280, h: 116 },
+  vb: '0 0 320 560',
+  cluster: { x: 20, y: 12, w: 280, h: 104 },
   qW: 250,
-  orderQ: [35, 62],
-  payQ: [35, 96],
-  order: { x: 24, y: 208, w: 272, h: 70 },
-  payment: { x: 24, y: 338, w: 272, h: 70 },
-  steps: (mode) => [
-    { from: [90, 208], to: [70, 88], via: [58, 150], label: { en: '1 · Worker polls order-task-queue → runs OrderWorkflow', vi: '1 · Worker poll order-task-queue → chạy OrderWorkflow' }, color: DIA.cyan },
-    { from: [160, 208], to: [230, 122], via: [210, 165], label: { en: '2 · Workflow schedules ChargePayment activity', vi: '2 · Workflow đẩy activity ChargePayment' }, color: DIA.blue },
-    { from: [200, 130], to: [200, 338], via: [255, 240], label: { en: '3 · Payment worker pulls task → charges', vi: '3 · Payment worker pull task → thu tiền' }, color: DIA.cyan },
-    mode === 'happy'
-      ? { from: [120, 338], to: [90, 88], via: [66, 230], label: { en: '4 · Reports success → confirms order', vi: '4 · Báo thành công → xác nhận đơn' }, color: DIA.green }
-      : { from: [120, 338], to: [90, 88], via: [66, 230], label: { en: '4 · Reports failure → compensation (rollback)', vi: '4 · Báo lỗi → compensation (rollback)' }, color: DIA.rose },
-  ],
+  orderQ: [35, 48],
+  payQ: [35, 82],
+  order: { x: 24, y: 176, w: 272, h: 66 },
+  inv: { x: 24, y: 300, w: 272, h: 66 },
+  payment: { x: 24, y: 458, w: 272, h: 66 },
+  steps: (mode) => {
+    const base: Step[] = [
+      { from: [96, 176], to: [80, 74], via: [58, 130], color: DIA.cyan, hot: ['order'], q: 'order', label: { en: '1 · Worker polls order-task-queue → runs OrderWorkflow', vi: '1 · Worker poll order-task-queue → chạy OrderWorkflow' } },
+      { from: [160, 176], to: [160, 300], via: [235, 240], color: DIA.amber, hot: ['inv'], q: null, label: { en: '2 · Reserve stock → Inventory (decrement qty)', vi: '2 · Giữ hàng → Inventory (trừ số lượng)' } },
+      { from: [200, 116], to: [200, 458], via: [280, 290], color: DIA.blue, hot: ['pay'], q: 'payment', label: { en: '3 · Schedule ChargePayment → payment-task-queue', vi: '3 · Đẩy ChargePayment → payment-task-queue' } },
+    ]
+    if (mode === 'happy')
+      return [...base,
+        { from: [120, 458], to: [120, 116], via: [40, 290], color: DIA.green, hot: ['order', 'inv'], q: null, label: { en: '4 · Success → confirm order & commit stock', vi: '4 · Thành công → xác nhận đơn & chốt hàng' } },
+      ]
+    return [
+      ...base,
+      { from: [160, 458], to: [160, 366], via: [250, 412], color: DIA.rose, hot: ['inv'], q: null, label: { en: '4 · Fail → release reserved stock (+qty back)', vi: '4 · Lỗi → trả lại hàng đã giữ (+cộng lại)' } },
+      { from: [120, 300], to: [120, 242], via: [40, 270], color: DIA.rose, hot: ['order'], q: null, label: { en: '5 · Roll order status back → CANCELLED', vi: '5 · Rollback trạng thái đơn → ĐÃ HUỶ' } },
+    ]
+  },
 }
 
 function SagaDiagram({ mode, layout }: { mode: Mode; layout: Layout }) {
@@ -112,14 +133,13 @@ function SagaDiagram({ mode, layout }: { mode: Mode; layout: Layout }) {
   }, [mode, layout])
 
   const cur = steps[active]
-  // which queue is "hot" for the active step
-  const activeQueue = active === 0 || active === 3 ? 'order' : active === 1 ? 'payment' : 'payment'
+  const hot = (n: Node3) => cur.hot.includes(n)
 
   return (
     <div className="absolute inset-0 flex flex-col">
       <svg viewBox={layout.vb} className="h-full w-full" preserveAspectRatio="xMidYMid meet">
         {steps.map((s, i) => (
-          <g key={i} opacity={i === active ? 1 : 0.22}>
+          <g key={i} opacity={i === active ? 1 : 0.14}>
             <Edge id={`s${i}`} from={s.from} to={s.to} via={s.via} color={s.color} dashed={i === active} />
           </g>
         ))}
@@ -134,9 +154,10 @@ function SagaDiagram({ mode, layout }: { mode: Mode; layout: Layout }) {
           transition={{ duration: 1.6, ease: 'easeInOut' }}
         />
 
-        <TemporalCluster box={layout.cluster} qW={layout.qW} orderQ={layout.orderQ} payQ={layout.payQ} activeQueue={activeQueue} />
-        <ServiceNode {...layout.order} title="Order Worker" sub="Order Service · Java" color={DIA.cyan} Icon={Cog} active={active === 0 || active === 3} />
-        <ServiceNode {...layout.payment} title="Payment Worker" sub="executes activities" color={DIA.cyan} Icon={CreditCard} active={active === 2} />
+        <TemporalCluster box={layout.cluster} qW={layout.qW} orderQ={layout.orderQ} payQ={layout.payQ} activeQueue={cur.q} />
+        <ServiceNode {...layout.order} title="Order Worker" sub="Order Service · Java" color={DIA.cyan} Icon={Cog} active={hot('order')} />
+        <ServiceNode {...layout.inv} title="Inventory" sub="stock reservation" color={DIA.amber} Icon={Boxes} active={hot('inv')} />
+        <ServiceNode {...layout.payment} title="Payment Worker" sub="executes activities" color={DIA.cyan} Icon={CreditCard} active={hot('pay')} />
       </svg>
 
       <div className="px-4 pb-4">
@@ -147,7 +168,7 @@ function SagaDiagram({ mode, layout }: { mode: Mode; layout: Layout }) {
           className="glass flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-center font-mono text-[13px] leading-snug"
           style={{ color: cur.color }}
         >
-          {mode === 'fail' && active === 3 ? <RotateCcw size={15} className="shrink-0" /> : mode === 'happy' && active === 3 ? <CheckCircle2 size={15} className="shrink-0" /> : null}
+          {mode === 'fail' && cur.color === DIA.rose ? <RotateCcw size={15} className="shrink-0" /> : mode === 'happy' && active === steps.length - 1 ? <CheckCircle2 size={15} className="shrink-0" /> : null}
           {pick(cur.label)}
         </motion.div>
       </div>

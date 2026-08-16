@@ -18,10 +18,19 @@ const links = [
 export function Nav() {
   const { pick } = useLang()
   const [scrolled, setScrolled] = useState(false)
+  const [hidden, setHidden] = useState(false)
   const [open, setOpen] = useState(false)
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24)
+    let last = window.scrollY
+    const onScroll = () => {
+      const y = window.scrollY
+      setScrolled(y > 24)
+      // hide when scrolling down past the hero, reveal on any upward scroll
+      if (y > last + 6 && y > 140) setHidden(true)
+      else if (y < last - 6) setHidden(false)
+      last = y
+    }
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
@@ -36,8 +45,8 @@ export function Nav() {
     <>
       <motion.header
         initial={{ y: -80, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+        animate={{ y: hidden && !open ? -120 : 0, opacity: 1 }}
+        transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
         className="fixed inset-x-0 top-0 z-50"
       >
         <div
