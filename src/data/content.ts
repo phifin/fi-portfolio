@@ -15,8 +15,8 @@ export const profile = {
     vi: 'Xây dựng microservice event-driven bằng Go & Java và giao diện dữ liệu lớn với React/TypeScript.',
   } as Bi,
   summary: {
-    en: 'Fullstack Engineer with nearly 3 years of production experience on a multi-tenant fintech platform. I build backend services in Go and Java within an event-driven microservice architecture, and data-heavy dashboards in React/TypeScript. I owned a Go API gateway end-to-end and contributed core business logic to a high-throughput order service.',
-    vi: 'Kỹ sư Fullstack với gần 3 năm kinh nghiệm production trên nền tảng fintech multi-tenant. Mình xây các service backend bằng Go và Java trong kiến trúc microservice event-driven, và các dashboard dữ liệu lớn với React/TypeScript. Mình đã sở hữu (owned) một Go API gateway end-to-end và đóng góp business logic cốt lõi cho một order service throughput cao.',
+    en: 'Fullstack Engineer, ~3 years on a multi-tenant fintech platform — event-driven backend in Go & Java, data-heavy dashboards in React/TypeScript. I owned a Go API gateway end-to-end and shipped core logic in a high-throughput order service.',
+    vi: 'Kỹ sư Fullstack, ~3 năm trên nền tảng fintech multi-tenant — backend event-driven bằng Go & Java, dashboard dữ liệu lớn với React/TypeScript. Mình sở hữu một Go API gateway end-to-end và business logic cốt lõi của order service throughput cao.',
   } as Bi,
   avatar: 'avatar.webp',
   avatarSmall: 'avatar-sm.webp',
@@ -40,11 +40,13 @@ export const stats: { value: number; suffix: string; label: Bi }[] = [
   { value: 4, suffix: '', label: { en: 'E-invoice providers unified', vi: 'Nhà cung cấp e-invoice hợp nhất' } },
 ]
 
+export type SkillCategory = { label: Bi; items: string[] }
 export type SkillGroup = {
   key: string
   title: Bi
   accent: 'cyan' | 'blue' | 'sky'
-  skills: string[]
+  /** the stack, broken into named sub-categories (lang / framework / pattern …) */
+  categories: SkillCategory[]
 }
 
 export const skillGroups: SkillGroup[] = [
@@ -52,63 +54,56 @@ export const skillGroups: SkillGroup[] = [
     key: 'backend',
     title: { en: 'Backend', vi: 'Backend' },
     accent: 'cyan',
-    skills: [
-      'Golang (net/http, Gin, Chi)',
-      'Java',
-      'NestJS',
-      'REST API Design',
-      'gRPC',
-      'Microservices',
-      'Event-Driven Architecture',
-      'Kafka',
-      'Outbox Pattern',
-      'Debezium CDC',
-      'Temporal / Saga',
-      'API Gateway Design',
+    categories: [
+      { label: { en: 'Language', vi: 'Ngôn ngữ' }, items: ['Go', 'Java', 'TypeScript'] },
+      { label: { en: 'Frameworks', vi: 'Framework' }, items: ['net/http', 'Gin', 'Chi', 'Spring', 'NestJS'] },
+      { label: { en: 'API & RPC', vi: 'API & RPC' }, items: ['REST', 'gRPC', 'API Gateway'] },
+      { label: { en: 'Architecture', vi: 'Kiến trúc' }, items: ['Microservices', 'Event-Driven'] },
+      { label: { en: 'Messaging', vi: 'Message Queue' }, items: ['Kafka'] },
+      { label: { en: 'Patterns', vi: 'Pattern' }, items: ['Outbox', 'Debezium CDC', 'Temporal / Saga'] },
     ],
   },
   {
     key: 'frontend',
     title: { en: 'Frontend', vi: 'Frontend' },
     accent: 'blue',
-    skills: [
-      'React',
-      'Next.js',
-      'TypeScript',
-      'Zustand',
-      'TanStack Query',
-      'Recharts',
-      'ApexCharts',
-      'PWA',
-      'Frontend Performance',
+    categories: [
+      { label: { en: 'Language', vi: 'Ngôn ngữ' }, items: ['JavaScript', 'TypeScript'] },
+      { label: { en: 'Framework', vi: 'Framework' }, items: ['React', 'Next.js'] },
+      { label: { en: 'State & Data', vi: 'State & Data' }, items: ['Zustand', 'TanStack Query'] },
+      { label: { en: 'Visualization', vi: 'Trực quan hoá' }, items: ['Recharts', 'ApexCharts'] },
+      { label: { en: 'Delivery', vi: 'Delivery' }, items: ['PWA', 'Capacitor', 'Performance'] },
     ],
   },
   {
     key: 'data',
     title: { en: 'Databases & Caching', vi: 'Cơ sở dữ liệu & Cache' },
     accent: 'sky',
-    skills: ['PostgreSQL', 'MongoDB', 'Redis'],
+    categories: [
+      { label: { en: 'Relational', vi: 'Quan hệ (SQL)' }, items: ['PostgreSQL'] },
+      { label: { en: 'Document', vi: 'Document (NoSQL)' }, items: ['MongoDB'] },
+      { label: { en: 'Cache & KV', vi: 'Cache & KV' }, items: ['Redis'] },
+    ],
   },
   {
     key: 'devops',
     title: { en: 'DevOps & Observability', vi: 'DevOps & Observability' },
     accent: 'cyan',
-    skills: [
-      'Docker',
-      'Kubernetes',
-      'Helm',
-      'GitOps',
-      'Grafana Loki',
-      'Rancher',
-      'CI/CD',
-      'AWS S3',
+    categories: [
+      { label: { en: 'Containers', vi: 'Container' }, items: ['Docker', 'Kubernetes', 'Helm'] },
+      { label: { en: 'Delivery', vi: 'Delivery' }, items: ['GitOps', 'CI/CD', 'Rancher'] },
+      { label: { en: 'Observability', vi: 'Observability' }, items: ['Grafana Loki'] },
+      { label: { en: 'Cloud', vi: 'Cloud' }, items: ['AWS S3'] },
     ],
   },
   {
     key: 'practices',
     title: { en: 'Practices', vi: 'Phương pháp' },
     accent: 'blue',
-    skills: ['Agile', 'Code Review', 'Multi-tenant System Design'],
+    categories: [
+      { label: { en: 'Process', vi: 'Quy trình' }, items: ['Agile', 'Code Review'] },
+      { label: { en: 'System Design', vi: 'Thiết kế hệ thống' }, items: ['Multi-tenant Architecture'] },
+    ],
   },
 ]
 
@@ -241,7 +236,7 @@ export const projects: Project[] = [
 ]
 
 export const education = {
-  school: 'University of Information Technology — VNUHCM',
+  school: 'University of Information Technology',
   degree: { en: 'Bachelor of Software Engineering', vi: 'Cử nhân Kỹ thuật Phần mềm' } as Bi,
   period: { en: 'Sep 2021 – Sep 2025', vi: 'Th9 2021 – Th9 2025' } as Bi,
 }

@@ -24,7 +24,7 @@ export const ui = {
   skills: {
     kicker: { en: 'Toolbox', vi: 'Bộ công cụ' },
     title: { en: 'Skills & Technologies', vi: 'Kỹ năng & Công nghệ' },
-    hint: { en: 'Select a layer to highlight it on the live architecture map — one real system, front to back.', vi: 'Chọn một tầng để làm nổi bật trên sơ đồ kiến trúc — một hệ thống thật, từ front tới back.' },
+    hint: { en: 'Pick a layer — each one breaks down into the exact categories and tools I reach for.', vi: 'Chọn một tầng — mỗi tầng được chia rõ theo từng hạng mục và công cụ mình dùng.' },
   },
   kafka: {
     kicker: { en: 'Deep dive · 01', vi: 'Đào sâu · 01' },

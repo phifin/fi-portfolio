@@ -24,8 +24,8 @@ const RINGS = [
   { rx: 250, ry: 168 },
   { rx: 396, ry: 264 },
 ] as const
-const START = -232 // deg — sweep the top and sides, leaving the bottom open for the name
-const SPAN = 284
+const START = -228 // deg — sweep the top and both sides, leaving a gap at bottom-centre for the name
+const SPAN = 276
 const rad = (d: number) => (d * Math.PI) / 180
 
 type OrbitNode = { t: string; color: string; ring: 0 | 1; cat: { en: string; vi: string }; x: number; y: number }
@@ -71,7 +71,7 @@ export function Intro({ onDone }: { onDone: () => void }) {
 
   useEffect(() => {
     const fit = () => {
-      setScale(Math.min(1, window.innerWidth / 1040, window.innerHeight / 940))
+      setScale(Math.min(1, window.innerWidth / 1040, window.innerHeight / 860))
       setCompact(window.innerWidth < 680)
       setShort(window.innerHeight < 880)
     }
@@ -187,7 +187,7 @@ export function Intro({ onDone }: { onDone: () => void }) {
             </div>
           </motion.div>
 
-          <Name className="text-5xl font-extrabold leading-none tracking-tight" />
+          <Name className="text-5xl font-extrabold uppercase leading-none tracking-tight" />
           <p className="mt-4 font-mono text-[11px] uppercase tracking-[0.4em] text-accent-cyan">{profile.role[lang]}</p>
           <p className="mt-4 max-w-xs text-sm leading-relaxed text-white/55">{TAGLINE[lang]}</p>
 
@@ -207,11 +207,12 @@ export function Intro({ onDone }: { onDone: () => void }) {
           <Stats className="mt-8 flex items-stretch justify-center divide-x divide-white/10" />
         </div>
       ) : (
-        <>
-          {/* ── engineering orbit stage ── */}
-          <div className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2" style={{ top: stageTop }}>
-            <motion.div style={{ scale, x: px, y: py }}>
-              <div className="relative" style={{ width: BOX, height: BOX }}>
+        /* ── desktop / tablet: one centred identity column with the orbit haloing the avatar ── */
+        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center px-6 pb-14 text-center">
+          {/* avatar core, with the orbit composition centred on it and overflowing */}
+          <div className="relative flex items-center justify-center">
+            <motion.div className="pointer-events-none absolute left-1/2 top-1/2" style={{ x: px, y: py }}>
+              <motion.div className="relative" style={{ width: BOX, height: BOX, x: '-50%', y: '-50%', scale }}>
                 {/* orbit rings (ellipses) — emphasise on related hover */}
                 {RINGS.map((r, i) => (
                   <motion.div
@@ -245,7 +246,7 @@ export function Intro({ onDone }: { onDone: () => void }) {
                   return (
                     <motion.div
                       key={o.t}
-                      className="absolute left-1/2 top-1/2"
+                      className="pointer-events-auto absolute left-1/2 top-1/2"
                       style={{ willChange: 'transform' }}
                       initial={{ x: o.x, y: o.y, opacity: 0, scale: 0.85 }}
                       animate={{ x: o.x, y: o.y, opacity: dim ? 0.4 : 1, scale: 1 }}
@@ -282,61 +283,62 @@ export function Intro({ onDone }: { onDone: () => void }) {
                     </motion.div>
                   )
                 })}
+              </motion.div>
+            </motion.div>
 
-                {/* ── the core: avatar with soft atmospheric glow (no heavy border) ── */}
-                {!rm && (
-                  <motion.div
-                    className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full"
-                    style={{ width: 260, height: 260, background: 'radial-gradient(circle, rgba(34,211,238,0.28), transparent 68%)' }}
-                    animate={{ opacity: [0.6, 0.9, 0.6] }}
-                    transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
-                  />
-                )}
-                <motion.div
-                  className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-full"
-                  style={{
-                    width: 176, height: 176,
-                    boxShadow: '0 0 0 1px rgba(120,200,255,0.25), 0 0 60px -10px rgba(34,211,238,0.55)',
-                    willChange: 'transform',
-                  }}
-                  initial={{ scale: 0.9, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ delay: D(0.3), duration: rm ? 0 : 0.7, ease: [0.22, 1, 0.36, 1] }}
-                >
-                  <img src={avatarUrl} alt={profile.name} className="h-full w-full object-cover" width={176} height={176} />
-                  <div className="pointer-events-none absolute inset-0" style={{ background: 'radial-gradient(circle at 50% 30%, transparent 55%, rgba(5,6,11,0.55))' }} />
-                </motion.div>
-              </div>
+            {/* soft atmospheric glow hugging the avatar (no heavy border) */}
+            {!rm && (
+              <motion.div
+                className="pointer-events-none absolute h-[260px] w-[260px] rounded-full"
+                style={{ background: 'radial-gradient(circle, rgba(34,211,238,0.28), transparent 68%)' }}
+                animate={{ opacity: [0.6, 0.9, 0.6] }}
+                transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
+              />
+            )}
+            <motion.div
+              className="relative overflow-hidden rounded-full"
+              style={{
+                width: 184, height: 184,
+                boxShadow: '0 0 0 1px rgba(120,200,255,0.25), 0 0 60px -10px rgba(34,211,238,0.55)',
+                willChange: 'transform',
+              }}
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: D(0.3), duration: rm ? 0 : 0.7, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <img src={avatarUrl} alt={profile.name} className="h-full w-full object-cover" width={184} height={184} />
+              <div className="pointer-events-none absolute inset-0" style={{ background: 'radial-gradient(circle at 50% 30%, transparent 55%, rgba(5,6,11,0.55))' }} />
             </motion.div>
           </div>
 
-          {/* ── identity block ── */}
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex flex-col items-center px-6 pb-[6%] pt-12 text-center">
-            <div className="absolute inset-0 bg-gradient-to-t from-[#05060b] via-[#05060b]/90 to-transparent" />
-            <div className="relative overflow-hidden">
+          {/* ── identity, tucked directly under the avatar ── */}
+          <div className="pointer-events-none relative z-20 mt-5 flex flex-col items-center">
+            {/* soft scrim so the name always reads cleanly over any nearby orbit node */}
+            <div className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[130%] w-[130%] -translate-x-1/2 -translate-y-1/2" style={{ background: 'radial-gradient(ellipse 60% 55% at 50% 42%, rgba(5,6,11,0.92) 30%, transparent 72%)' }} />
+            <div className="overflow-hidden">
               <motion.div initial={{ y: '110%' }} animate={{ y: 0 }} transition={{ delay: D(0.9), duration: rm ? 0 : 0.85, ease: [0.22, 1, 0.36, 1] }}>
-                <Name className="text-5xl font-extrabold leading-none tracking-tight sm:text-7xl" />
+                <Name className="text-6xl font-extrabold uppercase leading-[0.95] tracking-tight sm:text-7xl" />
               </motion.div>
             </div>
             <motion.p
               initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: D(1.25), duration: rm ? 0 : 0.6 }}
-              className="relative mt-4 font-mono text-[11px] uppercase tracking-[0.4em] text-accent-cyan sm:text-sm"
+              className="mt-3 font-mono text-xs uppercase tracking-[0.5em] text-accent-cyan sm:text-sm"
             >
               {profile.role[lang]}
             </motion.p>
             <motion.p
               initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: D(1.4), duration: rm ? 0 : 0.6 }}
-              className="relative mt-4 max-w-md text-sm leading-relaxed text-white/55 sm:text-base"
+              className="mt-4 max-w-md text-sm leading-relaxed text-white/55 sm:text-base"
             >
               {TAGLINE[lang]}
             </motion.p>
             <motion.div
               initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: D(1.6), duration: rm ? 0 : 0.6 }}
             >
-              <Stats className="relative mt-7 flex items-stretch justify-center divide-x divide-white/10" />
+              <Stats className="mt-7 flex items-stretch justify-center divide-x divide-white/10" />
             </motion.div>
           </div>
-        </>
+        </div>
       )}
 
       {/* ── elegant scroll indicator ── */}
