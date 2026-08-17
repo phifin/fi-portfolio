@@ -73,19 +73,17 @@ export function ProviderLogo({ name, x, cy }: { name: string; x: number; cy: num
         </g>
       )
     case 'M-invoice': {
-      // real minvoice.vn logo: a red comet-swoosh under a solid indigo
-      // "invoice" wordmark (colors sampled from their actual logo file)
-      const grad = `mi-swoosh-${x}-${cy}`
+      // Real minvoice.vn emblem: a four-fold interlocking knot, three indigo
+      // arms plus one red. Paths traced from their official logo file and
+      // lightened slightly so they read on the dark diagram.
+      const s = 22
       return (
         <g>
-          <defs>
-            <linearGradient id={grad} x1={x} y1={cy + 8} x2={x + 18} y2={cy - 2} gradientUnits="userSpaceOnUse">
-              <stop stopColor="#F05138" />
-              <stop offset="1" stopColor="#ED1F24" />
-            </linearGradient>
-          </defs>
-          <path d={`M${x},${cy + 7} Q${x + 6},${cy - 4} ${x + 19},${cy - 6} Q${x + 9},${cy - 1} ${x + 3},${cy + 8} Z`} fill={`url(#${grad})`} />
-          <text x={x + 23} y={cy} dominantBaseline="central" fontFamily={FONT} fontSize={14.5} fontWeight={800} fill="#eaf2ff">
+          <svg x={x} y={cy - s / 2} width={s} height={s} viewBox="0 0 64 64">
+            <path d="M12.0,10.1 L14.4,10.1 L16.0,10.8 L33.8,24.4 L34.8,25.3 L34.8,25.8 L32.4,28.9 L31.1,29.6 L14.2,16.7 L12.4,16.4 L11.6,17.3 L11.0,19.0 L11.0,22.5 L12.4,26.2 L13.6,28.0 L15.9,30.2 L13.5,33.5 L10.7,31.1 L9.5,30.7 L8.1,31.0 L6.4,32.7 L5.5,34.5 L5.3,36.0 L5.6,38.4 L6.8,42.2 L3.7,45.9 L1.3,37.9 L0.9,35.4 L0.9,31.1 L1.9,28.3 L3.6,26.4 L7.3,25.0 L6.1,21.2 L6.1,17.5 L6.5,15.7 L7.3,14.1 L9.0,11.7 L10.4,10.7 L12.0,10.1ZM24.9,29.0 L28.1,31.0 L29.2,32.0 L29.2,32.9 L16.1,49.6 L16.0,51.3 L16.9,52.1 L19.0,52.9 L22.2,52.7 L26.4,51.0 L29.9,48.0 L33.0,50.2 L33.0,50.7 L31.6,51.9 L30.7,53.2 L30.2,54.5 L30.7,55.9 L32.3,57.5 L34.2,58.4 L37.0,58.4 L41.8,57.0 L45.3,59.7 L45.5,60.1 L37.2,62.5 L33.9,63.0 L30.4,62.8 L28.1,62.1 L26.1,60.4 L25.3,59.3 L24.6,56.4 L19.9,57.8 L16.1,57.5 L12.6,55.7 L10.1,53.0 L9.6,51.9 L9.6,49.3 L10.2,47.9 L24.9,29.0ZM59.7,18.1 L61.3,22.5 L62.4,27.0 L62.7,29.5 L62.4,33.9 L61.5,36.0 L60.1,37.5 L58.8,38.4 L56.7,38.7 L56.1,39.1 L57.2,42.5 L57.3,45.9 L56.9,48.1 L55.6,50.8 L53.8,52.7 L52.0,53.8 L49.0,53.9 L47.3,53.2 L28.6,38.4 L31.3,34.7 L32.3,34.2 L49.5,47.6 L51.0,47.6 L51.9,46.7 L52.4,45.2 L52.4,41.3 L50.7,37.3 L47.7,34.1 L47.7,33.6 L49.9,30.5 L50.4,30.5 L52.3,32.6 L53.8,33.3 L54.8,33.3 L56.7,31.9 L58.2,28.7 L58.1,26.4 L56.7,21.9 L59.7,18.1Z" fill="#5a62d6" />
+            <path d="M29.8,0.9 L33.8,1.2 L36.6,2.7 L38.2,4.7 L38.8,7.4 L43.4,6.2 L46.8,6.4 L48.7,7.0 L51.3,8.4 L52.9,10.1 L53.8,12.0 L53.8,14.7 L53.0,16.3 L38.4,35.0 L34.5,32.3 L34.2,31.0 L46.7,15.1 L47.4,13.9 L47.6,12.9 L45.6,11.3 L44.4,11.0 L41.2,11.1 L37.5,12.7 L35.7,13.9 L33.9,15.9 L33.2,15.7 L30.4,13.6 L33.2,9.9 L32.9,8.1 L31.3,6.5 L29.6,5.6 L27.7,5.3 L21.6,6.8 L18.1,4.0 L18.2,3.6 L24.7,1.6 L29.8,0.9Z" fill="#F0402E" />
+          </svg>
+          <text x={x + s + 6} y={cy} dominantBaseline="central" fontFamily={FONT} fontSize={14.5} fontWeight={800} fill="#eaf2ff">
             M-invoice
           </text>
         </g>

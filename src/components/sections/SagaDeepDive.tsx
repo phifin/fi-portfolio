@@ -55,9 +55,10 @@ function TemporalCluster({ box, qW, orderQ, payQ, activeQueue }: { box: { x: num
         strokeDasharray="6 5"
         style={{ filter: `drop-shadow(0 0 16px ${DIA.blue}33)` }}
       />
-      <Workflow x={box.x + box.w / 2 - 72} y={box.y + 11} width={14} height={14} color={DIA.blue} strokeWidth={2} />
-      <text x={box.x + box.w / 2 + 8} y={box.y + 22} textAnchor="middle" fill="#fff" fontSize={12.5} fontWeight={700}>Temporal Cluster</text>
-      <text x={box.x + box.w / 2} y={box.y + 37} textAnchor="middle" fill="rgba(255,255,255,0.45)" fontSize={9}>durable orchestration · task queues</text>
+      <Workflow x={box.x + box.w / 2 - 72} y={box.y + 9} width={14} height={14} color={DIA.blue} strokeWidth={2} />
+      <text x={box.x + box.w / 2 + 8} y={box.y + 20} textAnchor="middle" fill="#fff" fontSize={12.5} fontWeight={700}>Temporal Cluster</text>
+      {/* baseline sits ~3px above the first queue pill so descenders stay clear */}
+      <text x={box.x + box.w / 2} y={box.y + 34} textAnchor="middle" fill="rgba(255,255,255,0.45)" fontSize={9}>durable orchestration · task queues</text>
       <QueuePill x={orderQ[0]} y={orderQ[1]} w={qW} label="order-task-queue" active={activeQueue === 'order'} />
       <QueuePill x={payQ[0]} y={payQ[1]} w={qW} label="payment-task-queue" active={activeQueue === 'payment'} />
     </g>
@@ -66,10 +67,10 @@ function TemporalCluster({ box, qW, orderQ, payQ, activeQueue }: { box: { x: num
 
 const L_H: Layout = {
   vb: '0 0 480 344',
-  cluster: { x: 116, y: 14, w: 248, h: 104 },
+  cluster: { x: 116, y: 14, w: 248, h: 112 },
   qW: 216,
-  orderQ: [132, 50],
-  payQ: [132, 84],
+  orderQ: [132, 54],
+  payQ: [132, 88],
   order: { x: 8, y: 240, w: 150, h: 84 },
   inv: { x: 166, y: 240, w: 148, h: 84 },
   payment: { x: 322, y: 240, w: 150, h: 84 },
@@ -95,10 +96,10 @@ const L_H: Layout = {
 
 const L_V: Layout = {
   vb: '0 0 320 560',
-  cluster: { x: 20, y: 12, w: 280, h: 104 },
+  cluster: { x: 20, y: 12, w: 280, h: 112 },
   qW: 250,
-  orderQ: [35, 48],
-  payQ: [35, 82],
+  orderQ: [35, 52],
+  payQ: [35, 86],
   order: { x: 24, y: 176, w: 272, h: 66 },
   inv: { x: 24, y: 300, w: 272, h: 66 },
   payment: { x: 24, y: 458, w: 272, h: 66 },
@@ -106,11 +107,11 @@ const L_V: Layout = {
     const base: Step[] = [
       { from: [96, 176], to: [80, 74], via: [58, 130], color: DIA.cyan, hot: ['order'], q: 'order', label: { en: '1 · Worker polls order-task-queue → runs OrderWorkflow', vi: '1 · Worker poll order-task-queue → chạy OrderWorkflow' } },
       { from: [160, 176], to: [160, 300], via: [235, 240], color: DIA.amber, hot: ['inv'], q: null, label: { en: '2 · Reserve stock → Inventory (decrement qty)', vi: '2 · Giữ hàng → Inventory (trừ số lượng)' } },
-      { from: [200, 116], to: [200, 458], via: [280, 290], color: DIA.blue, hot: ['pay'], q: 'payment', label: { en: '3 · Schedule ChargePayment → payment-task-queue', vi: '3 · Đẩy ChargePayment → payment-task-queue' } },
+      { from: [200, 124], to: [200, 458], via: [280, 290], color: DIA.blue, hot: ['pay'], q: 'payment', label: { en: '3 · Schedule ChargePayment → payment-task-queue', vi: '3 · Đẩy ChargePayment → payment-task-queue' } },
     ]
     if (mode === 'happy')
       return [...base,
-        { from: [120, 458], to: [120, 116], via: [40, 290], color: DIA.green, hot: ['order', 'inv'], q: null, label: { en: '4 · Success → confirm order & commit stock', vi: '4 · Thành công → xác nhận đơn & chốt hàng' } },
+        { from: [120, 458], to: [120, 124], via: [40, 290], color: DIA.green, hot: ['order', 'inv'], q: null, label: { en: '4 · Success → confirm order & commit stock', vi: '4 · Thành công → xác nhận đơn & chốt hàng' } },
       ]
     return [
       ...base,

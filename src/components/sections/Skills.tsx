@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
   Wrench, Server, LayoutDashboard, Database, Cloud, GitPullRequestArrow,
-  Code2, Layers, Webhook, Boxes, Rocket,
+  Code2, Layers, Webhook, Boxes, Rocket, ShieldCheck,
   GitPullRequestArrow as GitIcon,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
@@ -32,6 +32,7 @@ const CAT_META: Record<string, { c: string; Icon: LucideIcon }> = {
   'Containers & Orchestration': { c: '#22d3ee', Icon: Boxes },
   'CI/CD & Observability': { c: '#818cf8', Icon: Cloud },
   'Ways of Working': { c: '#a78bfa', Icon: GitIcon },
+  Reliability: { c: '#34d399', Icon: ShieldCheck },
   'Cross-cutting': { c: '#4f8cff', Icon: Layers },
 }
 const catMeta = (en: string) => CAT_META[en] ?? { c: '#4f8cff', Icon: Layers }
@@ -160,8 +161,10 @@ export function Skills() {
   const maxLabelChars = Math.max(...bands.map((b) => catLabel(b.labelEn, b.labelBi).length))
   const catColWidth = `calc(${maxLabelChars}ch + ${(maxLabelChars - 1) * 0.14}em + 2rem)`
 
+  // Height follows content — a forced 100svh left dead space under the panel
+  // once the chips became compact, which read as a huge gap before the next section.
   return (
-    <section id={sectionIds.skills} className="relative flex min-h-[100svh] flex-col py-4 sm:py-5 xl:py-7">
+    <section id={sectionIds.skills} className="section-pad relative flex flex-col">
       <div className="grid-bg pointer-events-none absolute inset-0 opacity-30" />
 
       <div className="container-page relative flex min-h-0 flex-1 flex-col xl:max-w-6xl 2xl:max-w-7xl min-[1920px]:max-w-[96rem] min-[2560px]:max-w-[108rem]">

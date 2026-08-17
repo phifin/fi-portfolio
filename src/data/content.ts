@@ -114,6 +114,10 @@ export const skillGroups: SkillGroup[] = [
         items: ['Agile', 'Code Review'],
       },
       {
+        label: { en: 'Reliability', vi: 'Độ tin cậy' },
+        items: ['Idempotency', 'Retry & Backoff', 'Rate Limiting'],
+      },
+      {
         label: { en: 'Cross-cutting', vi: 'Xuyên suốt' },
         items: ['Multi-tenant Architecture', 'Observability'],
       },

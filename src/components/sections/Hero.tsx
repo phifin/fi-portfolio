@@ -68,7 +68,9 @@ export function Hero() {
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-ink-950 to-transparent" />
 
       {/* content: copy (left) + whoami terminal (right, lg+) in ONE aligned grid */}
-      <div className="container-page relative grid min-h-[100svh] grid-cols-1 items-center gap-8 py-24 lg:grid-cols-2 lg:gap-12 2xl:gap-16 min-[1920px]:gap-20">
+      {/* Capped narrower than container-page: at full container width the two
+          columns drift apart and leave a dead gap in the middle. */}
+      <div className="container-page relative grid min-h-[100svh] grid-cols-1 items-center gap-8 py-24 lg:grid-cols-2 lg:gap-12 2xl:gap-16 min-[1920px]:max-w-[82rem] min-[1920px]:gap-16 min-[2560px]:max-w-[88rem]">
        <div className="flex flex-col justify-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -106,7 +108,7 @@ export function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, delay: 0.7 }}
-          className="mt-6 max-w-xl border-l-2 border-accent-cyan/60 pl-4 text-base leading-relaxed text-white/70 sm:text-lg"
+          className="mt-6 max-w-xl border-l-2 border-accent-cyan/60 pl-4 text-base leading-relaxed text-white/70 sm:text-lg 2xl:max-w-2xl"
         >
           {pick(profile.tagline)}
         </motion.p>
