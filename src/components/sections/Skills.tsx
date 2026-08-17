@@ -164,7 +164,7 @@ export function Skills() {
           <SectionHeading kicker={pick(ui.skills.kicker)} title={pick(ui.skills.title)} Icon={Wrench} />
         </div>
 
-        <div className="flex flex-1 items-center justify-center py-2 sm:py-3 xl:py-5">
+        <div className="flex flex-1 items-start justify-center py-2 sm:py-3 xl:py-5">
           <div className="glass relative w-full overflow-visible rounded-2xl xl:rounded-3xl">
             <motion.div
               key={group.key}
@@ -229,7 +229,7 @@ export function Skills() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.18 }}
-                className="relative px-3 py-2.5 sm:px-5 sm:py-3 xl:px-8 xl:py-5 2xl:px-10 2xl:py-6"
+                className="relative flex min-h-[15rem] flex-col justify-center px-3 py-2.5 sm:min-h-[16rem] sm:px-5 sm:py-3 xl:min-h-[19rem] xl:px-8 xl:py-5 2xl:px-10 2xl:py-6"
               >
                 {bands.map((band, bi) => (
                     <motion.div
