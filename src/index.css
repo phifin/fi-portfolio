@@ -19,24 +19,19 @@ html {
   font-size: 16px;
 }
 
-/* Global type/spacing scale. Tailwind sizes are rem-based, so easing the root
-   font down on laptop-sized viewports (incl. 14" hi-dpi and 150% browser zoom,
-   which both land here) shrinks every heading, chip and gap uniformly — so
-   sections stop feeling cramped. Large monitors (>=1536px) keep full sizing. */
+/* Global type/spacing scale. Tailwind sizes are rem-based, so nudging the root
+   font shrinks/grows every heading, chip and gap uniformly with the viewport —
+   a 14" laptop (or 150% browser zoom) shouldn't read as bulkier than a 1080p
+   desktop, and a 4K monitor shouldn't read as smaller than either. 1536–1919px
+   (the common 1080p/1440p desktop band) is the 16px baseline. */
 @media (max-width: 1535px) {
-  html { font-size: 15px; }
+  html { font-size: 14.5px; }
 }
-
-/* Large desktop monitors. The rule above covers 14" laptops and 150% zoom.
-   Above 1536px we instead scale the root font UP in two steps so every
-   rem-based heading, body line, gap and padding grows together — the content
-   fills wide monitors instead of sitting as a small column in the middle.
-   Tailwind's breakpoints are px-based, so they are unaffected. */
 @media (min-width: 1920px) {
-  html { font-size: 17px; }
+  html { font-size: 18px; }
 }
 @media (min-width: 2560px) {
-  html { font-size: 18px; }
+  html { font-size: 20px; }
 }
 
 body {

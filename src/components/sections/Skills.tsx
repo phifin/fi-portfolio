@@ -104,7 +104,7 @@ function SkillCell({
           </span>
         )}
       </div>
-      <span className="line-clamp-2 w-full text-center text-[9px] leading-tight text-white/75 sm:text-[10px]">
+      <span className="line-clamp-2 w-full break-words text-center text-[9px] leading-tight text-white/75 sm:text-[10px] xl:text-[11px] 2xl:text-[12px]">
         {name}
       </span>
       <span
@@ -249,7 +249,7 @@ export function Skills() {
                       >
                         <band.Icon size={13} color={band.color} strokeWidth={2.2} className="shrink-0" />
                         <span
-                          className="whitespace-nowrap font-mono text-[10px] font-semibold uppercase tracking-[0.1em] lg:text-[11px] lg:tracking-[0.12em]"
+                          className="whitespace-nowrap font-mono text-[10px] font-semibold uppercase tracking-[0.1em] lg:text-[11px] lg:tracking-[0.12em] xl:text-[12px] 2xl:text-[13px]"
                           style={{ color: band.color }}
                         >
                           {catLabel(band.labelEn, band.labelBi)}
