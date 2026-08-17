@@ -1,9 +1,13 @@
 import { useEffect, useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Wrench, Server, LayoutDashboard, Database, Cloud, GitPullRequestArrow } from 'lucide-react'
+import {
+  Wrench, Server, LayoutDashboard, Database, Cloud, GitPullRequestArrow,
+  Code2, Layers, Webhook, Boxes, MessageSquare, Diamond, Workflow, BarChart3,
+  Rocket, FileJson, Zap, Container, Activity, GitPullRequestArrow as GitIcon,
+} from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { SectionHeading } from '../ui/SectionHeading'
-import { SkillOrbit, SkillPills } from './SkillOrbit'
+import { TechGlyph, hasLogo } from '../diagram/techLogos'
 import { useLang } from '../../providers/LanguageProvider'
 import { ui } from '../../i18n'
 import { skillGroups, sectionIds } from '../../data/content'
@@ -17,160 +21,222 @@ const groupIcon: Record<string, LucideIcon> = {
   practices: GitPullRequestArrow,
 }
 
-// category accent colours (shared with SkillOrbit)
-const CAT_COLOR: Record<string, string> = {
-  Language: '#22d3ee', Frameworks: '#34d399', Framework: '#34d399', 'API & RPC': '#a78bfa',
-  Architecture: '#4f8cff', Messaging: '#fbbf24', Patterns: '#f472b6', 'State & Data': '#38bdf8',
-  Visualization: '#2dd4ff', Delivery: '#818cf8', Relational: '#38bdf8', Document: '#34d399',
-  'Cache & KV': '#fb7185', Containers: '#4f8cff', Observability: '#fbbf24', Cloud: '#22d3ee',
-  Process: '#a78bfa', 'System Design': '#f472b6',
+const CAT_META: Record<string, { c: string; Icon: LucideIcon }> = {
+  Language: { c: '#22d3ee', Icon: Code2 },
+  Frameworks: { c: '#34d399', Icon: Layers },
+  Framework: { c: '#34d399', Icon: Layers },
+  'API & RPC': { c: '#a78bfa', Icon: Webhook },
+  Architecture: { c: '#4f8cff', Icon: Boxes },
+  Messaging: { c: '#fbbf24', Icon: MessageSquare },
+  Patterns: { c: '#f472b6', Icon: Diamond },
+  'State & Data': { c: '#38bdf8', Icon: Workflow },
+  Visualization: { c: '#2dd4ff', Icon: BarChart3 },
+  Delivery: { c: '#818cf8', Icon: Rocket },
+  Relational: { c: '#38bdf8', Icon: Database },
+  Document: { c: '#34d399', Icon: FileJson },
+  'Cache & KV': { c: '#fb7185', Icon: Zap },
+  Containers: { c: '#4f8cff', Icon: Container },
+  Observability: { c: '#fbbf24', Icon: Activity },
+  Cloud: { c: '#22d3ee', Icon: Cloud },
+  Process: { c: '#a78bfa', Icon: GitIcon },
+  'System Design': { c: '#f472b6', Icon: Boxes },
 }
-const catColor = (en: string) => CAT_COLOR[en] ?? '#4f8cff'
+const catMeta = (en: string) => CAT_META[en] ?? { c: '#4f8cff', Icon: Layers }
+
+function gridCols(n: number, w: number) {
+  if (w < 520) return 1
+  if (w < 768) return Math.min(2, n)
+  if (w < 1100) return Math.min(3, n)
+  if (w < 1440) return Math.min(n <= 4 ? n : 3, n)
+  return Math.min(n, 6)
+}
+
+function SkillTile({ name, color }: { name: string; color: string }) {
+  return (
+    <motion.span
+      layout
+      initial={{ opacity: 0, scale: 0.92 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.92 }}
+      whileHover={{ y: -2, scale: 1.04 }}
+      transition={{ type: 'spring', stiffness: 420, damping: 28 }}
+      className="inline-flex cursor-default items-center gap-1.5 rounded-lg border px-2 py-1.5 text-[11px] font-medium sm:text-xs"
+      style={{
+        borderColor: `${color}35`,
+        background: `linear-gradient(145deg, ${color}16, rgba(255,255,255,0.02))`,
+        boxShadow: `inset 0 1px 0 ${color}20`,
+      }}
+    >
+      {hasLogo(name) ? (
+        <TechGlyph name={name} size={13} />
+      ) : (
+        <span className="h-1.5 w-1.5 rounded-full" style={{ background: color }} />
+      )}
+      <span className="text-white/88">{name}</span>
+    </motion.span>
+  )
+}
 
 export function Skills() {
   const { pick } = useLang()
   const [active, setActive] = useState(0)
-  const [hoverCat, setHoverCat] = useState<number | null>(null)
-  const [compact, setCompact] = useState(false)
+  const [width, setWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1280)
   const [reducedMotion, setReducedMotion] = useState(false)
 
   useEffect(() => {
-    const fit = () => setCompact(window.innerWidth < 768)
+    const onResize = () => setWidth(window.innerWidth)
     const rm = window.matchMedia('(prefers-reduced-motion: reduce)')
     setReducedMotion(rm.matches)
-    fit()
-    window.addEventListener('resize', fit)
+    window.addEventListener('resize', onResize)
     rm.addEventListener('change', (e) => setReducedMotion(e.matches))
-    return () => window.removeEventListener('resize', fit)
+    return () => window.removeEventListener('resize', onResize)
   }, [])
 
   const group = skillGroups[active]
   const color = accentHex[group.accent]
   const GroupIcon = groupIcon[group.key] ?? Server
-  const focusCat = hoverCat
+  const cols = gridCols(group.categories.length, width)
+  const total = group.categories.reduce((n, c) => n + c.items.length, 0)
 
-  const rows = useMemo(
-    () => group.categories.map((cat, i) => ({
-      i,
-      label: pick(cat.label),
-      labelEn: cat.label.en,
-      items: cat.items,
-      color: catColor(cat.label.en),
-      dim: focusCat !== null && focusCat !== i,
-      focus: focusCat === i,
-    })),
-    [group.categories, pick, focusCat],
+  const cells = useMemo(
+    () => group.categories.map((cat) => {
+      const { c, Icon } = catMeta(cat.label.en)
+      return { label: pick(cat.label), labelEn: cat.label.en, items: cat.items, color: c, Icon }
+    }),
+    [group.categories, pick],
   )
 
-  const onGroupChange = (i: number) => {
-    setActive(i)
-    setHoverCat(null)
-  }
-
   return (
-    <section
-      id={sectionIds.skills}
-      className="relative flex h-[100svh] flex-col overflow-hidden py-4 sm:py-5 lg:py-6"
-    >
-      <div className="grid-bg pointer-events-none absolute inset-0 opacity-40" />
+    <section id={sectionIds.skills} className="relative flex h-[100svh] flex-col overflow-hidden py-4 sm:py-5">
+      <div className="grid-bg pointer-events-none absolute inset-0 opacity-35" />
+
       <div className="container-page relative flex min-h-0 flex-1 flex-col">
-        {/* ── compact header ── */}
         <div className="shrink-0">
           <SectionHeading kicker={pick(ui.skills.kicker)} title={pick(ui.skills.title)} Icon={Wrench} />
-          <p className="mt-1.5 max-w-lg text-sm text-white/45">{pick(ui.skills.hint)}</p>
         </div>
 
-        {/* ── domain selector ── */}
-        <div className="mt-4 shrink-0 sm:mt-5">
-          <div className="flex gap-1 overflow-x-auto rounded-xl border border-white/[0.07] bg-white/[0.02] p-1 scrollbar-none [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {skillGroups.map((g, i) => {
-              const Icon = groupIcon[g.key] ?? Server
-              const gc = accentHex[g.accent]
-              const on = active === i
-              const count = g.categories.reduce((n, c) => n + c.items.length, 0)
-              return (
-                <button
-                  key={g.key}
-                  onClick={() => onGroupChange(i)}
-                  className={`flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-left transition-all sm:px-4 ${
-                    on ? 'bg-white/[0.08] text-white' : 'text-white/55 hover:bg-white/[0.04] hover:text-white/80'
-                  }`}
-                  style={on ? { boxShadow: `inset 0 0 0 1px ${gc}55, 0 4px 16px -8px ${gc}` } : undefined}
-                >
-                  <Icon size={15} color={on ? gc : 'rgba(255,255,255,0.45)'} strokeWidth={2.2} />
-                  <span className="text-sm font-semibold">{pick(g.title)}</span>
-                  <span className="font-mono text-[10px] tabular-nums" style={{ color: on ? gc : 'rgba(255,255,255,0.28)' }}>
-                    {String(count).padStart(2, '0')}
-                  </span>
-                </button>
-              )
-            })}
+        {/* ── unified deck: tabs + bento grid in one card ── */}
+        <div className="glass relative mt-3 flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl sm:mt-4">
+          {/* ambient glow — shifts with active stack */}
+          <motion.div
+            key={group.key}
+            className="pointer-events-none absolute -left-20 -top-20 h-64 w-64 rounded-full blur-3xl"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.35 }}
+            style={{ background: color }}
+          />
+          <motion.div
+            key={`${group.key}-2`}
+            className="pointer-events-none absolute -bottom-16 -right-16 h-56 w-56 rounded-full blur-3xl"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.2 }}
+            style={{ background: color }}
+          />
+
+          {/* tab bar */}
+          <div className="relative shrink-0 border-b border-white/[0.06] px-2 py-2 sm:px-3">
+            <div className="flex gap-1 overflow-x-auto scrollbar-none [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              {skillGroups.map((g, i) => {
+                const Icon = groupIcon[g.key] ?? Server
+                const gc = accentHex[g.accent]
+                const on = active === i
+                return (
+                  <button
+                    key={g.key}
+                    onClick={() => setActive(i)}
+                    className={`relative flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 transition-colors ${
+                      on ? 'text-white' : 'text-white/50 hover:bg-white/[0.04] hover:text-white/75'
+                    }`}
+                  >
+                    {on && (
+                      <motion.span
+                        layoutId="skill-tab-bg"
+                        className="absolute inset-0 rounded-lg"
+                        style={{ background: `${gc}18`, boxShadow: `inset 0 0 0 1px ${gc}50` }}
+                        transition={{ type: 'spring', stiffness: 380, damping: 32 }}
+                      />
+                    )}
+                    <span className="relative flex items-center gap-2">
+                      <Icon size={14} color={on ? gc : 'rgba(255,255,255,0.4)'} strokeWidth={2.2} />
+                      <span className="text-sm font-semibold">{pick(g.title)}</span>
+                    </span>
+                  </button>
+                )
+              })}
+            </div>
           </div>
-        </div>
 
-        {/* ── main stage: orbit + skill strip ── */}
-        <div className="mt-3 flex min-h-0 flex-1 flex-col gap-2 sm:mt-4 lg:flex-row lg:items-stretch lg:gap-6">
-          {/* orbit hub */}
-          <div className="flex shrink-0 items-center justify-center lg:min-h-0 lg:w-[min(44%,400px)] lg:flex-col lg:justify-center">
+          {/* deck header — inline, no wasted vertical space */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={group.key}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.22 }}
+              className="relative flex shrink-0 items-center gap-3 border-b border-white/[0.05] px-3 py-2.5 sm:px-4"
+            >
+              <span
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl sm:h-10 sm:w-10"
+                style={{
+                  background: `linear-gradient(145deg, ${color}28, ${color}0a)`,
+                  border: `1px solid ${color}44`,
+                  boxShadow: `0 0 24px -8px ${color}`,
+                }}
+              >
+                <GroupIcon size={18} color={color} strokeWidth={2} />
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-medium text-white/90">{pick(group.blurb)}</p>
+              </div>
+              <span className="shrink-0 font-mono text-[10px] tabular-nums text-white/35">
+                {String(total).padStart(2, '0')} · {group.categories.length} {pick({ en: 'groups', vi: 'nhóm' })}
+              </span>
+            </motion.div>
+          </AnimatePresence>
+
+          {/* bento grid — equal cells, fills all remaining height */}
+          <div className="relative min-h-0 flex-1 p-2 sm:p-3">
             <AnimatePresence mode="wait">
               <motion.div
                 key={group.key}
-                initial={{ opacity: 0, scale: 0.96 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.96 }}
-                transition={{ duration: 0.28 }}
-                className="w-full"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="grid h-full gap-2"
+                style={{
+                  gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
+                  gridAutoRows: '1fr',
+                }}
               >
-                <SkillOrbit
-                  group={group}
-                  groupColor={color}
-                  GroupIcon={GroupIcon}
-                  groupTitle={pick(group.title)}
-                  activeCat={focusCat}
-                  onCatChange={setHoverCat}
-                  compact={compact}
-                  reducedMotion={reducedMotion}
-                  pick={pick}
-                />
-              </motion.div>
-            </AnimatePresence>
-          </div>
-
-          {/* skill detail strip — compact rows, no card boxes */}
-          <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-            <motion.div
-              key={group.key}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-              className="glass flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl p-3 sm:p-4"
-            >
-              <div className="mb-2 flex shrink-0 items-center justify-between gap-2 border-b border-white/[0.06] pb-2">
-                <p className="line-clamp-2 text-xs text-white/65 sm:text-sm">{pick(group.blurb)}</p>
-                <span className="shrink-0 font-mono text-[10px] uppercase tracking-wider text-white/35">
-                  {group.categories.reduce((n, c) => n + c.items.length, 0)} tools
-                </span>
-              </div>
-
-              <div className="min-h-0 flex-1 space-y-1.5 overflow-y-auto pr-0.5 sm:space-y-2">
-                {rows.map((row) => (
+                {cells.map((cell, ci) => (
                   <motion.div
-                    key={row.labelEn}
-                    animate={{ opacity: row.dim ? 0.35 : 1 }}
-                    transition={{ duration: 0.2 }}
-                    className="grid grid-cols-1 gap-1.5 sm:grid-cols-[7.5rem_1fr] sm:items-start sm:gap-3"
+                    key={cell.labelEn}
+                    initial={reducedMotion ? false : { opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: ci * 0.04, duration: 0.28 }}
+                    className="flex min-h-0 flex-col overflow-hidden rounded-xl border border-white/[0.06] bg-black/25 p-2.5 sm:p-3"
+                    style={{ boxShadow: `inset 3px 0 0 ${cell.color}` }}
                   >
-                    <span
-                      className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] sm:pt-1"
-                      style={{ color: row.focus ? row.color : `${row.color}99` }}
-                    >
-                      {row.label}
-                    </span>
-                    <SkillPills items={row.items} color={row.color} highlight={row.focus} />
+                    <div className="mb-2 flex shrink-0 items-center gap-2">
+                      <cell.Icon size={14} color={cell.color} strokeWidth={2.2} />
+                      <span
+                        className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] sm:text-[11px]"
+                        style={{ color: cell.color }}
+                      >
+                        {cell.label}
+                      </span>
+                    </div>
+                    <div className="flex min-h-0 flex-1 flex-wrap content-start gap-1.5 overflow-y-auto">
+                      {cell.items.map((name) => (
+                        <SkillTile key={name} name={name} color={cell.color} />
+                      ))}
+                    </div>
                   </motion.div>
                 ))}
-              </div>
-            </motion.div>
+              </motion.div>
+            </AnimatePresence>
           </div>
         </div>
       </div>

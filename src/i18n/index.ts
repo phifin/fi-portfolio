@@ -25,7 +25,7 @@ export const ui = {
     kicker: { en: 'Toolbox', vi: 'Bộ công cụ' },
     title: { en: 'Skills & Technologies', vi: 'Kỹ năng & Công nghệ' },
     sub: { en: 'Technologies I use to build great products.', vi: 'Những công nghệ mình dùng để xây sản phẩm tốt.' },
-    hint: { en: 'Pick a stack — hover the orbit to spotlight each category.', vi: 'Chọn stack — hover quỹ đạo để highlight từng hạng mục.' },
+    hint: { en: 'Switch stack — each cell is a category, hover a tool to lift it.', vi: 'Chọn stack — mỗi ô là một hạng mục, hover để nổi tool lên.' },
   },
   kafka: {
     kicker: { en: 'Deep dive · 01', vi: 'Đào sâu · 01' },
