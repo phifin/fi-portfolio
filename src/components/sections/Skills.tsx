@@ -238,7 +238,7 @@ export function Skills() {
                       initial={reducedMotion ? false : { opacity: 0, x: -8 }}
                       animate={{ opacity: focusCat === null || focusCat === band.labelEn ? 1 : 0.35 }}
                       transition={{ delay: bi * 0.05 }}
-                      className="grid grid-cols-1 gap-2 border-b border-white/[0.04] py-2.5 last:border-0 sm:grid-cols-[minmax(8.75rem,auto)_1fr] sm:items-start sm:gap-x-5 sm:py-3 lg:grid-cols-[9.25rem_1fr] lg:gap-x-6 xl:grid-cols-[10rem_1fr] xl:gap-x-8 xl:py-3.5 2xl:grid-cols-[10.5rem_1fr] 2xl:gap-x-10"
+                      className="grid grid-cols-1 gap-2 border-b border-white/[0.04] py-2.5 last:border-0 sm:grid-cols-[auto_1fr] sm:items-start sm:gap-x-5 sm:py-3 lg:gap-x-6 xl:gap-x-8 xl:py-3.5 2xl:gap-x-10"
                       onMouseEnter={() => setFocusCat(band.labelEn)}
                       onMouseLeave={() => setFocusCat(null)}
                     >
