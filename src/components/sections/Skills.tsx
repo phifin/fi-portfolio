@@ -9,6 +9,7 @@ import type { LucideIcon } from 'lucide-react'
 import { SectionHeading } from '../ui/SectionHeading'
 import { Reveal } from '../ui/Reveal'
 import { TechGlyph, hasLogo } from '../diagram/techLogos'
+import { useDeviceTier } from '../../hooks/useDeviceTier'
 import { useLang } from '../../providers/LanguageProvider'
 import { ui } from '../../i18n'
 import { skillGroups, sectionIds } from '../../data/content'
@@ -76,7 +77,7 @@ function CatCard({ labelEn, label, items, i }: { labelEn: string; label: string;
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.32, delay: i * 0.05 }}
-      className="relative overflow-hidden rounded-2xl border p-4"
+      className="relative h-full overflow-hidden rounded-2xl border p-4"
       style={{ borderColor: `${c}30`, background: `linear-gradient(155deg, ${c}12, rgba(255,255,255,0.015) 55%)` }}
     >
       {/* faint corner watermark */}
@@ -101,10 +102,15 @@ function CatCard({ labelEn, label, items, i }: { labelEn: string; label: string;
 
 export function Skills() {
   const { pick } = useLang()
+  const { isMobile } = useDeviceTier()
   const [active, setActive] = useState(0)
   const group = skillGroups[active]
   const color = accentHex[group.accent]
   const GroupIcon = groupIcon[group.key] ?? Server
+  // fit the sub-categories into as few, as-full rows as possible (no lonely orphan)
+  const n = group.categories.length
+  const cols = isMobile ? 1 : n <= 3 ? n : n === 4 ? 2 : 3
+  const basis = cols === 1 ? '100%' : `calc((100% - ${(cols - 1) * 12}px) / ${cols})`
 
   return (
     <section id={sectionIds.skills} className="section-pad relative">
@@ -177,10 +183,12 @@ export function Skills() {
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.18 }}
-                    className="grid gap-3 sm:grid-cols-2"
+                    className="flex flex-wrap justify-center gap-3"
                   >
                     {group.categories.map((cat, i) => (
-                      <CatCard key={cat.label.en} labelEn={cat.label.en} label={pick(cat.label)} items={cat.items} i={i} />
+                      <div key={cat.label.en} style={{ flexBasis: basis, flexGrow: 0, flexShrink: 0, minWidth: 0 }}>
+                        <CatCard labelEn={cat.label.en} label={pick(cat.label)} items={cat.items} i={i} />
+                      </div>
                     ))}
                   </motion.div>
                 </AnimatePresence>

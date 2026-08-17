@@ -63,8 +63,8 @@ export function Hero() {
         </Canvas>
       </div>
 
-      {/* isometric workstation scene on the right (WebGL-independent, always visible) */}
-      <div className="pointer-events-none absolute right-[1%] top-1/2 hidden aspect-square w-[50%] max-w-[660px] -translate-y-1/2 md:block lg:right-[3%] lg:w-[46%]">
+      {/* personal "whoami" terminal on the right (WebGL-independent, always visible) */}
+      <div className="pointer-events-none absolute right-[5%] top-1/2 hidden w-[44%] max-w-[520px] -translate-y-1/2 lg:block xl:right-[7%]">
         <HeroGraphic />
       </div>
 
@@ -72,8 +72,8 @@ export function Hero() {
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_28%_50%,rgba(5,6,14,0.55),transparent_60%)]" />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-ink-950 to-transparent" />
 
-      {/* overlay content */}
-      <div className="container-page relative flex min-h-[100svh] flex-col justify-center pb-28 pt-24">
+      {/* overlay content — reserve the right half for the terminal on lg+ so copy never underlaps it */}
+      <div className="container-page relative flex min-h-[100svh] flex-col justify-center pb-28 pt-24 lg:pr-[50%]">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

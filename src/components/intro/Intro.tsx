@@ -65,15 +65,15 @@ export function Intro({ onDone }: { onDone: () => void }) {
   const rm = useMemo(() => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches, [])
   const [scale, setScale] = useState(1)
   const [compact, setCompact] = useState(false)
-  const [short, setShort] = useState(false)
   const px = useMotionValue(0)
   const py = useMotionValue(0)
 
   useEffect(() => {
     const fit = () => {
-      setScale(Math.min(1, window.innerWidth / 1040, window.innerHeight / 900))
+      // one uniform scale for the whole composition so it fits any viewport
+      // (small laptops, browser zoom) — width- AND height-bound.
+      setScale(Math.min(1, window.innerWidth / 1080, window.innerHeight / 820))
       setCompact(window.innerWidth < 680)
-      setShort(window.innerHeight < 880)
     }
     fit()
     window.addEventListener('resize', fit)
@@ -131,7 +131,6 @@ export function Intro({ onDone }: { onDone: () => void }) {
   const last = profile.name.split(' ').slice(-1)
   const D = (s: number) => (rm ? 0 : s)
   const hoverRing = hover !== null ? NODES[hover].ring : null
-  const stageTop = short ? '36%' : '42%'
 
   const Name = ({ className }: { className: string }) => (
     <h1 className={className}>
@@ -161,8 +160,8 @@ export function Intro({ onDone }: { onDone: () => void }) {
       {/* ── background: near-black with one soft core glow + a whisper of grid ── */}
       <div className="grid-bg absolute inset-0 opacity-[0.12]" />
       <div
-        className="pointer-events-none absolute left-1/2 h-[680px] w-[680px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-70"
-        style={{ top: stageTop, background: 'radial-gradient(circle, rgba(34,211,238,0.14), rgba(79,140,255,0.08) 34%, transparent 66%)' }}
+        className="pointer-events-none absolute left-1/2 top-[44%] h-[680px] w-[680px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-70"
+        style={{ background: 'radial-gradient(circle, rgba(34,211,238,0.14), rgba(79,140,255,0.08) 34%, transparent 66%)' }}
       />
       <div className="pointer-events-none absolute inset-0" style={{ background: 'radial-gradient(ellipse 90% 80% at 50% 42%, transparent 40%, rgba(5,6,11,0.9) 100%)' }} />
 
@@ -208,11 +207,12 @@ export function Intro({ onDone }: { onDone: () => void }) {
         </div>
       ) : (
         /* ── desktop / tablet: one centred identity column with the orbit haloing the avatar ── */
-        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center px-6 text-center">
+        <div className="absolute inset-0 z-10 flex items-center justify-center px-6 pb-16 text-center">
+         <motion.div style={{ scale }} className="flex flex-col items-center">
           {/* avatar core, with the orbit composition centred on it and overflowing */}
           <div className="relative flex items-center justify-center">
             <motion.div className="pointer-events-none absolute left-1/2 top-1/2" style={{ x: px, y: py }}>
-              <motion.div className="relative" style={{ width: BOX, height: BOX, x: '-50%', y: '-50%', scale }}>
+              <motion.div className="relative" style={{ width: BOX, height: BOX, x: '-50%', y: '-50%' }}>
                 {/* orbit rings (ellipses) — emphasise on related hover */}
                 {RINGS.map((r, i) => (
                   <motion.div
@@ -338,6 +338,7 @@ export function Intro({ onDone }: { onDone: () => void }) {
               <Stats className="mt-7 flex items-stretch justify-center divide-x divide-white/10" />
             </motion.div>
           </div>
+         </motion.div>
         </div>
       )}
 
@@ -349,7 +350,7 @@ export function Intro({ onDone }: { onDone: () => void }) {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
-            className="group absolute inset-x-0 bottom-6 z-20 mx-auto flex w-fit flex-col items-center gap-2"
+            className="group absolute inset-x-0 bottom-6 z-20 mx-auto hidden w-fit flex-col items-center gap-2 [@media(min-height:600px)]:flex"
             aria-label="Enter site"
           >
             <span className="font-mono text-[10px] uppercase tracking-[0.35em] text-white/45 transition-colors group-hover:text-white/70">
