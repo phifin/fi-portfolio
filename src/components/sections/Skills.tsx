@@ -51,7 +51,7 @@ const CAT_SHORT: Record<string, { en: string; vi: string }> = {
 }
 
 function useSkillsLayout() {
-  const [layout, setLayout] = useState({ compactTabs: false, compactLabels: false, wide: false })
+  const [layout, setLayout] = useState({ compactTabs: false, compactLabels: false })
 
   useEffect(() => {
     const fit = () => {
@@ -59,7 +59,6 @@ function useSkillsLayout() {
       setLayout({
         compactTabs: w >= 640 && w < 1400,
         compactLabels: w >= 640 && w < 1280,
-        wide: w >= 1536,
       })
     }
     fit()
@@ -71,9 +70,9 @@ function useSkillsLayout() {
 }
 
 function SkillCell({
-  name, color, dim, index, reducedMotion, wide,
+  name, color, dim, index, reducedMotion,
 }: {
-  name: string; color: string; dim: boolean; index: number; reducedMotion: boolean; wide: boolean
+  name: string; color: string; dim: boolean; index: number; reducedMotion: boolean
 }) {
   return (
     <motion.div
@@ -81,18 +80,16 @@ function SkillCell({
       initial={reducedMotion ? false : { opacity: 0, scale: 0.88 }}
       animate={{ opacity: dim ? 0.28 : 1, scale: 1 }}
       transition={{ delay: index * 0.025, type: 'spring', stiffness: 380, damping: 26 }}
-      whileHover={dim ? undefined : { y: -4, scale: 1.06 }}
-      className={`group relative flex flex-col items-center justify-center rounded-xl border px-1 py-2 ${
-        wide ? 'w-[5.5rem]' : 'w-[4.25rem] sm:w-[4.75rem] xl:w-[5.25rem]'
-      }`}
+      whileHover={dim ? undefined : { y: -3, scale: 1.05 }}
+      // Chip sizes itself to its label — a fixed width forced long names
+      // ("PostgreSQL", "Grafana Loki") to wrap or break mid-word.
+      className="group relative flex shrink-0 items-center gap-2 rounded-xl border py-2 pl-2.5 pr-3.5"
       style={{
         borderColor: `${color}30`,
         background: `linear-gradient(160deg, ${color}14, rgba(255,255,255,0.02))`,
       }}
     >
-      <div
-        className="mb-1.5 flex h-7 w-7 items-center justify-center transition-transform group-hover:scale-110"
-      >
+      <div className="flex h-7 w-7 shrink-0 items-center justify-center transition-transform group-hover:scale-110">
         {hasLogo(name) ? (
           <TechGlyph name={name} size={22} />
         ) : (
@@ -104,11 +101,11 @@ function SkillCell({
           </span>
         )}
       </div>
-      <span className="line-clamp-2 w-full break-words text-center text-[9px] leading-tight text-white/75 sm:text-[10px] xl:text-[11px] 2xl:text-[12px]">
+      <span className="whitespace-nowrap text-[11px] leading-none text-white/80 sm:text-xs xl:text-[13px] 2xl:text-sm">
         {name}
       </span>
       <span
-        className="pointer-events-none absolute inset-x-2 bottom-0 h-0.5 rounded-full opacity-0 transition-opacity group-hover:opacity-100"
+        className="pointer-events-none absolute inset-x-2.5 bottom-0 h-0.5 rounded-full opacity-0 transition-opacity group-hover:opacity-100"
         style={{ background: color }}
       />
     </motion.div>
@@ -117,7 +114,7 @@ function SkillCell({
 
 export function Skills() {
   const { pick } = useLang()
-  const { compactTabs, compactLabels, wide } = useSkillsLayout()
+  const { compactTabs, compactLabels } = useSkillsLayout()
   const [active, setActive] = useState(0)
   const [focusCat, setFocusCat] = useState<string | null>(null)
   const [reducedMotion, setReducedMotion] = useState(false)
@@ -156,11 +153,18 @@ export function Skills() {
     })
   }, [group.categories, pick])
 
+  // Size the label column to the longest label in the ACTIVE tab so every row
+  // stays aligned (no fixed rem width that overflows long labels or leaves a
+  // huge gap after short ones). The label font is monospace, so `ch` gives an
+  // accurate per-character width; the extra term covers letter-spacing.
+  const maxLabelChars = Math.max(...bands.map((b) => catLabel(b.labelEn, b.labelBi).length))
+  const catColWidth = `calc(${maxLabelChars}ch + ${(maxLabelChars - 1) * 0.14}em + 2rem)`
+
   return (
     <section id={sectionIds.skills} className="relative flex min-h-[100svh] flex-col py-4 sm:py-5 xl:py-7">
       <div className="grid-bg pointer-events-none absolute inset-0 opacity-30" />
 
-      <div className="container-page relative flex min-h-0 flex-1 flex-col xl:max-w-6xl 2xl:max-w-7xl min-[1920px]:max-w-[88rem] min-[2560px]:max-w-[100rem]">
+      <div className="container-page relative flex min-h-0 flex-1 flex-col xl:max-w-6xl 2xl:max-w-7xl min-[1920px]:max-w-[96rem] min-[2560px]:max-w-[108rem]">
         <div className="shrink-0">
           <SectionHeading kicker={pick(ui.skills.kicker)} title={pick(ui.skills.title)} Icon={Wrench} />
         </div>
@@ -230,6 +234,7 @@ export function Skills() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.18 }}
+                style={{ ['--cat-col' as string]: catColWidth }}
                 className="relative flex min-h-[15rem] flex-col justify-center px-3 py-2.5 sm:min-h-[16rem] sm:px-5 sm:py-3 xl:min-h-[19rem] xl:px-8 xl:py-5 2xl:px-10 2xl:py-6"
               >
                 {bands.map((band, bi) => (
@@ -238,7 +243,7 @@ export function Skills() {
                       initial={reducedMotion ? false : { opacity: 0, x: -8 }}
                       animate={{ opacity: focusCat === null || focusCat === band.labelEn ? 1 : 0.35 }}
                       transition={{ delay: bi * 0.05 }}
-                      className="grid grid-cols-1 gap-2 border-b border-white/[0.04] py-2.5 last:border-0 sm:grid-cols-[auto_1fr] sm:items-start sm:gap-x-5 sm:py-3 lg:gap-x-6 xl:gap-x-8 xl:py-3.5 2xl:gap-x-10"
+                      className="grid grid-cols-1 gap-2 border-b border-white/[0.04] py-2.5 last:border-0 sm:grid-cols-[var(--cat-col)_1fr] sm:items-start sm:gap-x-5 sm:py-3 lg:gap-x-6 xl:gap-x-8 xl:py-3.5 2xl:gap-x-10"
                       onMouseEnter={() => setFocusCat(band.labelEn)}
                       onMouseLeave={() => setFocusCat(null)}
                     >
@@ -264,7 +269,6 @@ export function Skills() {
                               dim={focusCat !== null && focusCat !== band.labelEn}
                               index={band.tileStart + si}
                               reducedMotion={reducedMotion}
-                              wide={wide}
                             />
                           ))}
                       </div>
