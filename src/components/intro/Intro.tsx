@@ -103,21 +103,33 @@ export function Intro({ onDone }: { onDone: () => void }) {
     exitingRef.current = true
     setExiting(true)
     document.body.style.overflow = ''
-    getLenis()?.start()
+    // Reset scroll before Lenis resumes so wheel/touch momentum can't slip the page.
+    window.scrollTo(0, 0)
+    const lenis = getLenis()
+    lenis?.scrollTo(0, { immediate: true })
+    lenis?.start()
     setTimeout(onDone, 850)
   }
 
   useEffect(() => {
     if (!ready) return
-    const onWheel = (e: WheelEvent) => { if (e.deltaY > 4) exit() }
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault()
+      if (e.deltaY > 4) exit()
+    }
     const onKey = (e: KeyboardEvent) => { if (['ArrowUp', 'Enter', ' ', 'ArrowDown'].includes(e.key)) exit() }
     let startY = 0
     const onTS = (e: TouchEvent) => { startY = e.touches[0].clientY }
-    const onTM = (e: TouchEvent) => { if (startY - e.touches[0].clientY > 24) exit() }
-    window.addEventListener('wheel', onWheel, { passive: true })
+    const onTM = (e: TouchEvent) => {
+      if (startY - e.touches[0].clientY > 24) {
+        e.preventDefault()
+        exit()
+      }
+    }
+    window.addEventListener('wheel', onWheel, { passive: false })
     window.addEventListener('keydown', onKey)
     window.addEventListener('touchstart', onTS, { passive: true })
-    window.addEventListener('touchmove', onTM, { passive: true })
+    window.addEventListener('touchmove', onTM, { passive: false })
     return () => {
       window.removeEventListener('wheel', onWheel)
       window.removeEventListener('keydown', onKey)
@@ -149,15 +161,15 @@ export function Intro({ onDone }: { onDone: () => void }) {
     </div>
   )
 
-  // scroll cue lives IN the flow (not absolute) so it can never be gated off /
-  // overlapped on short viewports — it scales with the rest of the composition.
-  const ScrollCue = ({ className = '' }: { className?: string }) => (
+  // Pinned to the viewport bottom — outside the scaled/centered composition so it
+  // always sits on the screen edge regardless of content height or uniform scale.
+  const ScrollCue = () => (
     <motion.button
       onClick={exit}
       initial={{ opacity: 0 }}
       animate={{ opacity: ready && !exiting ? 1 : 0 }}
       transition={{ duration: 0.5 }}
-      className={`group pointer-events-auto flex flex-col items-center gap-2 ${className}`}
+      className="group pointer-events-auto absolute inset-x-0 bottom-[max(1.25rem,env(safe-area-inset-bottom,0px))] z-30 flex flex-col items-center gap-2"
       aria-label="Enter site"
     >
       <span className="font-mono text-[10px] uppercase tracking-[0.35em] text-white/45 transition-colors group-hover:text-white/70">
@@ -191,7 +203,7 @@ export function Intro({ onDone }: { onDone: () => void }) {
 
       {compact ? (
         /* ── mobile: a calm vertical stack (no absolute overlap) ── */
-        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center px-6 pb-24 pt-8 text-center">
+        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center px-6 pb-16 pt-8 text-center">
           <motion.div
             className="relative mb-7 flex items-center justify-center"
             initial={{ scale: 0.9, opacity: 0 }}
@@ -228,11 +240,10 @@ export function Intro({ onDone }: { onDone: () => void }) {
           </div>
 
           <Stats className="mt-8 flex items-stretch justify-center divide-x divide-white/10" />
-          <ScrollCue className="mt-9" />
         </div>
       ) : (
         /* ── desktop / tablet: one centred identity column with the orbit haloing the avatar ── */
-        <div className="absolute inset-0 z-10 flex items-center justify-center px-6 pb-8 text-center">
+        <div className="absolute inset-0 z-10 flex items-center justify-center px-6 pb-14 text-center">
          <motion.div style={{ scale }} className="flex flex-col items-center">
           {/* avatar core, with the orbit composition centred on it and overflowing */}
           <div className="relative flex items-center justify-center">
@@ -363,10 +374,11 @@ export function Intro({ onDone }: { onDone: () => void }) {
               <Stats className="mt-7 flex items-stretch justify-center divide-x divide-white/10" />
             </motion.div>
           </div>
-          <ScrollCue className="mt-9" />
          </motion.div>
         </div>
       )}
+
+      <ScrollCue />
     </motion.div>
   )
 }
