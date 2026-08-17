@@ -31,16 +31,16 @@ export const ui = {
     kicker: { en: 'Deep dive · 01', vi: 'Đào sâu · 01' },
     title: { en: 'Event-Driven Order Flow', vi: 'Luồng đơn hàng Event-Driven' },
     body: {
-      en: 'Orders are written transactionally, published through the outbox pattern, streamed by Debezium CDC into Kafka, and fanned out to consumers — millions of orders a month, with idempotency and retries.',
-      vi: 'Đơn hàng được ghi transactional, phát qua outbox pattern, được Debezium CDC stream vào Kafka rồi fan-out tới các consumer — hàng triệu đơn mỗi tháng, có idempotency và retry.',
+      en: 'Outbox pattern → Debezium CDC → Kafka → consumers, handling millions of orders a month with idempotency and retries.',
+      vi: 'Outbox pattern → Debezium CDC → Kafka → consumer, xử lý hàng triệu đơn/tháng với idempotency và retry.',
     },
   },
   saga: {
     kicker: { en: 'Deep dive · 02', vi: 'Đào sâu · 02' },
     title: { en: 'Temporal Saga & Compensation', vi: 'Temporal Saga & Bù trừ' },
     body: {
-      en: 'Temporal is the orchestration infra. The Order Worker runs OrderWorkflow: it first reserves stock in Inventory, then pushes a ChargePayment activity onto the payment-task-queue for the Payment Worker to pull and execute. If payment fails, the compensating transaction releases the reserved stock and rolls the order back.',
-      vi: 'Temporal là hạ tầng điều phối. Order Worker chạy OrderWorkflow: trước tiên giữ hàng trong Inventory, rồi đẩy activity ChargePayment vào payment-task-queue để Payment Worker pull về và execute. Nếu thanh toán lỗi, compensating transaction trả lại hàng đã giữ và rollback đơn hàng.',
+      en: 'Order Worker orchestrates the saga with Temporal: reserve stock, then charge payment. If payment fails, the compensating transaction releases the stock and rolls back the order.',
+      vi: 'Order Worker điều phối saga bằng Temporal: giữ hàng trước, rồi thu tiền. Nếu thanh toán lỗi, compensating transaction trả lại hàng đã giữ và rollback đơn.',
     },
     happy: { en: 'Happy path', vi: 'Happy path' },
     fail: { en: 'Payment fails → compensate', vi: 'Thanh toán lỗi → bù trừ' },
@@ -49,8 +49,8 @@ export const ui = {
     kicker: { en: 'Deep dive · 03', vi: 'Đào sâu · 03' },
     title: { en: 'Go API Gateway', vi: 'Go API Gateway' },
     body: {
-      en: 'One API for both internal services and external partners. Hand-written middleware rate-limits and caches in Redis, batches bulk-sign requests, then normalizes and routes each call to the right e-invoice provider (FPT.eInvoice, meInvoice, SInvoice, M-invoice) — no invoice data stored.',
-      vi: 'Một API cho cả internal service lẫn đối tác bên ngoài. Middleware tự viết lo rate limit và cache trong Redis, gom (batch) các request ký hàng loạt, rồi chuẩn hoá và route mỗi request tới đúng dịch vụ hoá đơn điện tử (FPT.eInvoice, meInvoice, SInvoice, M-invoice) — không lưu dữ liệu hoá đơn.',
+      en: 'One Go API for internal services and external partners — middleware rate-limits, caches, batches and routes each call to the right e-invoice provider, with no invoice data stored.',
+      vi: 'Một Go API duy nhất cho cả service nội bộ lẫn đối tác ngoài — middleware lo rate limit, cache, gom batch và route mỗi request tới đúng nhà cung cấp, không lưu dữ liệu hoá đơn.',
     },
   },
   experience: {

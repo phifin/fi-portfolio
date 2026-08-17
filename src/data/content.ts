@@ -15,8 +15,8 @@ export const profile = {
     vi: 'Xây dựng microservice event-driven bằng Go & Java và giao diện dữ liệu lớn với React/TypeScript.',
   } as Bi,
   summary: {
-    en: 'Fullstack Engineer, ~3 years on a multi-tenant fintech platform — event-driven backend in Go & Java, data-heavy dashboards in React/TypeScript. I owned a Go API gateway end-to-end and shipped core logic in a high-throughput order service.',
-    vi: 'Kỹ sư Fullstack, ~3 năm trên nền tảng fintech multi-tenant — backend event-driven bằng Go & Java, dashboard dữ liệu lớn với React/TypeScript. Mình sở hữu một Go API gateway end-to-end và business logic cốt lõi của order service throughput cao.',
+    en: 'Fullstack Engineer, ~3 years on a multi-tenant fintech platform — event-driven Go/Java backend, data-heavy React/TypeScript dashboards. Owned a Go API gateway end-to-end and core logic in a high-throughput order service.',
+    vi: 'Kỹ sư Fullstack, ~3 năm trên nền tảng fintech multi-tenant — backend event-driven Go/Java, dashboard dữ liệu lớn React/TypeScript. Sở hữu một Go API gateway end-to-end và business logic cốt lõi của order service throughput cao.',
   } as Bi,
   avatar: 'avatar.webp',
   avatarSmall: 'avatar-sm.webp',
@@ -155,8 +155,8 @@ export const experiences: Experience[] = [
         stack: ['Java', 'NestJS', 'PostgreSQL', 'MongoDB', 'Kafka', 'Debezium', 'ReactJS', 'PWA'],
         highlights: [
           {
-            en: 'Implemented order-creation logic (validation, pricing, persistence) in the Java/PostgreSQL order service — the platform’s system of record for order, invoice and payment status.',
-            vi: 'Xây logic tạo đơn (validate, tính giá, lưu trữ) trong order service Java/PostgreSQL — system of record cho trạng thái đơn, hoá đơn và thanh toán.',
+            en: 'Implemented order-creation logic (validation, pricing, persistence) in the Java/PostgreSQL order service — system of record for orders, invoices and payments.',
+            vi: 'Xây logic tạo đơn (validate, tính giá, lưu trữ) trong order service Java/PostgreSQL — system of record cho đơn, hoá đơn và thanh toán.',
           },
           {
             en: 'Built idempotent refund workflows integrated via gRPC with the payment service (idempotency key, line-item amounts).',
