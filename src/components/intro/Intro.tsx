@@ -55,6 +55,14 @@ const STATS = [
   { v: '04M+', l: { en: 'Orders / month', vi: 'Đơn / tháng' } },
 ]
 
+// layout budget (unscaled px) — orbit is absolute so we must reserve top space in flow
+const AVATAR = 184
+const CHIP = 30
+const ORBIT_TOP = RINGS[1].ry + CHIP - AVATAR / 2 // clearance above avatar box
+const IDENTITY_H = 300
+const SCROLL_RESERVE = 68
+const COMPOSITION_H = ORBIT_TOP + AVATAR + IDENTITY_H
+
 export function Intro({ onDone }: { onDone: () => void }) {
   const { lang, pick } = useLang()
   const [ready, setReady] = useState(false)
@@ -64,16 +72,19 @@ export function Intro({ onDone }: { onDone: () => void }) {
 
   const rm = useMemo(() => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches, [])
   const [scale, setScale] = useState(1)
+  const [yFlatten, setYFlatten] = useState(1)
   const [compact, setCompact] = useState(false)
   const px = useMotionValue(0)
   const py = useMotionValue(0)
 
   useEffect(() => {
     const fit = () => {
-      // one uniform scale for the whole composition (incl. the scroll cue) so it
-      // always fits — width- AND height-bound. Only shrinks below ~700px tall.
-      setScale(Math.min(1, window.innerWidth / 1080, window.innerHeight / 760))
-      setCompact(window.innerWidth < 680)
+      const w = window.innerWidth
+      const h = window.innerHeight
+      // flatten the ellipse on short viewports so top nodes (Kafka, PG, Temporal) stay in frame
+      setYFlatten(h < 760 ? 0.82 : h < 820 ? 0.88 : h < 900 ? 0.94 : 1)
+      setScale(Math.min(1, w / 1080, (h - SCROLL_RESERVE) / COMPOSITION_H))
+      setCompact(w < 680)
     }
     fit()
     window.addEventListener('resize', fit)
@@ -243,19 +254,23 @@ export function Intro({ onDone }: { onDone: () => void }) {
         </div>
       ) : (
         /* ── desktop / tablet: one centred identity column with the orbit haloing the avatar ── */
-        <div className="absolute inset-0 z-10 flex items-center justify-center px-6 pb-14 text-center">
+        <div className="absolute inset-0 z-10 flex items-center justify-center px-6 pb-14 pt-2 text-center">
          <motion.div style={{ scale }} className="flex flex-col items-center">
-          {/* avatar core, with the orbit composition centred on it and overflowing */}
-          <div className="relative flex items-center justify-center">
-            <motion.div className="pointer-events-none absolute left-1/2 top-1/2" style={{ x: px, y: py }}>
+          {/* paddingTop reserves flow space for absolutely-positioned orbit above avatar */}
+          <div className="relative flex items-center justify-center" style={{ paddingTop: ORBIT_TOP }}>
+            <motion.div
+              className="pointer-events-none absolute left-1/2"
+              style={{ top: ORBIT_TOP + AVATAR / 2, x: px, y: py }}
+            >
               <motion.div className="relative" style={{ width: BOX, height: BOX, x: '-50%', y: '-50%' }}>
-                {/* orbit rings (ellipses) — emphasise on related hover */}
                 {RINGS.map((r, i) => (
                   <motion.div
                     key={i}
                     className="absolute left-1/2 top-1/2 rounded-full border"
                     style={{
-                      width: r.rx * 2, height: r.ry * 2, x: '-50%', y: '-50%',
+                      width: r.rx * 2,
+                      height: r.ry * 2 * yFlatten,
+                      x: '-50%', y: '-50%',
                       borderColor: hoverRing === i ? 'rgba(120,190,255,0.35)' : 'rgba(255,255,255,0.07)',
                       transition: 'border-color 0.5s ease',
                     }}
@@ -284,8 +299,8 @@ export function Intro({ onDone }: { onDone: () => void }) {
                       key={o.t}
                       className="pointer-events-auto absolute left-1/2 top-1/2"
                       style={{ willChange: 'transform' }}
-                      initial={{ x: o.x, y: o.y, opacity: 0, scale: 0.85 }}
-                      animate={{ x: o.x, y: o.y, opacity: dim ? 0.4 : 1, scale: 1 }}
+                      initial={{ x: o.x, y: o.y * yFlatten, opacity: 0, scale: 0.85 }}
+                      animate={{ x: o.x, y: o.y * yFlatten, opacity: dim ? 0.4 : 1, scale: 1 }}
                       transition={{ delay: D(0.5 + i * 0.045), duration: rm ? 0 : 0.6, ease: [0.22, 1, 0.36, 1] }}
                       onMouseEnter={() => setHover(i)}
                       onMouseLeave={() => setHover(null)}
