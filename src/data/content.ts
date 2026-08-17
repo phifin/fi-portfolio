@@ -59,10 +59,14 @@ export const skillGroups: SkillGroup[] = [
     categories: [
       { label: { en: 'Language', vi: 'Ngôn ngữ' }, items: ['Go', 'Java', 'TypeScript'] },
       { label: { en: 'Frameworks', vi: 'Framework' }, items: ['net/http', 'Gin', 'Chi', 'Spring', 'NestJS'] },
-      { label: { en: 'API & RPC', vi: 'API & RPC' }, items: ['REST', 'gRPC', 'API Gateway'] },
-      { label: { en: 'Architecture', vi: 'Kiến trúc' }, items: ['Microservices', 'Event-Driven'] },
-      { label: { en: 'Messaging', vi: 'Message Queue' }, items: ['Kafka'] },
-      { label: { en: 'Patterns', vi: 'Pattern' }, items: ['Outbox', 'Debezium CDC', 'Temporal / Saga'] },
+      {
+        label: { en: 'Service Communication', vi: 'Giao tiếp service' },
+        items: ['REST', 'gRPC', 'API Gateway', 'Kafka'],
+      },
+      {
+        label: { en: 'Architecture & Patterns', vi: 'Kiến trúc & Pattern' },
+        items: ['Microservices', 'Event-Driven', 'Outbox', 'Debezium CDC', 'Temporal / Saga'],
+      },
     ],
   },
   {
@@ -72,9 +76,10 @@ export const skillGroups: SkillGroup[] = [
     blurb: { en: 'How I build fast, data-heavy interfaces that still feel effortless.', vi: 'Cách mình xây giao diện nhanh, nhiều dữ liệu mà vẫn mượt.' },
     categories: [
       { label: { en: 'Language', vi: 'Ngôn ngữ' }, items: ['JavaScript', 'TypeScript'] },
-      { label: { en: 'Framework', vi: 'Framework' }, items: ['React', 'Next.js'] },
-      { label: { en: 'State & Data', vi: 'State & Data' }, items: ['Zustand', 'TanStack Query'] },
-      { label: { en: 'Visualization', vi: 'Trực quan hoá' }, items: ['Recharts', 'ApexCharts'] },
+      {
+        label: { en: 'UI Stack', vi: 'UI Stack' },
+        items: ['React', 'Next.js', 'Zustand', 'TanStack Query', 'Recharts', 'ApexCharts'],
+      },
       { label: { en: 'Delivery', vi: 'Delivery' }, items: ['PWA', 'Capacitor', 'Performance'] },
     ],
   },
@@ -84,9 +89,10 @@ export const skillGroups: SkillGroup[] = [
     accent: 'sky',
     blurb: { en: 'Where state lives — relational, document and in-memory.', vi: 'Nơi lưu trạng thái — quan hệ, document và in-memory.' },
     categories: [
-      { label: { en: 'Relational', vi: 'Quan hệ (SQL)' }, items: ['PostgreSQL'] },
-      { label: { en: 'Document', vi: 'Document (NoSQL)' }, items: ['MongoDB'] },
-      { label: { en: 'Cache & KV', vi: 'Cache & KV' }, items: ['Redis'] },
+      {
+        label: { en: 'Data Stores', vi: 'Kho dữ liệu' },
+        items: ['PostgreSQL', 'MongoDB', 'Redis'],
+      },
     ],
   },
   {
@@ -95,10 +101,10 @@ export const skillGroups: SkillGroup[] = [
     accent: 'cyan',
     blurb: { en: 'Shipping and observing services in production.', vi: 'Ship và giám sát service trên production.' },
     categories: [
-      { label: { en: 'Containers', vi: 'Container' }, items: ['Docker', 'Kubernetes', 'Helm'] },
-      { label: { en: 'Delivery', vi: 'Delivery' }, items: ['GitOps', 'CI/CD', 'Rancher'] },
-      { label: { en: 'Observability', vi: 'Observability' }, items: ['Grafana Loki'] },
-      { label: { en: 'Cloud', vi: 'Cloud' }, items: ['AWS S3'] },
+      {
+        label: { en: 'Platform & Ops', vi: 'Platform & Ops' },
+        items: ['Docker', 'Kubernetes', 'Helm', 'GitOps', 'CI/CD', 'Rancher', 'Grafana Loki', 'AWS S3'],
+      },
     ],
   },
   {
@@ -107,8 +113,10 @@ export const skillGroups: SkillGroup[] = [
     accent: 'blue',
     blurb: { en: 'How I work with a team and keep systems healthy.', vi: 'Cách mình làm việc nhóm và giữ hệ thống khoẻ mạnh.' },
     categories: [
-      { label: { en: 'Process', vi: 'Quy trình' }, items: ['Agile', 'Code Review'] },
-      { label: { en: 'System Design', vi: 'Thiết kế hệ thống' }, items: ['Multi-tenant Architecture'] },
+      {
+        label: { en: 'Ways of Working', vi: 'Cách làm việc' },
+        items: ['Agile', 'Code Review', 'Multi-tenant Architecture'],
+      },
     ],
   },
 ]

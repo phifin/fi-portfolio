@@ -2,8 +2,8 @@ import { useEffect, useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
   Wrench, Server, LayoutDashboard, Database, Cloud, GitPullRequestArrow,
-  Code2, Layers, Webhook, Boxes, MessageSquare, Diamond, Workflow, BarChart3,
-  Rocket, FileJson, Zap, Container, Activity, GitPullRequestArrow as GitIcon,
+  Code2, Layers, Webhook, Boxes, Rocket,
+  GitPullRequestArrow as GitIcon,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { SectionHeading } from '../ui/SectionHeading'
@@ -25,21 +25,13 @@ const CAT_META: Record<string, { c: string; Icon: LucideIcon }> = {
   Language: { c: '#22d3ee', Icon: Code2 },
   Frameworks: { c: '#34d399', Icon: Layers },
   Framework: { c: '#34d399', Icon: Layers },
-  'API & RPC': { c: '#a78bfa', Icon: Webhook },
-  Architecture: { c: '#4f8cff', Icon: Boxes },
-  Messaging: { c: '#fbbf24', Icon: MessageSquare },
-  Patterns: { c: '#f472b6', Icon: Diamond },
-  'State & Data': { c: '#38bdf8', Icon: Workflow },
-  Visualization: { c: '#2dd4ff', Icon: BarChart3 },
+  'Service Communication': { c: '#a78bfa', Icon: Webhook },
+  'Architecture & Patterns': { c: '#4f8cff', Icon: Boxes },
+  'UI Stack': { c: '#34d399', Icon: LayoutDashboard },
   Delivery: { c: '#818cf8', Icon: Rocket },
-  Relational: { c: '#38bdf8', Icon: Database },
-  Document: { c: '#34d399', Icon: FileJson },
-  'Cache & KV': { c: '#fb7185', Icon: Zap },
-  Containers: { c: '#4f8cff', Icon: Container },
-  Observability: { c: '#fbbf24', Icon: Activity },
-  Cloud: { c: '#22d3ee', Icon: Cloud },
-  Process: { c: '#a78bfa', Icon: GitIcon },
-  'System Design': { c: '#f472b6', Icon: Boxes },
+  'Data Stores': { c: '#38bdf8', Icon: Database },
+  'Platform & Ops': { c: '#22d3ee', Icon: Cloud },
+  'Ways of Working': { c: '#a78bfa', Icon: GitIcon },
 }
 const catMeta = (en: string) => CAT_META[en] ?? { c: '#4f8cff', Icon: Layers }
 
@@ -51,12 +43,10 @@ const TAB_SHORT: Record<string, { en: string; vi: string }> = {
 
 /** Shorter category labels when the sidebar is tight */
 const CAT_SHORT: Record<string, { en: string; vi: string }> = {
-  'State & Data': { en: 'State · Data', vi: 'State · Data' },
-  'System Design': { en: 'Sys Design', vi: 'TK hệ thống' },
-  'Cache & KV': { en: 'Cache · KV', vi: 'Cache · KV' },
-  Visualization: { en: 'Visualize', vi: 'Trực quan' },
-  Architecture: { en: 'Arch', vi: 'Kiến trúc' },
-  Messaging: { en: 'Messaging', vi: 'MQ' },
+  'Service Communication': { en: 'Communication', vi: 'Giao tiếp' },
+  'Architecture & Patterns': { en: 'Arch & Patterns', vi: 'KT & Pattern' },
+  'Platform & Ops': { en: 'Platform', vi: 'Platform' },
+  'Ways of Working': { en: 'Process', vi: 'Quy trình' },
 }
 
 function useSkillsLayout() {
@@ -166,7 +156,7 @@ export function Skills() {
   }, [group.categories, pick])
 
   return (
-    <section id={sectionIds.skills} className="relative flex h-[100svh] flex-col overflow-hidden py-4 sm:py-5 xl:py-7">
+    <section id={sectionIds.skills} className="relative flex min-h-[100svh] flex-col py-4 sm:py-5 xl:py-7">
       <div className="grid-bg pointer-events-none absolute inset-0 opacity-30" />
 
       <div className="container-page relative flex min-h-0 flex-1 flex-col xl:max-w-6xl 2xl:max-w-7xl">
@@ -174,8 +164,8 @@ export function Skills() {
           <SectionHeading kicker={pick(ui.skills.kicker)} title={pick(ui.skills.title)} Icon={Wrench} />
         </div>
 
-        <div className="flex min-h-0 flex-1 items-center justify-center py-2 sm:py-3 xl:py-5">
-          <div className="glass relative w-full max-h-full overflow-y-auto rounded-2xl xl:rounded-3xl">
+        <div className="flex flex-1 items-center justify-center py-2 sm:py-3 xl:py-5">
+          <div className="glass relative w-full overflow-visible rounded-2xl xl:rounded-3xl">
             <motion.div
               key={group.key}
               className="pointer-events-none absolute inset-0 rounded-2xl opacity-40"
@@ -239,7 +229,7 @@ export function Skills() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.18 }}
-                className="relative px-3 py-3 sm:px-5 sm:py-4 xl:px-8 xl:py-6 2xl:px-10 2xl:py-7"
+                className="relative px-3 py-2.5 sm:px-5 sm:py-3 xl:px-8 xl:py-5 2xl:px-10 2xl:py-6"
               >
                 {bands.map((band, bi) => (
                     <motion.div
@@ -247,7 +237,7 @@ export function Skills() {
                       initial={reducedMotion ? false : { opacity: 0, x: -8 }}
                       animate={{ opacity: focusCat === null || focusCat === band.labelEn ? 1 : 0.35 }}
                       transition={{ delay: bi * 0.05 }}
-                      className="grid grid-cols-1 gap-2 border-b border-white/[0.04] py-3 last:border-0 sm:grid-cols-[minmax(8.75rem,auto)_1fr] sm:items-start sm:gap-x-5 sm:py-3.5 lg:grid-cols-[9.25rem_1fr] lg:gap-x-6 xl:grid-cols-[10rem_1fr] xl:gap-x-8 xl:py-4 2xl:grid-cols-[10.5rem_1fr] 2xl:gap-x-10"
+                      className="grid grid-cols-1 gap-2 border-b border-white/[0.04] py-2.5 last:border-0 sm:grid-cols-[minmax(8.75rem,auto)_1fr] sm:items-start sm:gap-x-5 sm:py-3 lg:grid-cols-[9.25rem_1fr] lg:gap-x-6 xl:grid-cols-[10rem_1fr] xl:gap-x-8 xl:py-3.5 2xl:grid-cols-[10.5rem_1fr] 2xl:gap-x-10"
                       onMouseEnter={() => setFocusCat(band.labelEn)}
                       onMouseLeave={() => setFocusCat(null)}
                     >
