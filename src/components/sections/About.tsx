@@ -19,10 +19,10 @@ export function About() {
       <div className="container-page">
         <SectionHeading kicker={pick(ui.about.kicker)} title={pick(ui.about.title)} Icon={User} />
 
-        <div className="mt-8 grid gap-8 lg:grid-cols-[280px_1fr] lg:items-start">
+        <div className="mt-8 grid gap-8 lg:grid-cols-[240px_1fr] lg:items-start">
           {/* avatar */}
           <Reveal>
-            <TiltCard max={12} className="relative mx-auto w-full max-w-[300px]">
+            <TiltCard max={12} className="relative mx-auto w-full max-w-[240px]">
               <div className="relative overflow-hidden rounded-3xl border border-white/10 shadow-glow-blue">
                 <div
                   className="absolute inset-0 scale-110 blur-xl"

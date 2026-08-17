@@ -16,7 +16,7 @@ export function SectionHeading({ kicker, title, Icon, align = 'left' }: Props) {
           {Icon && <Icon size={15} strokeWidth={2.2} />}
           {kicker}
         </span>
-        <h2 className="max-w-3xl text-3xl font-bold leading-tight sm:text-4xl md:text-5xl">
+        <h2 className="max-w-3xl text-[1.75rem] font-bold leading-tight sm:text-4xl 2xl:text-5xl">
           {title}
         </h2>
       </div>

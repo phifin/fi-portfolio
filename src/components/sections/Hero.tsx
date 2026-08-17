@@ -63,17 +63,13 @@ export function Hero() {
         </Canvas>
       </div>
 
-      {/* personal "whoami" terminal on the right (WebGL-independent, always visible) */}
-      <div className="pointer-events-none absolute right-[5%] top-1/2 hidden w-[44%] max-w-[520px] -translate-y-1/2 lg:block xl:right-[7%]">
-        <HeroGraphic />
-      </div>
-
-      {/* soft vignette — keep the left copy legible without hiding the graphic */}
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_28%_50%,rgba(5,6,14,0.55),transparent_60%)]" />
+      {/* soft vignette — keep the left copy legible */}
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_28%_50%,rgba(5,6,14,0.5),transparent_62%)]" />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-ink-950 to-transparent" />
 
-      {/* overlay content — reserve the right half for the terminal on lg+ so copy never underlaps it */}
-      <div className="container-page relative flex min-h-[100svh] flex-col justify-center pb-28 pt-24 lg:pr-[50%]">
+      {/* content: copy (left) + whoami terminal (right, lg+) in ONE aligned grid */}
+      <div className="container-page relative grid min-h-[100svh] grid-cols-1 items-center gap-8 py-24 lg:grid-cols-2 lg:gap-12">
+       <div className="flex flex-col justify-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -91,7 +87,7 @@ export function Hero() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
-          className="max-w-4xl text-5xl font-extrabold leading-[1.05] tracking-tight sm:text-6xl md:text-7xl"
+          className="text-5xl font-extrabold leading-[1.05] tracking-tight sm:text-6xl 2xl:text-7xl"
         >
           {profile.name.split(' ').slice(0, -1).join(' ')}{' '}
           <span className="text-gradient glow-cyan">{profile.name.split(' ').slice(-1)}</span>
@@ -101,7 +97,7 @@ export function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, delay: 0.55 }}
-          className="mt-4 font-mono text-base uppercase tracking-[0.25em] text-accent-cyan sm:text-lg"
+          className="mt-4 font-mono text-sm uppercase tracking-[0.25em] text-accent-cyan sm:text-base"
         >
           {pick(profile.role)}
         </motion.p>
@@ -110,7 +106,7 @@ export function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, delay: 0.7 }}
-          className="mt-6 max-w-2xl border-l-2 border-accent-cyan/60 pl-4 text-lg leading-relaxed text-white/70 sm:text-xl"
+          className="mt-6 max-w-xl border-l-2 border-accent-cyan/60 pl-4 text-base leading-relaxed text-white/70 sm:text-lg"
         >
           {pick(profile.tagline)}
         </motion.p>
@@ -119,7 +115,7 @@ export function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, delay: 0.85 }}
-          className="mt-9 flex flex-wrap items-center gap-3"
+          className="mt-8 flex flex-wrap items-center gap-3"
         >
           <button
             onClick={() => scrollToId(sectionIds.about)}
@@ -156,6 +152,17 @@ export function Hero() {
             </a>
           </div>
         </motion.div>
+       </div>
+
+       {/* whoami terminal — aligned grid column, lg+ only */}
+       <motion.div
+         initial={{ opacity: 0, y: 24 }}
+         animate={{ opacity: 1, y: 0 }}
+         transition={{ duration: 0.9, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
+         className="hidden w-full max-w-[540px] justify-self-center lg:block lg:justify-self-end"
+       >
+         <HeroGraphic />
+       </motion.div>
       </div>
 
       {/* scroll hint — hidden on short viewports to avoid overlapping the CTAs */}
@@ -163,7 +170,7 @@ export function Hero() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.4 }}
-        className="pointer-events-none absolute inset-x-0 bottom-6 hidden flex-col items-center gap-2 text-xs uppercase tracking-[0.2em] text-white/40 [@media(min-height:760px)]:flex"
+        className="pointer-events-none absolute inset-x-0 bottom-6 hidden flex-col items-center gap-2 text-xs uppercase tracking-[0.2em] text-white/40 [@media(min-height:640px)]:flex"
       >
         {pick(ui.hero.scroll)}
         <motion.span

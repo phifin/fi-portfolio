@@ -70,9 +70,9 @@ export function Intro({ onDone }: { onDone: () => void }) {
 
   useEffect(() => {
     const fit = () => {
-      // one uniform scale for the whole composition so it fits any viewport
-      // (small laptops, browser zoom) — width- AND height-bound.
-      setScale(Math.min(1, window.innerWidth / 1080, window.innerHeight / 820))
+      // one uniform scale for the whole composition (incl. the scroll cue) so it
+      // always fits — width- AND height-bound. Only shrinks below ~700px tall.
+      setScale(Math.min(1, window.innerWidth / 1080, window.innerHeight / 760))
       setCompact(window.innerWidth < 680)
     }
     fit()
@@ -149,6 +149,30 @@ export function Intro({ onDone }: { onDone: () => void }) {
     </div>
   )
 
+  // scroll cue lives IN the flow (not absolute) so it can never be gated off /
+  // overlapped on short viewports — it scales with the rest of the composition.
+  const ScrollCue = ({ className = '' }: { className?: string }) => (
+    <motion.button
+      onClick={exit}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: ready && !exiting ? 1 : 0 }}
+      transition={{ duration: 0.5 }}
+      className={`group pointer-events-auto flex flex-col items-center gap-2 ${className}`}
+      aria-label="Enter site"
+    >
+      <span className="font-mono text-[10px] uppercase tracking-[0.35em] text-white/45 transition-colors group-hover:text-white/70">
+        {EXPLORE[lang]}
+      </span>
+      <motion.span
+        animate={rm ? undefined : { y: [0, 6, 0], opacity: [0.5, 1, 0.5] }}
+        transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
+        className="text-accent-cyan"
+      >
+        <ChevronDown size={18} strokeWidth={2.5} />
+      </motion.span>
+    </motion.button>
+  )
+
   return (
     <motion.div
       className="fixed inset-0 z-[100] overflow-hidden"
@@ -204,10 +228,11 @@ export function Intro({ onDone }: { onDone: () => void }) {
           </div>
 
           <Stats className="mt-8 flex items-stretch justify-center divide-x divide-white/10" />
+          <ScrollCue className="mt-9" />
         </div>
       ) : (
         /* ── desktop / tablet: one centred identity column with the orbit haloing the avatar ── */
-        <div className="absolute inset-0 z-10 flex items-center justify-center px-6 pb-16 text-center">
+        <div className="absolute inset-0 z-10 flex items-center justify-center px-6 pb-8 text-center">
          <motion.div style={{ scale }} className="flex flex-col items-center">
           {/* avatar core, with the orbit composition centred on it and overflowing */}
           <div className="relative flex items-center justify-center">
@@ -338,34 +363,10 @@ export function Intro({ onDone }: { onDone: () => void }) {
               <Stats className="mt-7 flex items-stretch justify-center divide-x divide-white/10" />
             </motion.div>
           </div>
+          <ScrollCue className="mt-9" />
          </motion.div>
         </div>
       )}
-
-      {/* ── elegant scroll indicator ── */}
-      <AnimatePresence>
-        {ready && !exiting && (
-          <motion.button
-            onClick={exit}
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            className="group absolute inset-x-0 bottom-6 z-20 mx-auto hidden w-fit flex-col items-center gap-2 [@media(min-height:600px)]:flex"
-            aria-label="Enter site"
-          >
-            <span className="font-mono text-[10px] uppercase tracking-[0.35em] text-white/45 transition-colors group-hover:text-white/70">
-              {EXPLORE[lang]}
-            </span>
-            <motion.span
-              animate={rm ? undefined : { y: [0, 6, 0], opacity: [0.5, 1, 0.5] }}
-              transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
-              className="text-accent-cyan"
-            >
-              <ChevronDown size={18} strokeWidth={2.5} />
-            </motion.span>
-          </motion.button>
-        )}
-      </AnimatePresence>
     </motion.div>
   )
 }

@@ -16,6 +16,15 @@
 
 html {
   scroll-behavior: auto; /* Lenis handles smoothing */
+  font-size: 16px;
+}
+
+/* Global type/spacing scale. Tailwind sizes are rem-based, so easing the root
+   font down on laptop-sized viewports (incl. 14" hi-dpi and 150% browser zoom,
+   which both land here) shrinks every heading, chip and gap uniformly — so
+   sections stop feeling cramped. Large monitors (>=1536px) keep full sizing. */
+@media (max-width: 1535px) {
+  html { font-size: 15px; }
 }
 
 body {
