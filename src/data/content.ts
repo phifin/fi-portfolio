@@ -84,26 +84,22 @@ export const skillGroups: SkillGroup[] = [
     ],
   },
   {
-    key: 'data',
-    title: { en: 'Databases & Caching', vi: 'Cơ sở dữ liệu & Cache' },
+    key: 'dataops',
+    title: { en: 'Data & Ops', vi: 'Dữ liệu & Ops' },
     accent: 'sky',
-    blurb: { en: 'Where state lives — relational, document and in-memory.', vi: 'Nơi lưu trạng thái — quan hệ, document và in-memory.' },
+    blurb: { en: 'Where state lives, and how services ship and stay observable in production.', vi: 'Nơi lưu trạng thái, và cách service được ship & giám sát trên production.' },
     categories: [
       {
         label: { en: 'Data Stores', vi: 'Kho dữ liệu' },
         items: ['PostgreSQL', 'MongoDB', 'Redis'],
       },
-    ],
-  },
-  {
-    key: 'devops',
-    title: { en: 'DevOps & Observability', vi: 'DevOps & Observability' },
-    accent: 'cyan',
-    blurb: { en: 'Shipping and observing services in production.', vi: 'Ship và giám sát service trên production.' },
-    categories: [
       {
-        label: { en: 'Platform & Ops', vi: 'Platform & Ops' },
-        items: ['Docker', 'Kubernetes', 'Helm', 'GitOps', 'CI/CD', 'Rancher', 'Grafana Loki', 'AWS S3'],
+        label: { en: 'Containers & Orchestration', vi: 'Container & Orchestration' },
+        items: ['Docker', 'Kubernetes', 'Helm', 'Rancher'],
+      },
+      {
+        label: { en: 'CI/CD & Observability', vi: 'CI/CD & Observability' },
+        items: ['GitOps', 'CI/CD', 'Grafana Loki', 'AWS S3'],
       },
     ],
   },
@@ -111,11 +107,15 @@ export const skillGroups: SkillGroup[] = [
     key: 'practices',
     title: { en: 'Practices', vi: 'Phương pháp' },
     accent: 'blue',
-    blurb: { en: 'How I work with a team and keep systems healthy.', vi: 'Cách mình làm việc nhóm và giữ hệ thống khoẻ mạnh.' },
+    blurb: { en: 'How I work with a team and keep large systems healthy.', vi: 'Cách mình làm việc nhóm và giữ hệ thống lớn khoẻ mạnh.' },
     categories: [
       {
         label: { en: 'Ways of Working', vi: 'Cách làm việc' },
-        items: ['Agile', 'Code Review', 'Multi-tenant Architecture'],
+        items: ['Agile', 'Code Review'],
+      },
+      {
+        label: { en: 'Cross-cutting', vi: 'Xuyên suốt' },
+        items: ['Multi-tenant Architecture', 'Observability'],
       },
     ],
   },

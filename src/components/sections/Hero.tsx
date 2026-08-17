@@ -68,7 +68,7 @@ export function Hero() {
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-ink-950 to-transparent" />
 
       {/* content: copy (left) + whoami terminal (right, lg+) in ONE aligned grid */}
-      <div className="container-page relative grid min-h-[100svh] grid-cols-1 items-center gap-8 py-24 lg:grid-cols-2 lg:gap-12">
+      <div className="container-page relative grid min-h-[100svh] grid-cols-1 items-center gap-8 py-24 lg:grid-cols-2 lg:gap-12 2xl:gap-16 min-[1920px]:gap-20">
        <div className="flex flex-col justify-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -159,7 +159,7 @@ export function Hero() {
          initial={{ opacity: 0, y: 24 }}
          animate={{ opacity: 1, y: 0 }}
          transition={{ duration: 0.9, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
-         className="hidden w-full max-w-[540px] justify-self-center lg:block lg:justify-self-end"
+         className="hidden w-full max-w-[540px] justify-self-center lg:block lg:justify-self-end 2xl:max-w-[600px] min-[1920px]:max-w-[680px]"
        >
          <HeroGraphic />
        </motion.div>

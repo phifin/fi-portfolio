@@ -16,8 +16,7 @@ const accentHex: Record<string, string> = { cyan: '#2dd4ff', blue: '#4f8cff', sk
 const groupIcon: Record<string, LucideIcon> = {
   backend: Server,
   frontend: LayoutDashboard,
-  data: Database,
-  devops: Cloud,
+  dataops: Database,
   practices: GitPullRequestArrow,
 }
 
@@ -30,22 +29,24 @@ const CAT_META: Record<string, { c: string; Icon: LucideIcon }> = {
   'UI Stack': { c: '#34d399', Icon: LayoutDashboard },
   Delivery: { c: '#818cf8', Icon: Rocket },
   'Data Stores': { c: '#38bdf8', Icon: Database },
-  'Platform & Ops': { c: '#22d3ee', Icon: Cloud },
+  'Containers & Orchestration': { c: '#22d3ee', Icon: Boxes },
+  'CI/CD & Observability': { c: '#818cf8', Icon: Cloud },
   'Ways of Working': { c: '#a78bfa', Icon: GitIcon },
+  'Cross-cutting': { c: '#4f8cff', Icon: Layers },
 }
 const catMeta = (en: string) => CAT_META[en] ?? { c: '#4f8cff', Icon: Layers }
 
 /** Shorter stack names for laptop / small-desktop tab bar */
 const TAB_SHORT: Record<string, { en: string; vi: string }> = {
-  data: { en: 'Data', vi: 'Dữ liệu' },
-  devops: { en: 'DevOps', vi: 'DevOps' },
+  dataops: { en: 'Data & Ops', vi: 'Data & Ops' },
 }
 
 /** Shorter category labels when the sidebar is tight */
 const CAT_SHORT: Record<string, { en: string; vi: string }> = {
   'Service Communication': { en: 'Communication', vi: 'Giao tiếp' },
   'Architecture & Patterns': { en: 'Arch & Patterns', vi: 'KT & Pattern' },
-  'Platform & Ops': { en: 'Platform', vi: 'Platform' },
+  'Containers & Orchestration': { en: 'Containers', vi: 'Container' },
+  'CI/CD & Observability': { en: 'CI/CD & Obs', vi: 'CI/CD & Obs' },
   'Ways of Working': { en: 'Process', vi: 'Quy trình' },
 }
 
@@ -159,7 +160,7 @@ export function Skills() {
     <section id={sectionIds.skills} className="relative flex min-h-[100svh] flex-col py-4 sm:py-5 xl:py-7">
       <div className="grid-bg pointer-events-none absolute inset-0 opacity-30" />
 
-      <div className="container-page relative flex min-h-0 flex-1 flex-col xl:max-w-6xl 2xl:max-w-7xl">
+      <div className="container-page relative flex min-h-0 flex-1 flex-col xl:max-w-6xl 2xl:max-w-7xl min-[1920px]:max-w-[88rem] min-[2560px]:max-w-[100rem]">
         <div className="shrink-0">
           <SectionHeading kicker={pick(ui.skills.kicker)} title={pick(ui.skills.title)} Icon={Wrench} />
         </div>

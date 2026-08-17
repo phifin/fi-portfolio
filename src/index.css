@@ -27,6 +27,18 @@ html {
   html { font-size: 15px; }
 }
 
+/* Large desktop monitors. The rule above covers 14" laptops and 150% zoom.
+   Above 1536px we instead scale the root font UP in two steps so every
+   rem-based heading, body line, gap and padding grows together — the content
+   fills wide monitors instead of sitting as a small column in the middle.
+   Tailwind's breakpoints are px-based, so they are unaffected. */
+@media (min-width: 1920px) {
+  html { font-size: 17px; }
+}
+@media (min-width: 2560px) {
+  html { font-size: 18px; }
+}
+
 body {
   margin: 0;
   background: var(--bg);
@@ -51,6 +63,19 @@ html.lenis body {
 @layer components {
   .container-page {
     @apply mx-auto w-full max-w-6xl px-5 sm:px-8;
+  }
+
+  /* Widen the shared content column on large monitors, in step with the root
+     font scale-up above, so sections use the extra width instead of capping at
+     1152px. rem values keep the column proportional to the enlarged type. */
+  @media (min-width: 1536px) {
+    .container-page { max-width: 80rem; }
+  }
+  @media (min-width: 1920px) {
+    .container-page { max-width: 88rem; }
+  }
+  @media (min-width: 2560px) {
+    .container-page { max-width: 100rem; }
   }
 
   .text-gradient {

@@ -87,7 +87,7 @@ export function HeroGraphic() {
           initial="hidden"
           animate="show"
           className="px-4 py-4 font-mono leading-[1.7] sm:px-5 sm:py-5"
-          style={{ fontSize: 'clamp(9.5px, 0.78vw, 12.5px)' }}
+          style={{ fontSize: 'clamp(9.5px, 0.8vw, 15px)' }}
         >
           {lines.map((l, i) => (
             <motion.div key={i} variants={item} className="min-h-[1.35em] whitespace-pre">
