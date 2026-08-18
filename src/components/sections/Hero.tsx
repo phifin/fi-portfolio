@@ -121,7 +121,7 @@ export function Hero() {
         >
           <button
             onClick={() => scrollToId(sectionIds.about)}
-            className="group relative overflow-hidden rounded-full bg-gradient-to-r from-accent-cyan to-accent-blue px-6 py-3 font-semibold text-ink-950 shadow-glow transition-transform hover:scale-[1.03]"
+            className="i-btn group relative overflow-hidden rounded-full bg-gradient-to-r from-accent-cyan to-accent-blue px-6 py-3 font-semibold text-ink-950 shadow-glow hover:shadow-glow-blue"
           >
             {pick(ui.hero.cta)}
           </button>
@@ -129,7 +129,7 @@ export function Hero() {
             href={`${import.meta.env.BASE_URL}${profile.cv}`}
             target="_blank"
             rel="noreferrer"
-            className="glass rounded-full px-6 py-3 font-semibold text-white/90 transition-colors hover:bg-white/10"
+            className="i-btn glass rounded-full px-6 py-3 font-semibold text-white/90 hover:border-white/25 hover:bg-white/10"
           >
             {pick(ui.hero.resume)}
           </a>
@@ -139,7 +139,7 @@ export function Hero() {
               target="_blank"
               rel="noreferrer"
               aria-label="GitHub"
-              className="flex h-11 w-11 items-center justify-center rounded-full glass text-white/70 transition-colors hover:text-accent-cyan"
+              className="i-btn glass flex h-11 w-11 items-center justify-center rounded-full text-white/70 hover:bg-white/10 hover:text-accent-cyan"
             >
               <Github size={19} strokeWidth={2} />
             </a>
@@ -148,7 +148,7 @@ export function Hero() {
               target="_blank"
               rel="noreferrer"
               aria-label="LinkedIn"
-              className="flex h-11 w-11 items-center justify-center rounded-full glass text-white/70 transition-colors hover:text-accent-cyan"
+              className="i-btn glass flex h-11 w-11 items-center justify-center rounded-full text-white/70 hover:bg-white/10 hover:text-accent-cyan"
             >
               <Linkedin size={19} strokeWidth={2} />
             </a>

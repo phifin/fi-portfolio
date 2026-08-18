@@ -37,7 +37,7 @@ export function Contact() {
             <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
               <a
                 href={`mailto:${contacts.email}`}
-                className="flex items-center gap-2 rounded-full bg-gradient-to-r from-accent-cyan to-accent-blue px-7 py-3.5 font-semibold text-ink-950 shadow-glow transition-transform hover:scale-[1.03]"
+                className="i-btn flex items-center gap-2 rounded-full bg-gradient-to-r from-accent-cyan to-accent-blue px-7 py-3.5 font-semibold text-ink-950 shadow-glow hover:shadow-glow-blue"
               >
                 <Mail size={18} strokeWidth={2.4} /> {pick(ui.contact.email)}
               </a>
@@ -45,7 +45,7 @@ export function Contact() {
                 href={`${import.meta.env.BASE_URL}${profile.cv}`}
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-center gap-2 rounded-full glass px-7 py-3.5 font-semibold text-white/90 hover:bg-white/10"
+                className="i-btn glass flex items-center gap-2 rounded-full px-7 py-3.5 font-semibold text-white/90 hover:border-white/25 hover:bg-white/10"
               >
                 <Download size={18} strokeWidth={2.4} /> {pick(ui.hero.resume)}
               </a>
@@ -60,14 +60,16 @@ export function Contact() {
                   target={l.href.startsWith('http') ? '_blank' : undefined}
                   rel="noreferrer"
                   whileHover={{ y: -3 }}
-                  className="glass flex items-center gap-3 rounded-xl px-5 py-4 text-left transition-colors hover:bg-white/[0.07]"
+                  className="i-card glass group flex items-center gap-3 rounded-xl px-5 py-4 text-left hover:bg-white/[0.07]"
                 >
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/[0.05] text-accent-cyan">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/[0.05] text-accent-cyan transition-all duration-300 group-hover:scale-110 group-hover:bg-accent-cyan/15">
                     <l.Icon size={17} strokeWidth={2} />
                   </span>
                   <span className="min-w-0">
                     <span className="block font-mono text-[10px] uppercase tracking-wider text-white/40">{l.label}</span>
-                    <span className="block truncate text-sm font-medium text-white/85">{l.value}</span>
+                    <span className="block truncate text-sm font-medium text-white/85 transition-colors duration-300 group-hover:text-white">
+                      {l.value}
+                    </span>
                   </span>
                 </motion.a>
               </Reveal>

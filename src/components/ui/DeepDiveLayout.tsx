@@ -36,7 +36,7 @@ export function DeepDiveLayout({ id, kicker, title, body, Icon, children, flip, 
 
           <Reveal delay={0.15}>
             <div
-              className={`relative aspect-[4/5] w-full overflow-hidden rounded-3xl border border-white/10 bg-ink-900/50 ${
+              className={`relative aspect-[4/5] w-full overflow-hidden rounded-3xl border border-white/10 bg-ink-900/50 transition-[border-color,box-shadow] duration-500 hover:border-accent-cyan/25 hover:shadow-glow ${
                 wide ? 'md:aspect-[16/10]' : 'md:aspect-[4/3]'
               }`}
             >

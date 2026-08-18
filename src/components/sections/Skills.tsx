@@ -191,8 +191,8 @@ export function Skills() {
                     <button
                       key={g.key}
                       onClick={() => { setActive(i); setFocusCat(null) }}
-                      className={`relative shrink-0 rounded-lg px-2.5 py-2 sm:flex-1 sm:min-w-0 sm:px-3 xl:px-4 xl:py-2.5 ${
-                        on ? 'text-white' : 'text-white/45 hover:text-white/70'
+                      className={`group relative shrink-0 rounded-lg px-2.5 py-2 transition-colors duration-200 active:scale-[0.97] sm:flex-1 sm:min-w-0 sm:px-3 xl:px-4 xl:py-2.5 ${
+                        on ? 'text-white' : 'text-white/45 hover:bg-white/[0.05] hover:text-white/85'
                       }`}
                     >
                       {on && (
@@ -204,7 +204,12 @@ export function Skills() {
                         />
                       )}
                       <span className="relative flex items-center justify-center gap-1.5 sm:gap-2">
-                        <Icon size={13} color={on ? gc : 'rgba(255,255,255,0.35)'} strokeWidth={2.2} className="shrink-0" />
+                        <Icon
+                          size={13}
+                          color={on ? gc : 'rgba(255,255,255,0.35)'}
+                          strokeWidth={2.2}
+                          className="shrink-0 transition-transform duration-200 group-hover:scale-110"
+                        />
                         <span className="whitespace-nowrap text-xs font-semibold sm:truncate sm:text-sm xl:text-[0.9375rem]">
                           {tabTitle(g.key, g.title)}
                         </span>
@@ -253,9 +258,17 @@ export function Skills() {
                       <button
                         type="button"
                         onClick={() => setFocusCat(focusCat === band.labelEn ? null : band.labelEn)}
-                        className="flex shrink-0 items-center gap-1.5 text-left sm:pt-1"
+                        /* negative margins cancel the new padded hit area so the
+                           label still lines up with the --cat-col measurement */
+                        className="group -mx-2 -my-1 flex w-fit shrink-0 items-center gap-1.5 rounded-lg px-2 py-1 text-left transition-colors duration-200 hover:bg-white/[0.06] active:scale-[0.97] sm:mt-1"
+                        style={{ background: focusCat === band.labelEn ? `${band.color}14` : undefined }}
                       >
-                        <band.Icon size={13} color={band.color} strokeWidth={2.2} className="shrink-0" />
+                        <band.Icon
+                          size={13}
+                          color={band.color}
+                          strokeWidth={2.2}
+                          className="shrink-0 transition-transform duration-200 group-hover:scale-125"
+                        />
                         <span
                           className="whitespace-nowrap font-mono text-[10px] font-semibold uppercase tracking-[0.1em] lg:text-[11px] lg:tracking-[0.12em] xl:text-[12px] 2xl:text-[13px]"
                           style={{ color: band.color }}

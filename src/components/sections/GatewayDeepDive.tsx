@@ -25,7 +25,7 @@ function useMiddleware(): { Icon: LucideIcon; label: { en: string; vi: string } 
 function ProviderNode({ x, y, w, h, name }: { x: number; y: number; w: number; h: number; name: string }) {
   const meta = PROVIDER_META[name]
   return (
-    <g style={{ filter: `drop-shadow(0 0 8px ${meta.glow}55)` }}>
+    <g className="dia-node" style={{ filter: `drop-shadow(0 0 8px ${meta.glow}55)` }}>
       <rect x={x} y={y} width={w} height={h} rx={12} fill="#0e1230" stroke={`${meta.edge}aa`} strokeWidth={1.4} />
       <ProviderLogo name={name} x={x + 16} cy={y + h / 2 - 6} />
       <text x={x + 16} y={y + h - 13} fill="rgba(255,255,255,0.4)" fontSize={9}>{meta.sub}</text>
@@ -36,7 +36,7 @@ function ProviderNode({ x, y, w, h, name }: { x: number; y: number; w: number; h
 function GatewayShell({ x, y, w, h, mw, pick }: { x: number; y: number; w: number; h: number; mw: { Icon: LucideIcon; label: { en: string; vi: string } }[]; pick: (b: { en: string; vi: string }) => string }) {
   const cx = x + w / 2
   return (
-    <>
+    <g className="dia-node">
       <rect x={x} y={y} width={w} height={h} rx={13} fill="#0e1230" stroke={`${DIA.blue}cc`} strokeWidth={1.8} style={{ filter: `drop-shadow(0 0 14px ${DIA.blue}55)` }} />
       <text x={cx} y={y + 22} textAnchor="middle" fill="#fff" fontSize={13.5} fontWeight={700}>Go Gateway</text>
       <text x={cx} y={y + 37} textAnchor="middle" fill="rgba(255,255,255,0.45)" fontSize={9}>net/http · no framework</text>
@@ -51,7 +51,7 @@ function GatewayShell({ x, y, w, h, mw, pick }: { x: number; y: number; w: numbe
           </g>
         )
       })}
-    </>
+    </g>
   )
 }
 
@@ -84,7 +84,7 @@ function GatewayDiagramH() {
   const redis = { x: GW.x + GW.w / 2 - 30, y: GW.y + GW.h + 18, w: 60, h: 50 }
   return (
     <div className="absolute inset-0">
-      <svg viewBox="0 0 660 434" className="h-full w-full" preserveAspectRatio="xMidYMid meet">
+      <svg viewBox="0 0 660 434" className="dia-svg h-full w-full" preserveAspectRatio="xMidYMid meet">
         {/* client -> gateway */}
         <Edge id="gwi" from={[182, 128]} to={[GW.x, 138]} via={[212, 132]} color={DIA.cyan} />
         <Edge id="gwe" from={[182, 290]} to={[GW.x, 262]} via={[212, 286]} color={DIA.sky} />
@@ -141,7 +141,7 @@ function GatewayDiagramV() {
   const ph = 66
   return (
     <div className="absolute inset-0">
-      <svg viewBox="0 0 340 552" className="h-full w-full" preserveAspectRatio="xMidYMid meet">
+      <svg viewBox="0 0 340 552" className="dia-svg h-full w-full" preserveAspectRatio="xMidYMid meet">
         <Edge id="gvi" from={[88, 68]} to={[gcx - 34, GW.y]} via={[100, 96]} color={DIA.cyan} />
         <Edge id="gve" from={[252, 68]} to={[gcx + 34, GW.y]} via={[240, 96]} color={DIA.sky} />
         {prov.map((p, i) => (

@@ -9,8 +9,8 @@ export function LanguageToggle() {
           key={l}
           onClick={() => setLang(l)}
           aria-pressed={lang === l}
-          className={`relative rounded-full px-3 py-1 uppercase tracking-wide transition-colors ${
-            lang === l ? 'text-ink-950' : 'text-white/60 hover:text-white'
+          className={`relative rounded-full px-3 py-1 uppercase tracking-wide transition-colors duration-200 active:scale-95 ${
+            lang === l ? 'text-ink-950' : 'text-white/60 hover:bg-white/10 hover:text-white'
           }`}
         >
           {lang === l && (

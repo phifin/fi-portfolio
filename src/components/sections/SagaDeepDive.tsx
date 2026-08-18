@@ -42,7 +42,7 @@ function QueuePill({ x, y, w, label, active }: { x: number; y: number; w: number
 
 function TemporalCluster({ box, qW, orderQ, payQ, activeQueue }: { box: { x: number; y: number; w: number; h: number }; qW: number; orderQ: XY; payQ: XY; activeQueue: 'order' | 'payment' | null }) {
   return (
-    <g>
+    <g className="dia-node">
       <rect
         x={box.x}
         y={box.y}
@@ -138,7 +138,7 @@ function SagaDiagram({ mode, layout }: { mode: Mode; layout: Layout }) {
 
   return (
     <div className="absolute inset-0 flex flex-col">
-      <svg viewBox={layout.vb} className="h-full w-full" preserveAspectRatio="xMidYMid meet">
+      <svg viewBox={layout.vb} className="dia-svg h-full w-full" preserveAspectRatio="xMidYMid meet">
         {steps.map((s, i) => (
           <g key={i} opacity={i === active ? 1 : 0.14}>
             <Edge id={`s${i}`} from={s.from} to={s.to} via={s.via} color={s.color} dashed={i === active} />
@@ -194,16 +194,20 @@ export function SagaDeepDive() {
         <div className="mt-2 flex gap-2">
           <button
             onClick={() => setMode('happy')}
-            className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-all ${
-              mode === 'happy' ? 'bg-emerald-400/20 text-emerald-300 ring-1 ring-emerald-400/50' : 'glass text-white/60'
+            className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-all duration-300 active:scale-95 ${
+              mode === 'happy'
+                ? 'bg-emerald-400/20 text-emerald-300 ring-1 ring-emerald-400/50'
+                : 'glass text-white/60 hover:-translate-y-0.5 hover:bg-white/10 hover:text-white/90'
             }`}
           >
             <CheckCircle2 size={15} /> {pick(ui.saga.happy)}
           </button>
           <button
             onClick={() => setMode('fail')}
-            className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-all ${
-              mode === 'fail' ? 'bg-rose-400/20 text-rose-300 ring-1 ring-rose-400/50' : 'glass text-white/60'
+            className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-all duration-300 active:scale-95 ${
+              mode === 'fail'
+                ? 'bg-rose-400/20 text-rose-300 ring-1 ring-rose-400/50'
+                : 'glass text-white/60 hover:-translate-y-0.5 hover:bg-white/10 hover:text-white/90'
             }`}
           >
             <RotateCcw size={15} /> {pick(ui.saga.fail)}

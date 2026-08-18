@@ -67,7 +67,7 @@ export function HeroGraphic() {
       <div className="pointer-events-none absolute -inset-8 -z-10 rounded-[2.5rem] opacity-70 blur-3xl" style={{ background: 'radial-gradient(60% 60% at 60% 40%, rgba(34,211,238,0.16), rgba(79,140,255,0.08) 55%, transparent 75%)' }} />
 
       <div
-        className="overflow-hidden rounded-xl border border-white/12"
+        className="overflow-hidden rounded-xl border border-white/12 transition-[transform,border-color] duration-500 hover:-translate-y-1 hover:border-accent-cyan/30"
         style={{
           background: 'linear-gradient(160deg, #0c1324 0%, #070b16 100%)',
           boxShadow: '0 0 0 1px rgba(45,212,255,0.08), 0 30px 70px -30px rgba(34,211,238,0.45)',

@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { motion } from 'framer-motion'
 import { User } from 'lucide-react'
 import { Reveal } from '../ui/Reveal'
 import { SectionHeading } from '../ui/SectionHeading'
@@ -52,11 +51,13 @@ export function About() {
             <div className="mt-7 grid grid-cols-2 gap-3 sm:grid-cols-4">
               {stats.map((s, i) => (
                 <Reveal key={i} delay={0.1 + i * 0.08}>
-                  <div className="glass rounded-2xl p-4 text-center">
-                    <div className="text-3xl font-bold text-gradient sm:text-4xl">
+                  <div className="i-card glass group h-full rounded-2xl p-4 text-center">
+                    <div className="text-3xl font-bold text-gradient transition-transform duration-300 group-hover:scale-110 sm:text-4xl">
                       <AnimatedCounter value={s.value} suffix={s.suffix} />
                     </div>
-                    <div className="mt-1 text-xs text-white/55">{pick(s.label)}</div>
+                    <div className="mt-1 text-xs text-white/55 transition-colors duration-300 group-hover:text-white/80">
+                      {pick(s.label)}
+                    </div>
                   </div>
                 </Reveal>
               ))}
@@ -64,7 +65,7 @@ export function About() {
 
             <div className="mt-6 grid gap-4 sm:grid-cols-2">
               <Reveal delay={0.2}>
-                <div className="glass h-full rounded-2xl p-5">
+                <div className="i-card glass h-full rounded-2xl p-5">
                   <h3 className="font-mono text-xs uppercase tracking-[0.2em] text-accent-cyan">
                     {pick(ui.education.title)}
                   </h3>
@@ -74,19 +75,19 @@ export function About() {
                 </div>
               </Reveal>
               <Reveal delay={0.28}>
-                <div className="glass h-full rounded-2xl p-5">
+                <div className="i-card glass h-full rounded-2xl p-5">
                   <h3 className="font-mono text-xs uppercase tracking-[0.2em] text-accent-blue">
                     {pick(ui.education.languages)}
                   </h3>
                   {languages.map((l) => (
                     <div key={l.name} className="mt-2 flex items-center justify-between">
                       <span className="font-semibold">{l.name}</span>
-                      <span className="chip">{l.detail}</span>
+                      <span className="chip i-tile">{l.detail}</span>
                     </div>
                   ))}
                   <div className="mt-3 flex items-center justify-between">
                     <span className="font-semibold">Tiếng Việt</span>
-                    <motion.span className="chip">Native</motion.span>
+                    <span className="chip i-tile">Native</span>
                   </div>
                 </div>
               </Reveal>

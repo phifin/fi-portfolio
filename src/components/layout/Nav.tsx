@@ -54,11 +54,13 @@ export function Nav() {
             scrolled ? 'glass-strong shadow-glow' : 'bg-transparent'
           }`}
         >
-          <button onClick={() => go(sectionIds.hero)} className="group flex items-center gap-2.5">
+          <button onClick={() => go(sectionIds.hero)} className="group flex items-center gap-2.5 active:scale-95">
             <span className="h-9 w-9 overflow-hidden rounded-full ring-2 ring-accent-blue/60 ring-offset-2 ring-offset-transparent transition-all group-hover:ring-accent-cyan">
               <img src={avatarUrl} alt="Vo Nhu Phi" className="h-full w-full object-cover" width={36} height={36} />
             </span>
-            <span className="hidden font-semibold tracking-tight sm:block">Vo Nhu Phi</span>
+            <span className="hidden font-semibold tracking-tight transition-colors group-hover:text-accent-cyan sm:block">
+              Vo Nhu Phi
+            </span>
           </button>
 
           <nav className="hidden items-center gap-1 md:flex">
@@ -66,7 +68,7 @@ export function Nav() {
               <button
                 key={l.id}
                 onClick={() => go(l.id)}
-                className="rounded-lg px-3 py-1.5 text-sm text-white/70 transition-colors hover:bg-white/5 hover:text-white"
+                className="rounded-lg px-3 py-1.5 text-sm text-white/70 transition-all duration-200 hover:-translate-y-0.5 hover:bg-white/5 hover:text-white active:translate-y-0 active:scale-95"
               >
                 {pick(l.label)}
               </button>
@@ -78,7 +80,7 @@ export function Nav() {
             <button
               onClick={() => setOpen((o) => !o)}
               aria-label="Menu"
-              className="glass flex h-9 w-9 items-center justify-center rounded-full md:hidden"
+              className="glass flex h-9 w-9 items-center justify-center rounded-full transition-colors duration-200 hover:bg-white/10 active:scale-95 md:hidden"
             >
               <span className="relative flex h-3 w-4 flex-col justify-between">
                 <span className={`h-0.5 w-full bg-white transition-transform ${open ? 'translate-y-[5px] rotate-45' : ''}`} />
@@ -112,7 +114,7 @@ export function Nav() {
                   animate={{ x: 0, opacity: 1 }}
                   transition={{ delay: 0.05 * i }}
                   onClick={() => go(l.id)}
-                  className="glass rounded-xl px-5 py-4 text-left text-lg font-semibold"
+                  className="glass rounded-xl px-5 py-4 text-left text-lg font-semibold transition-colors duration-200 hover:bg-white/10 active:scale-[0.98]"
                 >
                   {pick(l.label)}
                 </motion.button>

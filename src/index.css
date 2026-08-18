@@ -103,6 +103,58 @@ html.lenis body {
   .kicker {
     @apply inline-flex items-center gap-2 font-mono text-xs font-medium uppercase tracking-[0.25em];
   }
+
+  /* ── Interaction vocabulary ─────────────────────────────────────────
+     One hover language for the whole page: information blocks lift with a
+     brighter edge and an accent glow, controls answer a press. Defined
+     once here so a card in About reacts exactly like a card in Experience.
+     Gated on (hover: hover) so a tap on touch doesn't leave an element
+     stuck in the hovered state; the prefers-reduced-motion block at the
+     bottom of this file flattens the transitions. */
+  .i-card,
+  .i-tile,
+  .i-btn {
+    transition:
+      transform 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 0.32s ease,
+      background-color 0.32s ease,
+      box-shadow 0.32s ease,
+      color 0.2s ease;
+  }
+
+  @media (hover: hover) {
+    .i-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(126, 178, 255, 0.34);
+      box-shadow: 0 22px 46px -28px rgba(45, 212, 255, 0.65);
+    }
+    .i-tile:hover {
+      transform: translateY(-2px);
+      border-color: rgba(126, 178, 255, 0.32);
+      background-color: rgba(255, 255, 255, 0.08);
+      color: rgba(255, 255, 255, 0.92);
+    }
+    .i-btn:hover {
+      transform: translateY(-2px);
+    }
+  }
+
+  .i-btn:active,
+  .i-tile:active,
+  .i-card:active {
+    transform: scale(0.985);
+  }
+
+  /* Architecture diagrams: hovering a node spotlights it and fades its
+     siblings, so the SVGs read as inspectable rather than as a picture. */
+  .dia-node {
+    transition: opacity 0.25s ease;
+  }
+  @media (hover: hover) {
+    .dia-svg:has(.dia-node:hover) .dia-node:not(:hover) {
+      opacity: 0.38;
+    }
+  }
 }
 
 @layer utilities {

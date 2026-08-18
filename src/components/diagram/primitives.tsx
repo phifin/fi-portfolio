@@ -61,7 +61,7 @@ export function ServiceNode({
 }) {
   const useLogo = logo && hasLogo(logo)
   return (
-    <g>
+    <g className="dia-node">
       <rect
         x={x}
         y={y}
@@ -118,7 +118,7 @@ export function Datastore({
   const useLogo = logo && hasLogo(logo)
   const d = `M${x},${y + ry} A${w / 2},${ry} 0 0 1 ${x + w},${y + ry} L${x + w},${y + h - ry} A${w / 2},${ry} 0 0 1 ${x},${y + h - ry} Z`
   return (
-    <g style={{ filter: `drop-shadow(0 0 8px ${hexA(color, 0.35)})` }}>
+    <g className="dia-node" style={{ filter: `drop-shadow(0 0 8px ${hexA(color, 0.35)})` }}>
       <path d={d} fill="#0e1230" stroke={hexA(color, 0.7)} strokeWidth={1.4} />
       <ellipse cx={cx} cy={y + ry} rx={w / 2} ry={ry} fill={hexA(color, 0.18)} stroke={hexA(color, 0.7)} strokeWidth={1.4} />
       {useLogo && <TechGlyph name={logo!} x={x + 12} y={y + h / 2 - 8} size={16} />}
@@ -158,7 +158,7 @@ export function TopicNode({
   const bandH = 12
   const useLogo = logo && hasLogo(logo)
   return (
-    <g style={{ filter: `drop-shadow(0 0 10px ${hexA(color, 0.4)})` }}>
+    <g className="dia-node" style={{ filter: `drop-shadow(0 0 10px ${hexA(color, 0.4)})` }}>
       <rect x={x} y={y} width={w} height={h} rx={10} fill="#0e1230" stroke={hexA(color, 0.75)} strokeWidth={1.6} />
       {useLogo && <TechGlyph name={logo!} x={x + w / 2 - 46} y={y + 6} size={15} />}
       <text x={x + w / 2 + (useLogo ? 8 : 0)} y={y + 17} textAnchor="middle" fill="#fff" fontSize={12.5} fontWeight={700}>

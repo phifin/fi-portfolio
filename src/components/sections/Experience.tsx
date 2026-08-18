@@ -21,8 +21,8 @@ export function Experience() {
             <div key={exp.company} className="pl-8">
               {/* company header */}
               <Reveal>
-                <div className="relative">
-                  <span className="absolute -left-8 top-1.5 h-4 w-4 rounded-full bg-accent-cyan shadow-glow" />
+                <div className="group relative">
+                  <span className="absolute -left-8 top-1.5 h-4 w-4 rounded-full bg-accent-cyan shadow-glow transition-transform duration-300 group-hover:scale-125" />
                   <div className="flex flex-wrap items-baseline gap-x-3">
                     <h3 className="text-2xl font-bold">{exp.company}</h3>
                     <span className="font-mono text-sm text-accent-cyan">{pick(exp.period)}</span>
@@ -36,23 +36,29 @@ export function Experience() {
               <div className="mt-8 space-y-6">
                 {exp.projects.map((proj, pi) => (
                   <Reveal key={proj.name} delay={pi * 0.08}>
-                    <div className="glass overflow-hidden rounded-2xl p-6 sm:p-7">
+                    <div className="i-card glass group overflow-hidden rounded-2xl p-6 sm:p-7">
                       <div className="flex flex-col gap-4 border-b border-white/8 pb-5 sm:flex-row sm:items-start sm:justify-between">
                         <div>
                           <div className="flex items-center gap-2">
-                            <ArrowUpRight size={18} className="text-accent-blue" />
+                            <ArrowUpRight
+                              size={18}
+                              className="text-accent-blue transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                            />
                             <h4 className="text-xl font-bold text-gradient">{proj.name}</h4>
                           </div>
                           <p className="mt-2 max-w-2xl text-sm text-white/65">{pick(proj.summary)}</p>
                         </div>
-                        <span className="inline-flex w-fit shrink-0 items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs font-medium text-white/70">
+                        <span className="i-tile inline-flex w-fit shrink-0 items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs font-medium text-white/70">
                           <Users size={13} /> {pick(proj.team)}
                         </span>
                       </div>
 
                       <div className="mt-4 flex flex-wrap gap-1.5">
                         {proj.stack.map((t) => (
-                          <span key={t} className="rounded-md bg-white/[0.05] px-2 py-0.5 font-mono text-[11px] text-white/60">
+                          <span
+                            key={t}
+                            className="i-tile cursor-default rounded-md border border-transparent bg-white/[0.05] px-2 py-0.5 font-mono text-[11px] text-white/60"
+                          >
                             {t}
                           </span>
                         ))}
@@ -67,9 +73,9 @@ export function Experience() {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: (hi % 2) * 0.05 }}
-                            className="flex gap-2.5 text-sm leading-relaxed text-white/72"
+                            className="group/hl flex gap-2.5 text-sm leading-relaxed text-white/72 transition-colors duration-200 hover:text-white"
                           >
-                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-accent-cyan" />
+                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-accent-cyan transition-transform duration-200 group-hover/hl:scale-150" />
                             {pick(h)}
                           </motion.li>
                         ))}

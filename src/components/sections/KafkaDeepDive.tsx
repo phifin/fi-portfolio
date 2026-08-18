@@ -10,7 +10,7 @@ import { sectionIds } from '../../data/content'
 function KafkaDiagramH() {
   // Row 1 = ingest pipeline (top); Row 2 = consumers fanned out below Kafka.
   return (
-    <svg viewBox="0 0 620 390" className="h-full w-full" preserveAspectRatio="xMidYMid meet">
+    <svg viewBox="0 0 620 390" className="dia-svg h-full w-full" preserveAspectRatio="xMidYMid meet">
       {/* pipeline edges */}
       <Edge id="k1" from={[166, 96]} to={[196, 96]} color={DIA.green} />
       <Edge id="k2" from={[276, 96]} to={[306, 96]} color={DIA.amber} />
@@ -46,7 +46,7 @@ function KafkaDiagramV() {
   // still needs room for the line itself to read on a phone.
   const cons: [number, number] = [58, 386]
   return (
-    <svg viewBox="0 0 340 452" className="h-full w-full" preserveAspectRatio="xMidYMid meet">
+    <svg viewBox="0 0 340 452" className="dia-svg h-full w-full" preserveAspectRatio="xMidYMid meet">
       {/* spine edges */}
       <Edge id="kv1" from={[170, 60]} to={[170, 82]} color={DIA.green} />
       <Edge id="kv2" from={[170, 144]} to={[170, 166]} color={DIA.green} />
