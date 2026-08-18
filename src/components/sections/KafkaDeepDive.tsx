@@ -42,32 +42,34 @@ function KafkaDiagramH() {
 }
 
 function KafkaDiagramV() {
-  const cons: [number, number] = [58, 372]
+  // Spine gaps are 22 units, not the 14 they used to be: a shorter arrowhead
+  // still needs room for the line itself to read on a phone.
+  const cons: [number, number] = [58, 386]
   return (
-    <svg viewBox="0 0 340 440" className="h-full w-full" preserveAspectRatio="xMidYMid meet">
+    <svg viewBox="0 0 340 452" className="h-full w-full" preserveAspectRatio="xMidYMid meet">
       {/* spine edges */}
-      <Edge id="kv1" from={[170, 60]} to={[170, 74]} color={DIA.green} />
-      <Edge id="kv2" from={[170, 136]} to={[170, 150]} color={DIA.green} />
-      <Edge id="kv3" from={[170, 204]} to={[170, 222]} color={DIA.amber} />
-      <Edge id="kv4" from={[126, 300]} to={[58, 366]} via={[70, 336]} color={DIA.blue} />
-      <Edge id="kv5" from={[170, 302]} to={[170, 366]} color={DIA.blue} />
-      <Edge id="kv6" from={[214, 300]} to={[282, 366]} via={[270, 336]} color={DIA.blue} />
+      <Edge id="kv1" from={[170, 60]} to={[170, 82]} color={DIA.green} />
+      <Edge id="kv2" from={[170, 144]} to={[170, 166]} color={DIA.green} />
+      <Edge id="kv3" from={[170, 220]} to={[170, 242]} color={DIA.amber} />
+      <Edge id="kv4" from={[126, 320]} to={[58, 380]} via={[70, 352]} color={DIA.blue} />
+      <Edge id="kv5" from={[170, 320]} to={[170, 380]} color={DIA.blue} />
+      <Edge id="kv6" from={[214, 320]} to={[282, 380]} via={[270, 352]} color={DIA.blue} />
 
-      <FlowPackets points={[[170, 60], [170, 74]]} color={DIA.green} count={2} dur={1.3} />
-      <FlowPackets points={[[170, 136], [170, 150]]} color={DIA.green} count={2} dur={1.3} />
-      <FlowPackets points={[[170, 204], [170, 222]]} color={DIA.amber} count={2} dur={1.4} />
-      <FlowPackets points={[[170, 300], cons]} color={DIA.sky} count={2} dur={1.6} />
-      <FlowPackets points={[[170, 302], [170, 366]]} color={DIA.sky} count={2} dur={1.5} />
-      <FlowPackets points={[[170, 300], [282, 366]]} color={DIA.sky} count={2} dur={1.7} />
+      <FlowPackets points={[[170, 60], [170, 82]]} color={DIA.green} count={2} dur={1.3} />
+      <FlowPackets points={[[170, 144], [170, 166]]} color={DIA.green} count={2} dur={1.3} />
+      <FlowPackets points={[[170, 220], [170, 242]]} color={DIA.amber} count={2} dur={1.4} />
+      <FlowPackets points={[[170, 320], cons]} color={DIA.sky} count={2} dur={1.6} />
+      <FlowPackets points={[[170, 320], [170, 380]]} color={DIA.sky} count={2} dur={1.5} />
+      <FlowPackets points={[[170, 320], [282, 386]]} color={DIA.sky} count={2} dur={1.7} />
 
       <ServiceNode x={88} y={10} w={164} h={50} title="Order Service" sub="Java · PostgreSQL" color={DIA.cyan} Icon={Server} />
-      <Datastore x={135} y={76} w={70} h={60} title="Outbox" sub="transactional" color={DIA.green} />
-      <ServiceNode x={88} y={154} w={164} h={50} title="Debezium" sub="CDC · stream" color={DIA.amber} Icon={Radio} />
-      <TopicNode x={100} y={226} w={140} h={74} title="Kafka" sub="topic · partitions" color={DIA.blue} />
+      <Datastore x={135} y={84} w={70} h={60} title="Outbox" sub="transactional" color={DIA.green} />
+      <ServiceNode x={88} y={170} w={164} h={50} title="Debezium" sub="CDC · stream" color={DIA.amber} Icon={Radio} />
+      <TopicNode x={100} y={246} w={140} h={74} title="Kafka" sub="topic · partitions" color={DIA.blue} />
 
-      <ServiceNode x={4} y={372} w={104} h={50} title="Orders" color={DIA.sky} Icon={Boxes} />
-      <ServiceNode x={118} y={372} w={104} h={50} title="Invoices" color={DIA.sky} Icon={FileText} />
-      <ServiceNode x={232} y={372} w={104} h={50} title="Notify" color={DIA.sky} Icon={Bell} />
+      <ServiceNode x={4} y={386} w={104} h={50} title="Orders" color={DIA.sky} Icon={Boxes} />
+      <ServiceNode x={118} y={386} w={104} h={50} title="Invoices" color={DIA.sky} Icon={FileText} />
+      <ServiceNode x={232} y={386} w={104} h={50} title="Notify" color={DIA.sky} Icon={Bell} />
     </svg>
   )
 }
