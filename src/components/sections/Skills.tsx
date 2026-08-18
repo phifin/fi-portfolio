@@ -76,39 +76,51 @@ function SkillCell({
   name: string; color: string; dim: boolean; index: number; reducedMotion: boolean
 }) {
   return (
+    // Outer layer runs the entrance only. Its targets never change after mount,
+    // so the stagger `delay` can no longer leak into the dim/hover transitions —
+    // it used to, which made a hover wait up to 0.4s and then snap.
     <motion.div
-      layout
       initial={reducedMotion ? false : { opacity: 0, scale: 0.88 }}
-      animate={{ opacity: dim ? 0.28 : 1, scale: 1 }}
+      animate={{ opacity: 1, scale: 1 }}
       transition={{ delay: index * 0.025, type: 'spring', stiffness: 380, damping: 26 }}
-      whileHover={dim ? undefined : { y: -3, scale: 1.05 }}
-      // Chip sizes itself to its label — a fixed width forced long names
-      // ("PostgreSQL", "Grafana Loki") to wrap or break mid-word.
-      className="group relative flex shrink-0 items-center gap-2 rounded-xl border py-2 pl-2.5 pr-3.5"
-      style={{
-        borderColor: `${color}30`,
-        background: `linear-gradient(160deg, ${color}14, rgba(255,255,255,0.02))`,
-      }}
+      className="group shrink-0"
     >
-      <div className="flex h-7 w-7 shrink-0 items-center justify-center transition-transform group-hover:scale-110">
-        {hasLogo(name) ? (
-          <TechGlyph name={name} size={22} />
-        ) : (
-          <span
-            className="flex h-7 w-7 items-center justify-center rounded-lg text-[10px] font-bold"
-            style={{ background: `${color}22`, color }}
-          >
-            {name.slice(0, 2).toUpperCase()}
-          </span>
-        )}
-      </div>
-      <span className="whitespace-nowrap text-[11px] leading-none text-white/80 sm:text-xs xl:text-[13px] 2xl:text-sm">
-        {name}
-      </span>
-      <span
-        className="pointer-events-none absolute inset-x-2.5 bottom-0 h-0.5 rounded-full opacity-0 transition-opacity group-hover:opacity-100"
-        style={{ background: color }}
-      />
+      <motion.div
+        animate={{ opacity: dim ? 0.28 : 1 }}
+        transition={{ duration: 0.18 }}
+        // Chip sizes itself to its label — a fixed width forced long names
+        // ("PostgreSQL", "Grafana Loki") to wrap or break mid-word.
+        // The hover lift is CSS on this inner layer: the wrapper above keeps the
+        // hit box still, so easing the pointer across a chip can't slide the box
+        // out from under it and start a mouseenter/mouseleave flicker loop.
+        className={`relative flex items-center gap-2 rounded-xl border py-2 pl-2.5 pr-3.5 transition-transform duration-200 ${
+          dim ? '' : 'group-hover:-translate-y-[3px] group-hover:scale-105'
+        }`}
+        style={{
+          borderColor: `${color}30`,
+          background: `linear-gradient(160deg, ${color}14, rgba(255,255,255,0.02))`,
+        }}
+      >
+        <div className="flex h-7 w-7 shrink-0 items-center justify-center transition-transform group-hover:scale-110">
+          {hasLogo(name) ? (
+            <TechGlyph name={name} size={22} />
+          ) : (
+            <span
+              className="flex h-7 w-7 items-center justify-center rounded-lg text-[10px] font-bold"
+              style={{ background: `${color}22`, color }}
+            >
+              {name.slice(0, 2).toUpperCase()}
+            </span>
+          )}
+        </div>
+        <span className="whitespace-nowrap text-[11px] leading-none text-white/80 sm:text-xs xl:text-[13px] 2xl:text-sm">
+          {name}
+        </span>
+        <span
+          className="pointer-events-none absolute inset-x-2.5 bottom-0 h-0.5 rounded-full opacity-0 transition-opacity group-hover:opacity-100"
+          style={{ background: color }}
+        />
+      </motion.div>
     </motion.div>
   )
 }
@@ -117,7 +129,12 @@ export function Skills() {
   const { pick } = useLang()
   const { compactTabs, compactLabels } = useSkillsLayout()
   const [active, setActive] = useState(0)
-  const [focusCat, setFocusCat] = useState<string | null>(null)
+  // Clicking a category pins it; hovering is transient. Kept apart because a
+  // single piece of state meant the row's mouseleave immediately cleared the
+  // pin, leaving the label button's click toggle with no visible effect.
+  const [pinnedCat, setPinnedCat] = useState<string | null>(null)
+  const [hoverCat, setHoverCat] = useState<string | null>(null)
+  const focusCat = pinnedCat ?? hoverCat
   const [reducedMotion, setReducedMotion] = useState(false)
 
   const tabTitle = (key: string, title: { en: string; vi: string }) =>
@@ -128,8 +145,10 @@ export function Skills() {
 
   useEffect(() => {
     const rm = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const onChange = (e: MediaQueryListEvent) => setReducedMotion(e.matches)
     setReducedMotion(rm.matches)
-    rm.addEventListener('change', (e) => setReducedMotion(e.matches))
+    rm.addEventListener('change', onChange)
+    return () => rm.removeEventListener('change', onChange)
   }, [])
 
   const group = skillGroups[active]
@@ -190,7 +209,7 @@ export function Skills() {
                   return (
                     <button
                       key={g.key}
-                      onClick={() => { setActive(i); setFocusCat(null) }}
+                      onClick={() => { setActive(i); setPinnedCat(null); setHoverCat(null) }}
                       className={`group relative shrink-0 rounded-lg px-2.5 py-2 transition-colors duration-200 active:scale-[0.97] sm:flex-1 sm:min-w-0 sm:px-3 xl:px-4 xl:py-2.5 ${
                         on ? 'text-white' : 'text-white/45 hover:bg-white/[0.05] hover:text-white/85'
                       }`}
@@ -248,46 +267,54 @@ export function Skills() {
                 {bands.map((band, bi) => (
                     <motion.div
                       key={band.labelEn}
+                      // `animate` has to return x to 0 — it only carried opacity
+                      // before, so every row stayed parked at translateX(-8px).
                       initial={reducedMotion ? false : { opacity: 0, x: -8 }}
-                      animate={{ opacity: focusCat === null || focusCat === band.labelEn ? 1 : 0.35 }}
-                      transition={{ delay: bi * 0.05 }}
-                      className="grid grid-cols-1 gap-2 border-b border-white/[0.04] py-2.5 last:border-0 sm:grid-cols-[var(--cat-col)_1fr] sm:items-start sm:gap-x-5 sm:py-3 lg:gap-x-6 xl:gap-x-8 xl:py-3.5 2xl:gap-x-10"
-                      onMouseEnter={() => setFocusCat(band.labelEn)}
-                      onMouseLeave={() => setFocusCat(null)}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: bi * 0.05, duration: 0.3 }}
+                      className="border-b border-white/[0.04] last:border-0"
                     >
-                      <button
-                        type="button"
-                        onClick={() => setFocusCat(focusCat === band.labelEn ? null : band.labelEn)}
-                        /* negative margins cancel the new padded hit area so the
-                           label still lines up with the --cat-col measurement */
-                        className="group -mx-2 -my-1 flex w-fit shrink-0 items-center gap-1.5 rounded-lg px-2 py-1 text-left transition-colors duration-200 hover:bg-white/[0.06] active:scale-[0.97] sm:mt-1"
-                        style={{ background: focusCat === band.labelEn ? `${band.color}14` : undefined }}
+                      <motion.div
+                        animate={{ opacity: focusCat === null || focusCat === band.labelEn ? 1 : 0.35 }}
+                        transition={{ duration: 0.18 }}
+                        className="grid grid-cols-1 gap-2 py-2.5 sm:grid-cols-[var(--cat-col)_1fr] sm:items-start sm:gap-x-5 sm:py-3 lg:gap-x-6 xl:gap-x-8 xl:py-3.5 2xl:gap-x-10"
+                        onMouseEnter={() => setHoverCat(band.labelEn)}
+                        onMouseLeave={() => setHoverCat(null)}
                       >
-                        <band.Icon
-                          size={13}
-                          color={band.color}
-                          strokeWidth={2.2}
-                          className="shrink-0 transition-transform duration-200 group-hover:scale-125"
-                        />
-                        <span
-                          className="whitespace-nowrap font-mono text-[10px] font-semibold uppercase tracking-[0.1em] lg:text-[11px] lg:tracking-[0.12em] xl:text-[12px] 2xl:text-[13px]"
-                          style={{ color: band.color }}
+                        <button
+                          type="button"
+                          onClick={() => setPinnedCat(pinnedCat === band.labelEn ? null : band.labelEn)}
+                          /* negative margins cancel the new padded hit area so the
+                             label still lines up with the --cat-col measurement */
+                          className="group -mx-2 -my-1 flex w-fit shrink-0 items-center gap-1.5 rounded-lg px-2 py-1 text-left transition-colors duration-200 hover:bg-white/[0.06] active:scale-[0.97] sm:mt-1"
+                          style={{ background: focusCat === band.labelEn ? `${band.color}14` : undefined }}
                         >
-                          {catLabel(band.labelEn, band.labelBi)}
-                        </span>
-                      </button>
-                      <div className="flex flex-wrap gap-2 sm:gap-2.5 xl:gap-3 2xl:gap-4">
-                        {band.items.map((name, si) => (
-                            <SkillCell
-                              key={name}
-                              name={name}
-                              color={band.color}
-                              dim={focusCat !== null && focusCat !== band.labelEn}
-                              index={band.tileStart + si}
-                              reducedMotion={reducedMotion}
-                            />
-                          ))}
-                      </div>
+                          <band.Icon
+                            size={13}
+                            color={band.color}
+                            strokeWidth={2.2}
+                            className="shrink-0 transition-transform duration-200 group-hover:scale-125"
+                          />
+                          <span
+                            className="whitespace-nowrap font-mono text-[10px] font-semibold uppercase tracking-[0.1em] lg:text-[11px] lg:tracking-[0.12em] xl:text-[12px] 2xl:text-[13px]"
+                            style={{ color: band.color }}
+                          >
+                            {catLabel(band.labelEn, band.labelBi)}
+                          </span>
+                        </button>
+                        <div className="flex flex-wrap gap-2 sm:gap-2.5 xl:gap-3 2xl:gap-4">
+                          {band.items.map((name, si) => (
+                              <SkillCell
+                                key={name}
+                                name={name}
+                                color={band.color}
+                                dim={focusCat !== null && focusCat !== band.labelEn}
+                                index={band.tileStart + si}
+                                reducedMotion={reducedMotion}
+                              />
+                            ))}
+                        </div>
+                      </motion.div>
                     </motion.div>
                 ))}
               </motion.div>
