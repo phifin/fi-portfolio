@@ -223,17 +223,18 @@ export function Edge({
         {/* markerUnits=userSpaceOnUse is essential: the default (strokeWidth)
             multiplies the head by the 2px stroke, which made it 16 units long —
             over half of a 30-unit edge, and longer than the 14-unit edges in the
-            mobile layouts, where it swallowed the line entirely. */}
+            mobile layouts, where it swallowed the line entirely. Absolute units
+            keep it at 9.5 regardless of stroke. */}
         <marker
           id={`ah-${id}`}
           markerUnits="userSpaceOnUse"
-          markerWidth={8}
-          markerHeight={7}
-          refX={6.6}
-          refY={3.5}
+          markerWidth={11}
+          markerHeight={9}
+          refX={9}
+          refY={4.5}
           orient="auto"
         >
-          <path d="M0,0.4 L7,3.5 L0,6.6 Z" fill={color} />
+          <path d="M0,0.5 L9.5,4.5 L0,8.5 Z" fill={color} />
         </marker>
       </defs>
       {/* soft halo so the line reads clearly over the grid */}
