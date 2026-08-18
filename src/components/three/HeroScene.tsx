@@ -53,7 +53,11 @@ export function HeroScene({ tier }: { tier: DeviceTier }) {
       <ambientLight intensity={0.4} />
       <pointLight position={[6, 6, 6]} intensity={90} color="#22d3ee" />
       <pointLight position={[-6, -4, 2]} intensity={70} color="#4f8cff" />
-      <ParticleCloud count={particleCount} />
+      {/* keyed by count: drei's <Points> writes `positions` onto the SAME
+          BufferAttribute, and THREE cannot resize an attribute's array — a tier
+          change (resize past the mobile breakpoint, or PerformanceMonitor
+          degrading) would otherwise throw on every frame. Remount instead. */}
+      <ParticleCloud key={particleCount} count={particleCount} />
       <Rig enablePointer={tier !== 'low'} />
     </>
   )
